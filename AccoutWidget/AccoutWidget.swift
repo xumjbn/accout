@@ -27,7 +27,7 @@ struct BudgetProvider: TimelineProvider {
     private func loadEntry() -> BudgetEntry {
         do {
             let schema = Schema([Transaction.self, Budget.self, Account.self])
-            let config = ModelConfiguration(schema: schema, groupContainer: .identifier("group.com.accout"))
+            let config = ModelConfiguration(schema: schema, groupContainer: .identifier("group.com.xumjbn.accout"))
             let container = try ModelContainer(for: schema, configurations: [config])
             let context = ModelContext(container)
             let calendar = Calendar.current

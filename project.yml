@@ -1,6 +1,6 @@
 name: Accout
 options:
-  bundleIdPrefix: com.accout
+  bundleIdPrefix: com.xumjbn
   deploymentTarget:
     iOS: "17.0"
   developmentLanguage: zh-Hans
@@ -20,7 +20,7 @@ targets:
       path: Accout/Accout.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.accout
+          - group.com.xumjbn.accout
     info:
       path: Accout/Info.plist
       properties:
@@ -33,12 +33,12 @@ targets:
         NSMicrophoneUsageDescription: 语记账需要使用麦克风录制您的语音，用于语音记账。
         NSSpeechRecognitionUsageDescription: 语记账需要使用语音识别，把您说的话自动转换成账单记录。
         CFBundleURLTypes:
-          - CFBundleURLName: com.accout.app
+          - CFBundleURLName: com.xumjbn.accout
             CFBundleURLSchemes:
               - accout
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.accout.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.xumjbn.accout
         TARGETED_DEVICE_FAMILY: "1"
     scheme:
       gatherCoverageData: false
@@ -53,7 +53,7 @@ targets:
       path: AccoutWidget/AccoutWidget.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.accout
+          - group.com.xumjbn.accout
     info:
       path: AccoutWidget/Info.plist
       properties:
@@ -64,5 +64,5 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.accout.app.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.xumjbn.accout.widget
         TARGETED_DEVICE_FAMILY: "1"

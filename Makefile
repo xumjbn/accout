@@ -8,7 +8,7 @@
 #   make clean    清理构建产物和生成的工程
 
 APP         := Accout
-BUNDLE_ID   := com.accout.app
+BUNDLE_ID   := com.xumjbn.accout
 # 默认自动探测第一个可用的 iPhone 模拟器，可用 make run SIMULATOR="iPhone 17 Pro" 覆盖
 # 注：正则里的左括号必须经由变量注入，否则 make 解析 $(shell) 时括号计数会错
 LPAREN      := (

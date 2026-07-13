@@ -268,6 +268,7 @@ struct BudgetFormView: View {
         } else {
             context.insert(Budget(categoryRaw: selection, amount: amount))
         }
+        refreshWidgets()
         dismiss()
     }
 }

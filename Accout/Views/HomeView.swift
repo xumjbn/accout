@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 struct HomeView: View {
     @Environment(\.modelContext) private var context
@@ -9,6 +10,10 @@ struct HomeView: View {
     @State private var showVoiceInput = false
     @State private var showManualInput = false
     @State private var editingTransaction: Transaction?
+    @State private var searchText = ""
+    @State private var showImporter = false
+    @State private var importBatch: ImportBatch?
+    @State private var importError: String?
 
     private var calendar: Calendar { .current }
 
@@ -22,8 +27,17 @@ struct HomeView: View {
         monthTransactions.filter { !$0.isExpense }.reduce(0) { $0 + $1.amount }
     }
 
+    /// 搜索过滤后的账单（备注/分类匹配）
+    private var visibleTransactions: [Transaction] {
+        guard !searchText.isEmpty else { return transactions }
+        return transactions.filter {
+            $0.note.localizedCaseInsensitiveContains(searchText)
+                || $0.category.rawValue.contains(searchText)
+        }
+    }
+
     private var grouped: [(day: Date, items: [Transaction])] {
-        Dictionary(grouping: transactions) { calendar.startOfDay(for: $0.date) }
+        Dictionary(grouping: visibleTransactions) { calendar.startOfDay(for: $0.date) }
             .sorted { $0.key > $1.key }
             .map { (day: $0.key, items: $0.value.sorted { $0.createdAt > $1.createdAt }) }
     }
@@ -48,6 +62,7 @@ struct HomeView: View {
                                 for index in offsets {
                                     context.delete(group.items[index])
                                 }
+                                refreshWidgets()
                             }
                         }
                     }
@@ -67,10 +82,19 @@ struct HomeView: View {
             .navigationTitle("语记账")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    ShareLink(item: csvText, preview: SharePreview("语记账账单.csv")) {
-                        Image(systemName: "square.and.arrow.up")
+                    Menu {
+                        Button {
+                            showImporter = true
+                        } label: {
+                            Label("导入微信/支付宝账单", systemImage: "square.and.arrow.down")
+                        }
+                        ShareLink(item: csvText, preview: SharePreview("语记账账单.csv")) {
+                            Label("导出 CSV", systemImage: "square.and.arrow.up")
+                        }
+                        .disabled(transactions.isEmpty)
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
                     }
-                    .disabled(transactions.isEmpty)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -80,9 +104,36 @@ struct HomeView: View {
                     }
                 }
             }
+            .searchable(text: $searchText, prompt: "搜索备注或分类")
             .sheet(isPresented: $showVoiceInput) { VoiceInputView() }
             .sheet(isPresented: $showManualInput) { TransactionFormView() }
             .sheet(item: $editingTransaction) { TransactionFormView(transaction: $0) }
+            .sheet(item: $importBatch) { ImportPreviewView(batch: $0) }
+            .fileImporter(
+                isPresented: $showImporter,
+                allowedContentTypes: [.commaSeparatedText, .plainText, .text],
+                allowsMultipleSelection: false
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    guard let url = urls.first else { return }
+                    do {
+                        importBatch = ImportBatch(rows: try BillImporter.parse(fileURL: url, existing: transactions))
+                    } catch {
+                        importError = error.localizedDescription
+                    }
+                case .failure(let error):
+                    importError = error.localizedDescription
+                }
+            }
+            .alert("导入失败", isPresented: Binding(
+                get: { importError != nil },
+                set: { if !$0 { importError = nil } }
+            )) {
+                Button("好", role: .cancel) {}
+            } message: {
+                Text(importError ?? "")
+            }
         }
     }
 
@@ -155,7 +206,7 @@ struct HomeView: View {
                 tx.category.rawValue,
                 "\(tx.amount)",
                 note,
-                tx.source == "voice" ? "语音" : "手动",
+                tx.source == "voice" ? "语音" : (tx.source == "import" ? "导入" : "手动"),
             ].joined(separator: ","))
         }
         return "\u{FEFF}" + lines.joined(separator: "\n")
@@ -189,6 +240,8 @@ struct TransactionRow: View {
                     Text(transaction.category.rawValue)
                     if transaction.source == "voice" {
                         Image(systemName: "mic.fill").font(.system(size: 9))
+                    } else if transaction.source == "import" {
+                        Image(systemName: "square.and.arrow.down").font(.system(size: 9))
                     }
                 }
                 .font(.caption)

@@ -13,6 +13,14 @@ targets:
     platform: iOS
     sources:
       - Accout
+    dependencies:
+      - target: AccoutWidget
+        embed: true
+    entitlements:
+      path: Accout/Accout.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.accout
     info:
       path: Accout/Info.plist
       properties:
@@ -24,9 +32,37 @@ targets:
           - UIInterfaceOrientationPortrait
         NSMicrophoneUsageDescription: 语记账需要使用麦克风录制您的语音，用于语音记账。
         NSSpeechRecognitionUsageDescription: 语记账需要使用语音识别，把您说的话自动转换成账单记录。
+        CFBundleURLTypes:
+          - CFBundleURLName: com.accout.app
+            CFBundleURLSchemes:
+              - accout
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.accout.app
         TARGETED_DEVICE_FAMILY: "1"
     scheme:
       gatherCoverageData: false
+  AccoutWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - AccoutWidget
+      - Accout/Models
+      - Accout/Support/Extensions.swift
+    entitlements:
+      path: AccoutWidget/AccoutWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.accout
+    info:
+      path: AccoutWidget/Info.plist
+      properties:
+        CFBundleDisplayName: 语记账
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.accout.app.widget
+        TARGETED_DEVICE_FAMILY: "1"

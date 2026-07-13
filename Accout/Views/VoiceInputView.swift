@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 /// 语音记账：边说边识别，实时解析出金额/分类/备注，确认后入账
+/// 支持多笔连说：「早餐12块，打车35，咖啡20」自动拆成多笔
 struct VoiceInputView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
@@ -13,10 +14,15 @@ struct VoiceInputView: View {
     @State private var note = ""
     @State private var date = Date.now
     @State private var hasResult = false
+    @State private var multiItems: [ParsedTransaction] = []
 
     private var amount: Decimal? {
         guard let value = Decimal(string: amountText), value > 0 else { return nil }
         return value
+    }
+
+    private var canSave: Bool {
+        multiItems.count > 1 || amount != nil
     }
 
     var body: some View {
@@ -24,7 +30,9 @@ struct VoiceInputView: View {
             VStack(spacing: 16) {
                 transcriptArea
 
-                if hasResult {
+                if multiItems.count > 1 {
+                    multiResultList
+                } else if hasResult {
                     resultCard
                 }
 
@@ -50,13 +58,20 @@ struct VoiceInputView: View {
                     Button("取消") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存", action: save)
-                        .disabled(amount == nil)
+                    Button(multiItems.count > 1 ? "保存 \(multiItems.count) 笔" : "保存", action: save)
+                        .disabled(!canSave)
                 }
             }
             .onChange(of: speech.transcript) { _, newValue in
                 guard !newValue.isEmpty else { return }
-                apply(TransactionParser.parse(newValue))
+                let parsed = TransactionParser.parseMultiple(newValue)
+                if parsed.count > 1 {
+                    multiItems = parsed
+                    hasResult = false
+                } else if let first = parsed.first {
+                    multiItems = []
+                    apply(first)
+                }
             }
             .onDisappear { speech.stop() }
         }
@@ -65,7 +80,7 @@ struct VoiceInputView: View {
     private var transcriptArea: some View {
         ScrollView {
             Text(speech.transcript.isEmpty
-                 ? "试试说：\n「昨天打车花了三十五块五」\n「星巴克 32」\n「发工资一万二」"
+                 ? "试试说：\n「昨天打车花了三十五块五」\n「早餐12块，打车35，咖啡20」（多笔连说）\n「发工资一万二」"
                  : speech.transcript)
                 .font(speech.transcript.isEmpty ? .subheadline : .title3)
                 .foregroundStyle(speech.transcript.isEmpty ? .secondary : .primary)
@@ -75,6 +90,58 @@ struct VoiceInputView: View {
         .frame(maxHeight: 140)
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
     }
+
+    // MARK: - 多笔结果
+
+    private var multiResultList: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("识别到 \(multiItems.count) 笔，确认后一起入账")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                ForEach(Array(multiItems.enumerated()), id: \.offset) { index, item in
+                    HStack(spacing: 10) {
+                        Image(systemName: item.category.icon)
+                            .font(.system(size: 12))
+                            .foregroundStyle(.white)
+                            .frame(width: 26, height: 26)
+                            .background(item.category.color.gradient, in: Circle())
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(item.note.isEmpty ? item.category.rawValue : item.note)
+                                .font(.subheadline)
+                                .lineLimit(1)
+                            Text(item.category.rawValue)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Text((item.isExpense ? "-" : "+") + (item.amount ?? 0).moneyString)
+                            .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                            .foregroundStyle(item.isExpense ? Color.primary : Color.green)
+                        Button {
+                            removeMultiItem(at: index)
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func removeMultiItem(at index: Int) {
+        multiItems.remove(at: index)
+        // 只剩一笔时退回单笔可编辑模式
+        if multiItems.count == 1, let only = multiItems.first {
+            multiItems = []
+            apply(only)
+        }
+    }
+
+    // MARK: - 单笔结果
 
     private var resultCard: some View {
         VStack(spacing: 0) {
@@ -159,16 +226,31 @@ struct VoiceInputView: View {
     }
 
     private func save() {
-        guard let amount else { return }
-        let transaction = Transaction(
-            amount: amount,
-            isExpense: isExpense,
-            category: category,
-            note: note,
-            date: date,
-            source: "voice"
-        )
-        context.insert(transaction)
+        if multiItems.count > 1 {
+            for item in multiItems {
+                guard let itemAmount = item.amount, itemAmount > 0 else { continue }
+                context.insert(Transaction(
+                    amount: itemAmount,
+                    isExpense: item.isExpense,
+                    category: item.category,
+                    note: item.note,
+                    date: item.date,
+                    source: "voice"
+                ))
+            }
+        } else {
+            guard let amount else { return }
+            context.insert(Transaction(
+                amount: amount,
+                isExpense: isExpense,
+                category: category,
+                note: note,
+                date: date,
+                source: "voice"
+            ))
+        }
+        BudgetNotifier.evaluate(context: context)
+        refreshWidgets()
         dismiss()
     }
 }

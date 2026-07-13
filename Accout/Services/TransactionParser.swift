@@ -13,6 +13,18 @@ struct ParsedTransaction {
 /// 中文口语账单解析器
 /// 支持：「昨天打车花了三十五块五」「星巴克 35」「发工资一万二」「早餐12块5」
 enum TransactionParser {
+    /// 多笔连说：「早餐12块，打车35，咖啡20」按标点分段各自解析
+    /// 至少两段解析出金额才按多笔处理，否则退回整句单笔解析
+    static func parseMultiple(_ raw: String) -> [ParsedTransaction] {
+        let segments = raw
+            .split(whereSeparator: { "，,、；;。".contains($0) })
+            .map { String($0).trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        let parsed = segments.map { parse($0) }.filter { $0.amount != nil }
+        if parsed.count >= 2 { return parsed }
+        return [parse(raw)]
+    }
+
     static func parse(_ raw: String) -> ParsedTransaction {
         let text = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         var result = ParsedTransaction(rawText: text)

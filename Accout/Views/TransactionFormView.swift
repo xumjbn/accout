@@ -93,6 +93,8 @@ struct TransactionFormView: View {
                 date: date
             ))
         }
+        BudgetNotifier.evaluate(context: context)
+        refreshWidgets()
         dismiss()
     }
 }

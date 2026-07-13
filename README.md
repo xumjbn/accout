@@ -12,6 +12,11 @@
   - 收支方向：`花了/买了` → 支出，`工资/报销/退款/收到红包` → 收入（`发红包`仍是支出）
   - 日期：`昨天/前天/大前天` 自动折算
   - 分类：关键词规则引擎，15 个分类（餐饮/交通/购物/娱乐/居住/…/工资/理财）
+- 🗣️ **多笔连说**：「早餐12块，打车35，咖啡20」一句话自动拆成多笔，逐笔确认后一起入账
+- 📥 **微信/支付宝账单导入**：明细页左上角菜单选 CSV 账单文件，自动识别两家格式（含支付宝 GBK 编码）、自动分类、跳过疑似重复，导入前可预览
+- 📱 **小组件 + Siri**：桌面/锁屏小组件显示本月支出与预算进度，点按直达语音记账；对 Siri 说「用语记账记一笔」即可开始
+- 🔔 **预算提醒**：总预算用到 80% / 超支时本地推送（每月每档一次），无需联网
+- 🔍 明细搜索：按备注或分类关键词过滤
 - ✍️ 手动记账、账单编辑、滑动删除
 - 🎯 **预算管理**：本月总预算（剩余/日均可用/超支告警）+ 分类预算（如给「旅行」设旅游预算），首页实时显示预算进度，80% 变橙、超支变红
 - 🏦 **资产负债**：资产账户（现金/存款/投资/借出）+ 负债账户（房贷/车贷/信用卡/借入），自动汇总**净资产**；投资账户录入本金后自动算收益与收益率
@@ -43,8 +48,10 @@ accout/
     │   └── TransactionCategory.swift    # 分类枚举（图标/颜色/收支属性）
     ├── Services/
     │   ├── SpeechRecognizer.swift       # 语音识别（权限申请 + 实时转写）
-    │   ├── TransactionParser.swift      # 口语解析：金额/中文数字/日期/收支
-    │   └── CategoryClassifier.swift     # 关键词自动分类
+    │   ├── TransactionParser.swift      # 口语解析：金额/中文数字/日期/收支/多笔连说
+    │   ├── CategoryClassifier.swift     # 关键词自动分类
+    │   ├── BillImporter.swift           # 微信/支付宝 CSV 账单导入（格式识别/GBK/去重）
+    │   └── BudgetNotifier.swift         # 预算 80%/超支本地通知
     ├── Views/
     │   ├── RootView.swift               # Tab 框架
     │   ├── HomeView.swift               # 明细列表 + 月度概览卡（含预算进度、CSV 导出）
@@ -52,9 +59,13 @@ accout/
     │   ├── TransactionFormView.swift    # 手动记账 / 编辑
     │   ├── BudgetView.swift             # 预算管理（总预算 + 分类预算 + 表单）
     │   ├── AssetsView.swift             # 资产负债（净资产总览 + 账户管理）
+    │   ├── ImportPreviewView.swift      # 账单导入预览与确认
     │   └── StatsView.swift              # 月度统计图表
-    └── Support/
-        └── Extensions.swift
+    ├── Support/
+    │   ├── Extensions.swift
+    │   └── AppShortcuts.swift           # Siri 快捷指令 + 深链（accout://voice）
+    └── ../AccoutWidget/
+        └── AccoutWidget.swift           # 桌面/锁屏小组件（App Group 共享数据）
 ```
 
 ## 构建（需要 macOS + Xcode 15+）
@@ -96,4 +107,6 @@ open Accout.xcodeproj
 
 - 分类是关键词规则，误判时可在识别结果卡片中手动改（保存前可编辑所有字段）
 - 中文数字支持到「万」级及口语缩略（两千三=2300）；「亿」级未支持
-- 后续可做：iCloud 同步、预算本地通知提醒、周期账单（房租自动入账）、接 LLM 做更聪明的分类与多笔连说
+- 数据库存放在 App Group 共享容器（供小组件读取）；真机运行时若签名报 App Group 错误，在 Xcode 的 Signing & Capabilities 里让它自动注册 `group.com.accout` 即可
+- 账单导入的重复判定为「同一分钟 + 相同金额」，重复导入同一文件会自动跳过
+- 后续可做：iCloud 同步、周期账单（房租自动入账）、年度视图、接 LLM 做更聪明的分类

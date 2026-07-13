@@ -31,6 +31,13 @@ check-xcode:
 	  echo "  未装 Xcode： 从 App Store 安装 Xcode 后再执行上面两行"; \
 	  echo ""; \
 	  exit 1; }
+	@test -d /Library/Developer/PrivateFrameworks/CoreSimulator.framework || { \
+	  echo ""; \
+	  echo "Xcode 首次启动组件未安装（缺 CoreSimulator），请执行："; \
+	  echo "  sudo xcodebuild -runFirstLaunch"; \
+	  echo "  xcodebuild -downloadPlatform iOS   # 下载 iOS 模拟器运行时"; \
+	  echo ""; \
+	  exit 1; }
 
 setup:
 	@command -v brew >/dev/null 2>&1 || { echo "请先安装 Homebrew: https://brew.sh"; exit 1; }

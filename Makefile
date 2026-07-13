@@ -9,7 +9,9 @@
 
 APP         := Accout
 BUNDLE_ID   := com.accout.app
-SIMULATOR   ?= iPhone 16
+# 默认自动探测第一个可用的 iPhone 模拟器，可用 make run SIMULATOR="iPhone 17 Pro" 覆盖
+SIMULATOR   ?= $(shell xcrun simctl list devices available 2>/dev/null \
+  | sed -nE 's/^ *(iPhone[^(]*[^ (]) *\(.*/\1/p' | head -1)
 BUILD_DIR   := build
 APP_PATH    := $(BUILD_DIR)/Build/Products/Debug-iphonesimulator/$(APP).app
 DESTINATION := platform=iOS Simulator,name=$(SIMULATOR)
@@ -50,6 +52,11 @@ $(APP).xcodeproj/project.pbxproj: project.yml
 gen: $(APP).xcodeproj/project.pbxproj
 
 build: check-xcode gen
+	@test -n "$(SIMULATOR)" || { \
+	  echo "未找到可用 iPhone 模拟器。安装：xcodebuild -downloadPlatform iOS"; \
+	  echo "或手动指定：make run SIMULATOR=\"iPad (A16)\""; \
+	  exit 1; }
+	@echo "==> 使用模拟器: $(SIMULATOR)"
 	xcodebuild -project $(APP).xcodeproj -scheme $(APP) \
 	  -configuration Debug -destination '$(DESTINATION)' \
 	  -derivedDataPath $(BUILD_DIR) build

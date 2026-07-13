@@ -1,0 +1,49 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 XcodeGen
+        run: brew install xcodegen
+
+      - name: 生成工程
+        run: xcodegen generate
+
+      - name: 编译（模拟器 Debug，验证代码可构建）
+        run: |
+          xcodebuild -project Accout.xcodeproj -scheme Accout \
+            -configuration Debug -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+
+      - name: 打未签名 ipa（Release 真机包，供侧载）
+        run: |
+          xcodebuild -project Accout.xcodeproj -scheme Accout \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/Accout.app Payload/
+          zip -qr Accout-unsigned.ipa Payload
+
+      - name: 上传未签名 ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Accout-unsigned-ipa
+          path: Accout-unsigned.ipa
+
+      - name: 上传模拟器包
+        uses: actions/upload-artifact@v4
+        with:
+          name: Accout-simulator-app
+          path: build/Build/Products/Debug-iphonesimulator/Accout.app

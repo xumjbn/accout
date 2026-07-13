@@ -10,8 +10,11 @@
 APP         := Accout
 BUNDLE_ID   := com.accout.app
 # 默认自动探测第一个可用的 iPhone 模拟器，可用 make run SIMULATOR="iPhone 17 Pro" 覆盖
-SIMULATOR   ?= $(shell xcrun simctl list devices available 2>/dev/null \
-  | sed -nE 's/^ *(iPhone[^(]*[^ (]) *\(.*/\1/p' | head -1)
+# 注：正则里的左括号必须经由变量注入，否则 make 解析 $(shell) 时括号计数会错
+LPAREN      := (
+ifeq ($(origin SIMULATOR),undefined)
+SIMULATOR   := $(shell xcrun simctl list devices available 2>/dev/null | grep -o 'iPhone[^$(LPAREN)]*' | head -1 | sed 's/ *$$//')
+endif
 BUILD_DIR   := build
 APP_PATH    := $(BUILD_DIR)/Build/Products/Debug-iphonesimulator/$(APP).app
 DESTINATION := platform=iOS Simulator,name=$(SIMULATOR)

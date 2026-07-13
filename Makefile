@@ -18,9 +18,19 @@ ifneq ($(shell uname),Darwin)
 $(error iOS 应用只能在 macOS 上编译，请把仓库克隆到 Mac 后运行 make)
 endif
 
-.PHONY: all setup gen build run device clean
+.PHONY: all setup gen build run device clean check-xcode
 
 all: build
+
+check-xcode:
+	@xcode-select -p 2>/dev/null | grep -qv CommandLineTools || { \
+	  echo ""; \
+	  echo "编译 iOS 应用需要完整的 Xcode，当前只有命令行工具。"; \
+	  echo "  已装 Xcode： sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"; \
+	  echo "               sudo xcodebuild -license accept"; \
+	  echo "  未装 Xcode： 从 App Store 安装 Xcode 后再执行上面两行"; \
+	  echo ""; \
+	  exit 1; }
 
 setup:
 	@command -v brew >/dev/null 2>&1 || { echo "请先安装 Homebrew: https://brew.sh"; exit 1; }
@@ -32,7 +42,7 @@ $(APP).xcodeproj/project.pbxproj: project.yml
 
 gen: $(APP).xcodeproj/project.pbxproj
 
-build: gen
+build: check-xcode gen
 	xcodebuild -project $(APP).xcodeproj -scheme $(APP) \
 	  -configuration Debug -destination '$(DESTINATION)' \
 	  -derivedDataPath $(BUILD_DIR) build
@@ -43,7 +53,7 @@ run: build
 	xcrun simctl install booted "$(APP_PATH)"
 	xcrun simctl launch booted $(BUNDLE_ID)
 
-device: gen
+device: check-xcode gen
 	@test -n "$(TEAM_ID)" || { echo "用法: make device TEAM_ID=XXXXXXXXXX（Apple 开发者团队 ID）"; exit 1; }
 	xcodebuild -project $(APP).xcodeproj -scheme $(APP) \
 	  -configuration Debug -destination 'generic/platform=iOS' \

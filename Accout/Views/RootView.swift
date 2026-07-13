@@ -5,6 +5,8 @@ struct RootView: View {
         TabView {
             HomeView()
                 .tabItem { Label("明细", systemImage: "list.bullet.rectangle.fill") }
+            BudgetView()
+                .tabItem { Label("预算", systemImage: "creditcard.fill") }
             StatsView()
                 .tabItem { Label("统计", systemImage: "chart.pie.fill") }
         }
@@ -13,5 +15,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
-        .modelContainer(for: Transaction.self, inMemory: true)
+        .modelContainer(for: [Transaction.self, Budget.self], inMemory: true)
 }

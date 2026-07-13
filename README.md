@@ -13,7 +13,9 @@
   - 日期：`昨天/前天/大前天` 自动折算
   - 分类：关键词规则引擎，15 个分类（餐饮/交通/购物/娱乐/居住/…/工资/理财）
 - ✍️ 手动记账、账单编辑、滑动删除
+- 🎯 **预算管理**：本月总预算（剩余/日均可用/超支告警）+ 分类预算（如给「旅行」设旅游预算），首页实时显示预算进度，80% 变橙、超支变红
 - 📊 月度统计：分类占比环形图、每日支出柱状图、分类排行（Swift Charts）
+- 📤 账单一键导出 CSV（带 BOM，Excel 直接打开）
 - 💾 SwiftData 本地持久化，数据不出设备
 
 ## 技术栈
@@ -35,6 +37,7 @@ accout/
     ├── AccoutApp.swift          # 入口
     ├── Models/
     │   ├── Transaction.swift            # SwiftData 账单模型
+    │   ├── Budget.swift                 # 预算模型（总预算/分类预算，按自然月统计）
     │   └── TransactionCategory.swift    # 分类枚举（图标/颜色/收支属性）
     ├── Services/
     │   ├── SpeechRecognizer.swift       # 语音识别（权限申请 + 实时转写）
@@ -42,9 +45,10 @@ accout/
     │   └── CategoryClassifier.swift     # 关键词自动分类
     ├── Views/
     │   ├── RootView.swift               # Tab 框架
-    │   ├── HomeView.swift               # 明细列表 + 月度概览卡
+    │   ├── HomeView.swift               # 明细列表 + 月度概览卡（含预算进度、CSV 导出）
     │   ├── VoiceInputView.swift         # 语音记账页（实时转写 + 可编辑识别结果）
     │   ├── TransactionFormView.swift    # 手动记账 / 编辑
+    │   ├── BudgetView.swift             # 预算管理（总预算 + 分类预算 + 表单）
     │   └── StatsView.swift              # 月度统计图表
     └── Support/
         └── Extensions.swift
@@ -89,4 +93,4 @@ open Accout.xcodeproj
 
 - 分类是关键词规则，误判时可在识别结果卡片中手动改（保存前可编辑所有字段）
 - 中文数字支持到「万」级及口语缩略（两千三=2300）；「亿」级未支持
-- 后续可做：预算提醒、账本导出 CSV、iCloud 同步、接 LLM 做更聪明的分类与多笔连说
+- 后续可做：iCloud 同步、预算本地通知提醒、周期账单（房租自动入账）、接 LLM 做更聪明的分类与多笔连说

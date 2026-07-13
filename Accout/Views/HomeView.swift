@@ -4,6 +4,7 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
+    @Query private var budgets: [Budget]
 
     @State private var showVoiceInput = false
     @State private var showManualInput = false
@@ -65,6 +66,12 @@ struct HomeView: View {
             }
             .navigationTitle("语记账")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    ShareLink(item: csvText, preview: SharePreview("语记账账单.csv")) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .disabled(transactions.isEmpty)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showManualInput = true
@@ -94,6 +101,24 @@ struct HomeView: View {
             }
             .font(.footnote)
             .foregroundStyle(.white.opacity(0.85))
+
+            if let totalBudget = budgets.first(where: { $0.categoryRaw.isEmpty }), totalBudget.amount > 0 {
+                let ratio = clampedRatio(used: monthExpense, budget: totalBudget.amount)
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        Text(monthExpense <= totalBudget.amount
+                             ? "预算剩余 ¥" + (totalBudget.amount - monthExpense).moneyString
+                             : "预算超支 ¥" + (monthExpense - totalBudget.amount).moneyString)
+                        Spacer()
+                        Text("\(Int(ratio * 100))%")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.9))
+                    ProgressView(value: ratio)
+                        .tint(.white.opacity(0.95))
+                }
+                .padding(.top, 4)
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -115,6 +140,25 @@ struct HomeView: View {
                 .background(Capsule().fill(Color.blue).shadow(radius: 6, y: 3))
         }
         .padding(.bottom, 12)
+    }
+
+    /// 全部账单导出为 CSV（带 BOM，Excel 直接打开不乱码）
+    private var csvText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        var lines = ["日期,类型,分类,金额,备注,来源"]
+        for tx in transactions {
+            let note = tx.note.replacingOccurrences(of: ",", with: "，")
+            lines.append([
+                formatter.string(from: tx.date),
+                tx.isExpense ? "支出" : "收入",
+                tx.category.rawValue,
+                "\(tx.amount)",
+                note,
+                tx.source == "voice" ? "语音" : "手动",
+            ].joined(separator: ","))
+        }
+        return "\u{FEFF}" + lines.joined(separator: "\n")
     }
 
     private func dayTitle(_ day: Date) -> String {

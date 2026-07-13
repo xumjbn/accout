@@ -7,6 +7,6 @@ struct AccoutApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: Transaction.self)
+        .modelContainer(for: [Transaction.self, Budget.self])
     }
 }

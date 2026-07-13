@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语记账 · 界面预览</title>
+<style>
+:root{
+  --page-bg:#E9EBF0; --page-text:#1C1C1E; --page-muted:#6E6E73;
+  --scr-bg:#F2F2F7; --card:#FFFFFF; --text:#000; --muted:#6E6E73;
+  --sep:rgba(60,60,67,.14); --fill2:#E9E9EE;
+  --blue:#007AFF; --indigo:#5856D6; --green:#34C759; --red:#FF3B30;
+  --orange:#FF9500; --pink:#FF2D55; --purple:#AF52DE; --brown:#A2845E; --cyan:#32ADE6;
+  --bezel:#1A1A1C;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --page-bg:#0D0E12; --page-text:#F2F2F7; --page-muted:#98989E;
+    --scr-bg:#000; --card:#1C1C1E; --text:#fff; --muted:#98989E;
+    --sep:rgba(84,84,88,.5); --fill2:#2C2C2E; --blue:#0A84FF; --bezel:#3A3A3C;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:40px 24px 56px;
+  background:var(--page-bg); color:var(--page-text);
+  font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.intro{max-width:720px; margin:0 auto 36px; text-align:center}
+.intro h1{font-size:26px; font-weight:700; margin:0 0 8px; letter-spacing:-.02em; text-wrap:balance}
+.intro p{margin:0; font-size:14px; line-height:1.7; color:var(--page-muted)}
+.intro .tag{display:inline-block; margin-bottom:14px; font-size:11px; font-weight:600;
+  letter-spacing:.14em; color:var(--blue); text-transform:uppercase}
+
+.phones{display:flex; gap:36px; justify-content:center; align-items:flex-start; flex-wrap:wrap}
+figure.phone{margin:0; display:flex; flex-direction:column; align-items:center; gap:14px}
+figcaption{font-size:13px; color:var(--page-muted)}
+figcaption b{color:var(--page-text); font-weight:600}
+
+.frame{
+  width:330px; background:var(--bezel); border-radius:52px; padding:11px;
+  box-shadow:0 24px 60px rgba(15,20,40,.28), inset 0 0 0 2px rgba(255,255,255,.06);
+}
+.screen{
+  position:relative; background:var(--scr-bg); border-radius:42px; overflow:hidden;
+  height:660px; display:flex; flex-direction:column;
+  font-size:14.5px; color:var(--text); line-height:1.35;
+}
+.statusbar{
+  flex:none; height:48px; display:flex; align-items:center; justify-content:space-between;
+  padding:14px 26px 0; font-size:13.5px; font-weight:600;
+}
+.island{position:absolute; top:9px; left:50%; transform:translateX(-50%);
+  width:96px; height:26px; border-radius:14px; background:#000; z-index:5}
+.sigs{letter-spacing:.06em; font-size:12px}
+
+.body{flex:1; overflow:hidden; display:flex; flex-direction:column; padding:0 14px; gap:12px}
+
+/* ---- nav ---- */
+.largetitle{display:flex; align-items:flex-end; justify-content:space-between; padding:8px 4px 0}
+.largetitle h2{margin:0; font-size:30px; font-weight:800; letter-spacing:-.02em}
+.navbtn{width:30px; height:30px; border-radius:50%; background:var(--fill2);
+  display:grid; place-items:center; color:var(--blue); font-size:18px; font-weight:500}
+.sheetnav{display:flex; align-items:center; justify-content:space-between; padding:14px 6px 0}
+.sheetnav .t{font-weight:600; font-size:16px}
+.sheetnav .a{color:var(--blue); font-size:15.5px}
+.sheetnav .a.bold{font-weight:600}
+.grabber{position:absolute; top:6px; left:50%; transform:translateX(-50%);
+  width:36px; height:5px; border-radius:3px; background:var(--sep)}
+
+/* ---- summary card ---- */
+.summary{
+  border-radius:16px; padding:18px 20px; color:#fff;
+  background:linear-gradient(135deg,#0A84FF,#5856D6);
+  display:flex; flex-direction:column; gap:6px;
+}
+.summary .cap{font-size:13px; opacity:.85}
+.summary .big{font-size:34px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em;
+  font-family:ui-rounded,system-ui,sans-serif}
+.summary .row{display:flex; justify-content:space-between; font-size:12px; opacity:.9; margin-top:2px}
+
+/* ---- list ---- */
+.sechead{font-size:12.5px; color:var(--muted); padding:2px 6px 0}
+.group{background:var(--card); border-radius:12px; overflow:hidden}
+.tx{display:flex; align-items:center; gap:11px; padding:10px 12px}
+.tx + .tx{border-top:.5px solid var(--sep)}
+.cat{width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
+  color:#fff; font-size:15px}
+.tx .info{flex:1; min-width:0}
+.tx .name{font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tx .sub{font-size:11.5px; color:var(--muted); display:flex; align-items:center; gap:4px}
+.amt{font-weight:650; font-variant-numeric:tabular-nums; font-family:ui-rounded,system-ui,sans-serif}
+.amt.in{color:var(--green)}
+.mic-ind{font-size:9px}
+
+/* ---- floating voice button ---- */
+.fab-wrap{position:absolute; bottom:64px; left:0; right:0; display:flex; justify-content:center; z-index:4}
+.fab{background:var(--blue); color:#fff; font-weight:600; font-size:15px;
+  padding:12px 26px; border-radius:999px; display:flex; align-items:center; gap:8px;
+  box-shadow:0 8px 20px rgba(10,110,255,.4)}
+
+/* ---- tab bar ---- */
+.tabbar{
+  flex:none; height:64px; border-top:.5px solid var(--sep);
+  background:color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter:blur(10px);
+  display:flex; padding-bottom:14px;
+}
+.tab{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  font-size:10px; color:var(--muted)}
+.tab.on{color:var(--blue)}
+.tab .ic{font-size:20px; line-height:1}
+
+/* ---- voice sheet ---- */
+.transcript{background:var(--card); border-radius:12px; padding:14px 16px; min-height:86px;
+  font-size:17px; font-weight:500}
+.result{background:var(--card); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column}
+.result .head{display:flex; justify-content:space-between; align-items:center; padding-bottom:8px}
+.result .head .cap{font-size:12px; color:var(--muted)}
+.seg{display:flex; background:var(--fill2); border-radius:8px; padding:2px; font-size:12px}
+.seg span{padding:3px 12px; border-radius:6px; color:var(--muted)}
+.seg .on{background:var(--card); color:var(--text); font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.frow{display:flex; justify-content:space-between; align-items:center; padding:9px 2px; font-size:14.5px}
+.frow + .frow{border-top:.5px solid var(--sep)}
+.frow .k{color:var(--text)}
+.frow .v{color:var(--text); font-weight:500}
+.frow .v.blue{color:var(--blue)}
+.frow .v.num{font-weight:650; font-family:ui-rounded,system-ui,sans-serif; font-variant-numeric:tabular-nums}
+.micstage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  gap:12px; padding-bottom:26px}
+.micbtn{position:relative; width:82px; height:82px; border-radius:50%;
+  background:var(--red); display:grid; place-items:center; color:#fff; font-size:26px;
+  box-shadow:0 10px 26px rgba(255,59,48,.42)}
+.micbtn .ring{position:absolute; inset:-9px; border-radius:50%; border:2px solid var(--red);
+  opacity:.5; animation:pulse 1.5s ease-out infinite}
+@keyframes pulse{from{transform:scale(.92); opacity:.55} to{transform:scale(1.22); opacity:0}}
+@media (prefers-reduced-motion: reduce){.micbtn .ring{animation:none; opacity:.25}}
+.miccap{font-size:12.5px; color:var(--muted)}
+
+/* ---- stats ---- */
+.monthbar{display:flex; align-items:center; justify-content:space-between; padding:0 8px; font-weight:600}
+.monthbar .chev{color:var(--blue); font-size:17px}
+.monthbar .chev.dim{color:var(--sep)}
+.tiles{display:flex; gap:9px}
+.tile{flex:1; background:var(--card); border-radius:12px; padding:10px 12px;
+  display:flex; flex-direction:column; gap:3px}
+.tile .k{font-size:11px; color:var(--muted)}
+.tile .v{font-size:14.5px; font-weight:650; font-variant-numeric:tabular-nums;
+  font-family:ui-rounded,system-ui,sans-serif; white-space:nowrap}
+.tile .v.g{color:var(--green)} .tile .v.b{color:var(--blue)}
+.chartcard{background:var(--card); border-radius:12px; padding:14px 16px;
+  display:flex; flex-direction:column; gap:10px}
+.chartcard h3{margin:0; font-size:15px; font-weight:700}
+.donutwrap{display:flex; align-items:center; gap:16px}
+.donuthole{position:relative; width:132px; height:132px; flex:none}
+.donut{position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(var(--brown) 0 287.5deg, var(--orange) 287.5deg 325deg,
+    var(--cyan) 325deg 337.5deg, var(--pink) 337.5deg 348.2deg,
+    var(--purple) 348.2deg 355.6deg, var(--blue) 355.6deg 360deg);
+  -webkit-mask:radial-gradient(circle, transparent 57%, #000 58.5%);
+  mask:radial-gradient(circle, transparent 57%, #000 58.5%);
+}
+.donutlabel{position:absolute; inset:0; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:1px}
+.donutlabel .k{font-size:10.5px; color:var(--muted)}
+.donutlabel .v{font-size:16px; font-weight:750; font-variant-numeric:tabular-nums;
+  font-family:ui-rounded,system-ui,sans-serif}
+.legend{display:flex; flex-direction:column; gap:6px; font-size:11.5px; color:var(--muted)}
+.legend div{display:flex; align-items:center; gap:6px}
+.dot{width:8px; height:8px; border-radius:50%; flex:none}
+.bars{display:flex; align-items:flex-end; gap:5px; height:92px; padding-top:4px}
+.bars i{flex:1; border-radius:3px 3px 1px 1px; background:linear-gradient(180deg,#0A84FF,#0066DB); min-height:2px}
+.axis{display:flex; justify-content:space-between; font-size:10px; color:var(--muted)}
+.rank{display:flex; flex-direction:column; gap:9px}
+.rrow{display:flex; flex-direction:column; gap:5px}
+.rtop{display:flex; align-items:center; gap:9px; font-size:13.5px}
+.rtop .cat{width:26px; height:26px; font-size:12px}
+.rtop .amt{margin-left:auto; font-size:13px}
+.track{height:4px; border-radius:2px; background:var(--fill2); overflow:hidden}
+.track i{display:block; height:100%; border-radius:2px}
+
+.foot{max-width:720px; margin:40px auto 0; font-size:13px; line-height:1.8; color:var(--page-muted);
+  border-top:1px solid rgba(120,120,128,.25); padding-top:18px}
+.foot b{color:var(--page-text)}
+.foot code{background:rgba(120,120,128,.15); padding:1px 5px; border-radius:4px; font-size:12px}
+@media (max-width:1120px){.phones{gap:28px}}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <span class="tag">Accout · SwiftUI 界面 1:1 还原</span>
+  <h1>语记账 — 说一句话，自动记账</h1>
+  <p>按 <code>D:\src\accout</code> 的 SwiftUI 代码还原的高保真预览。左：明细页（HomeView）；中：语音记账（VoiceInputView，正在聆听状态）；右：月度统计（StatsView）。</p>
+</div>
+
+<div class="phones">
+
+  <!-- ================= 明细 HomeView ================= -->
+  <figure class="phone">
+    <div class="frame"><div class="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span class="sigs">●●●●● 🛜 🔋</span></div>
+      <div class="body">
+        <div class="largetitle"><h2>语记账</h2><div class="navbtn">＋</div></div>
+        <div class="summary">
+          <span class="cap">本月支出</span>
+          <span class="big">¥2,880.5</span>
+          <div class="row"><span>↓ 收入 ¥12,000</span><span>◎ 结余 ¥9,119.5</span></div>
+        </div>
+        <div class="sechead">今天</div>
+        <div class="group">
+          <div class="tx"><div class="cat" style="background:var(--orange)">🍴</div>
+            <div class="info"><div class="name">星巴克</div><div class="sub">餐饮 <span class="mic-ind">🎙</span></div></div>
+            <div class="amt">-32</div></div>
+          <div class="tx"><div class="cat" style="background:var(--orange)">🍴</div>
+            <div class="info"><div class="name">午饭外卖</div><div class="sub">餐饮 <span class="mic-ind">🎙</span></div></div>
+            <div class="amt">-28</div></div>
+          <div class="tx"><div class="cat" style="background:var(--pink)">🛍</div>
+            <div class="info"><div class="name">超市日用品</div><div class="sub">购物</div></div>
+            <div class="amt">-86</div></div>
+        </div>
+        <div class="sechead">昨天</div>
+        <div class="group">
+          <div class="tx"><div class="cat" style="background:var(--blue)">🚗</div>
+            <div class="info"><div class="name">打车</div><div class="sub">交通 <span class="mic-ind">🎙</span></div></div>
+            <div class="amt">-35.5</div></div>
+          <div class="tx"><div class="cat" style="background:var(--purple)">🎮</div>
+            <div class="info"><div class="name">电影</div><div class="sub">娱乐</div></div>
+            <div class="amt">-59</div></div>
+        </div>
+        <div class="sechead">7月8日 星期三</div>
+        <div class="group">
+          <div class="tx"><div class="cat" style="background:var(--green)">💵</div>
+            <div class="info"><div class="name">7月工资</div><div class="sub">工资</div></div>
+            <div class="amt in">+12,000</div></div>
+          <div class="tx"><div class="cat" style="background:var(--brown)">🏠</div>
+            <div class="info"><div class="name">房租</div><div class="sub">居住 <span class="mic-ind">🎙</span></div></div>
+            <div class="amt">-2,300</div></div>
+        </div>
+      </div>
+      <div class="fab-wrap"><div class="fab">🎙 语音记账</div></div>
+      <div class="tabbar">
+        <div class="tab on"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>明细</b> · HomeView</figcaption>
+  </figure>
+
+  <!-- ================= 语音记账 VoiceInputView ================= -->
+  <figure class="phone">
+    <div class="frame"><div class="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span class="sigs">●●●●● 🛜 🔋</span></div>
+      <div class="grabber"></div>
+      <div class="sheetnav"><span class="a">取消</span><span class="t">语音记账</span><span class="a bold">保存</span></div>
+      <div class="body" style="padding-top:4px">
+        <div class="transcript">昨天打车花了三十五块五</div>
+        <div class="result">
+          <div class="head">
+            <span class="cap">识别结果</span>
+            <div class="seg"><span class="on">支出</span><span>收入</span></div>
+          </div>
+          <div class="frow"><span class="k">金额</span><span class="v num">35.5</span></div>
+          <div class="frow"><span class="k">分类</span><span class="v blue">🚗 交通 ▾</span></div>
+          <div class="frow"><span class="k">备注</span><span class="v">打车</span></div>
+          <div class="frow"><span class="k">日期</span><span class="v">2026年7月10日</span></div>
+        </div>
+        <div class="micstage">
+          <div class="micbtn"><span class="ring"></span>◼</div>
+          <span class="miccap">正在聆听…点击停止</span>
+        </div>
+      </div>
+    </div></div>
+    <figcaption><b>语音记账</b> · VoiceInputView（识别中）</figcaption>
+  </figure>
+
+  <!-- ================= 统计 StatsView ================= -->
+  <figure class="phone">
+    <div class="frame"><div class="screen">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span class="sigs">●●●●● 🛜 🔋</span></div>
+      <div class="body">
+        <div class="largetitle"><h2>统计</h2></div>
+        <div class="monthbar"><span class="chev">‹</span><span>2026年7月</span><span class="chev dim">›</span></div>
+        <div class="tiles">
+          <div class="tile"><span class="k">总支出</span><span class="v">¥2,880.5</span></div>
+          <div class="tile"><span class="k">总收入</span><span class="v g">¥12,000</span></div>
+          <div class="tile"><span class="k">结余</span><span class="v b">¥9,119.5</span></div>
+        </div>
+        <div class="chartcard">
+          <h3>支出构成</h3>
+          <div class="donutwrap">
+            <div class="donuthole">
+              <div class="donut"></div>
+              <div class="donutlabel"><span class="k">总支出</span><span class="v">¥2,880.5</span></div>
+            </div>
+            <div class="legend">
+              <div><span class="dot" style="background:var(--brown)"></span>居住 79.9%</div>
+              <div><span class="dot" style="background:var(--orange)"></span>餐饮 10.4%</div>
+              <div><span class="dot" style="background:var(--cyan)"></span>水电通讯 3.5%</div>
+              <div><span class="dot" style="background:var(--pink)"></span>购物 3.0%</div>
+              <div><span class="dot" style="background:var(--purple)"></span>娱乐 2.0%</div>
+              <div><span class="dot" style="background:var(--blue)"></span>交通 1.2%</div>
+            </div>
+          </div>
+        </div>
+        <div class="chartcard">
+          <h3>每日支出</h3>
+          <div class="bars">
+            <i style="height:3%"></i><i style="height:2%"></i><i style="height:0"></i>
+            <i style="height:6%"></i><i style="height:2%"></i><i style="height:15%"></i>
+            <i style="height:4%"></i><i style="height:100%"></i><i style="height:3%"></i>
+            <i style="height:5%"></i><i style="height:7%"></i>
+          </div>
+          <div class="axis"><span>7月1日</span><span>7月6日</span><span>7月11日</span></div>
+        </div>
+        <div class="chartcard">
+          <h3>分类排行</h3>
+          <div class="rank">
+            <div class="rrow"><div class="rtop"><div class="cat" style="background:var(--brown)">🏠</div>居住<span class="amt">¥2,300.00</span></div>
+              <div class="track"><i style="width:100%; background:var(--brown)"></i></div></div>
+            <div class="rrow"><div class="rtop"><div class="cat" style="background:var(--orange)">🍴</div>餐饮<span class="amt">¥300.00</span></div>
+              <div class="track"><i style="width:13%; background:var(--orange)"></i></div></div>
+            <div class="rrow"><div class="rtop"><div class="cat" style="background:var(--cyan)">⚡</div>水电通讯<span class="amt">¥100.00</span></div>
+              <div class="track"><i style="width:4.3%; background:var(--cyan)"></i></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☰</span>明细</div>
+        <div class="tab on"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>统计</b> · StatsView</figcaption>
+  </figure>
+</div>
+
+<div class="foot">
+  <b>这是静态预览，不是真机截图。</b>真实界面由 SwiftUI 渲染（SF Symbols 图标、原生分组列表、Swift Charts 图表），布局、配色、文案与此一致。
+  iOS 模拟器只随 macOS 上的 Xcode 提供——在 Mac 上执行 <code>xcodegen generate &amp;&amp; open Accout.xcodeproj</code>，⌘R 即可在模拟器中运行；语音识别建议真机测试。
+</div>
+
+</body>
+</html>

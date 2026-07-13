@@ -1,0 +1,30 @@
+name: Accout
+options:
+  bundleIdPrefix: com.accout
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: zh-Hans
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+targets:
+  Accout:
+    type: application
+    platform: iOS
+    sources:
+      - Accout
+    info:
+      path: Accout/Info.plist
+      properties:
+        CFBundleDisplayName: 语记账
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSMicrophoneUsageDescription: 语记账需要使用麦克风录制您的语音，用于语音记账。
+        NSSpeechRecognitionUsageDescription: 语记账需要使用语音识别，把您说的话自动转换成账单记录。
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.accout.app
+        TARGETED_DEVICE_FAMILY: "1"

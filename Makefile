@@ -49,10 +49,9 @@ setup:
 	@command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
 	@echo "依赖就绪"
 
-$(APP).xcodeproj/project.pbxproj: project.yml
+# 每次都重新生成工程：新增/删除源文件后工程文件清单才会更新，xcodegen 幂等且秒级
+gen:
 	xcodegen generate
-
-gen: $(APP).xcodeproj/project.pbxproj
 
 build: check-xcode gen
 	@test -n "$(SIMULATOR)" || { \

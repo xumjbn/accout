@@ -14,6 +14,7 @@
   - 分类：关键词规则引擎，15 个分类（餐饮/交通/购物/娱乐/居住/…/工资/理财）
 - ✍️ 手动记账、账单编辑、滑动删除
 - 🎯 **预算管理**：本月总预算（剩余/日均可用/超支告警）+ 分类预算（如给「旅行」设旅游预算），首页实时显示预算进度，80% 变橙、超支变红
+- 🏦 **资产负债**：资产账户（现金/存款/投资/借出）+ 负债账户（房贷/车贷/信用卡/借入），自动汇总**净资产**；投资账户录入本金后自动算收益与收益率
 - 📊 月度统计：分类占比环形图、每日支出柱状图、分类排行（Swift Charts）
 - 📤 账单一键导出 CSV（带 BOM，Excel 直接打开）
 - 💾 SwiftData 本地持久化，数据不出设备
@@ -38,6 +39,7 @@ accout/
     ├── Models/
     │   ├── Transaction.swift            # SwiftData 账单模型
     │   ├── Budget.swift                 # 预算模型（总预算/分类预算，按自然月统计）
+    │   ├── Account.swift                # 资产/负债账户模型（投资类含本金与收益）
     │   └── TransactionCategory.swift    # 分类枚举（图标/颜色/收支属性）
     ├── Services/
     │   ├── SpeechRecognizer.swift       # 语音识别（权限申请 + 实时转写）
@@ -49,6 +51,7 @@ accout/
     │   ├── VoiceInputView.swift         # 语音记账页（实时转写 + 可编辑识别结果）
     │   ├── TransactionFormView.swift    # 手动记账 / 编辑
     │   ├── BudgetView.swift             # 预算管理（总预算 + 分类预算 + 表单）
+    │   ├── AssetsView.swift             # 资产负债（净资产总览 + 账户管理）
     │   └── StatsView.swift              # 月度统计图表
     └── Support/
         └── Extensions.swift

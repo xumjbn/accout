@@ -52,12 +52,17 @@ accout/
 
 ## 构建（需要 macOS + Xcode 15+）
 
-iOS 应用只能在 Mac 上编译。把本目录同步到 Mac 后：
+iOS 应用只能在 Mac 上编译。把仓库克隆到 Mac 后：
 
 ```bash
-# 方式一：XcodeGen（推荐）
+# 方式一：Makefile 一键构建（推荐）
+make setup   # 首次：安装 xcodegen
+make run     # 编译 + 启动模拟器 + 安装运行，一步到位
+# 其他：make（仅编译）/ make device TEAM_ID=XXX（真机包）/ make clean
+# 换模拟器机型：make run SIMULATOR="iPhone 15 Pro"
+
+# 方式二：手动用 Xcode 打开
 brew install xcodegen
-cd accout
 xcodegen generate
 open Accout.xcodeproj
 ```

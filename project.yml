@@ -28,3 +28,5 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.accout.app
         TARGETED_DEVICE_FAMILY: "1"
+    scheme:
+      gatherCoverageData: false

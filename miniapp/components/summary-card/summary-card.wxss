@@ -1,8 +1,15 @@
 .summary-card {
+  position: relative;
+  overflow: hidden;
   padding: 40rpx;
-  background: linear-gradient(135deg, #3B82F6, #6366F1);
-  border-radius: 24rpx;
+  /* 品牌渐变 + 两团高光，做出玻璃光感 */
+  background:
+    radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 42%),
+    radial-gradient(circle at 10% 90%, rgba(255, 214, 130, 0.18) 0%, rgba(255, 214, 130, 0) 45%),
+    linear-gradient(135deg, #4E6EF5 0%, #6C5CE7 55%, #7A5AF8 100%);
+  border-radius: 28rpx;
   color: #fff;
+  box-shadow: 0 12rpx 36rpx rgba(78, 110, 245, 0.35);
 }
 
 .summary-label {

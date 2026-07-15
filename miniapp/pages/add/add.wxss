@@ -1,6 +1,6 @@
 .page {
   padding: 24rpx;
-  background: #F3F4F6;
+  background: #F4F5FB;
   min-height: 100vh;
 }
 
@@ -13,8 +13,8 @@
 
 .type-toggle {
   display: flex;
-  background: #F3F4F6;
-  border-radius: 12rpx;
+  background: #F4F5FB;
+  border-radius: 20rpx;
   margin-bottom: 24rpx;
   overflow: hidden;
 }
@@ -28,7 +28,7 @@
 }
 
 .type-option.active {
-  background: #2563EB;
+  background: #4E6EF5;
   color: #fff;
 }
 
@@ -65,11 +65,11 @@
 
 .field-divider {
   height: 1rpx;
-  background: #F3F4F6;
+  background: #F4F5FB;
 }
 
 .save-btn {
-  background: #2563EB;
+  background: #4E6EF5;
   color: #fff;
   text-align: center;
   padding: 24rpx;

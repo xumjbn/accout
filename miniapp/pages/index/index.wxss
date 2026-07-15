@@ -2,22 +2,20 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #F3F4F6;
 }
 
-/* 搜索栏 */
+/* 搜索栏：融入页面背景，不再是白条 */
 .search-bar {
-  padding: 16rpx 24rpx;
-  background: #fff;
-  border-bottom: 1rpx solid #E5E7EB;
+  padding: 16rpx 24rpx 8rpx;
 }
 
 .search-input {
-  height: 64rpx;
-  background: #F3F4F6;
-  border-radius: 32rpx;
+  height: 68rpx;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 34rpx;
   padding: 0 32rpx;
   font-size: 28rpx;
+  box-shadow: 0 4rpx 14rpx rgba(38, 48, 92, 0.05);
 }
 
 /* 提醒条 */
@@ -107,13 +105,13 @@
 
 .tx-item {
   background: #fff;
-  padding: 0 24rpx;
-  border-radius: 12rpx;
+  padding: 6rpx 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 14rpx rgba(38, 48, 92, 0.04);
 }
 
 .tx-item + .tx-item {
-  margin-top: 2rpx;
-  border-radius: 12rpx;
+  margin-top: 12rpx;
 }
 
 .bottom-spacer {
@@ -129,11 +127,11 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
-  background: #2563EB;
+  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
   color: #fff;
-  padding: 24rpx 56rpx;
+  padding: 26rpx 60rpx;
   border-radius: 60rpx;
-  box-shadow: 0 8rpx 24rpx rgba(37, 99, 235, 0.4);
+  box-shadow: 0 12rpx 30rpx rgba(94, 100, 245, 0.45);
   font-size: 30rpx;
   font-weight: 600;
   z-index: 100;

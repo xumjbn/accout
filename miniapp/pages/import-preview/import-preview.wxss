@@ -1,4 +1,4 @@
-.page { padding: 24rpx; background: #F3F4F6; min-height: 100vh; display: flex; flex-direction: column; }
+.page { padding: 24rpx; background: #F4F5FB; min-height: 100vh; display: flex; flex-direction: column; }
 
 .summary-card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
 .summary-item { display: flex; justify-content: space-between; padding: 8rpx 0; }
@@ -12,7 +12,7 @@
 
 .preview-list { flex: 1; background: #fff; border-radius: 16rpx; overflow: hidden; margin-bottom: 16rpx; }
 
-.preview-row { display: flex; align-items: center; gap: 16rpx; padding: 16rpx 24rpx; border-bottom: 1rpx solid #F3F4F6; }
+.preview-row { display: flex; align-items: center; gap: 16rpx; padding: 16rpx 24rpx; border-bottom: 1rpx solid #F4F5FB; }
 .preview-row.duplicate { opacity: 0.35; }
 
 .row-icon { font-size: 24rpx; flex-shrink: 0; }
@@ -25,7 +25,7 @@
 .more-hint { padding: 16rpx; text-align: center; font-size: 24rpx; color: #9CA3AF; }
 
 .import-btn {
-  background: #2563EB; color: #fff; text-align: center; padding: 24rpx;
+  background: #4E6EF5; color: #fff; text-align: center; padding: 24rpx;
   border-radius: 16rpx; font-size: 32rpx; font-weight: 600;
 }
 .import-btn.disabled { opacity: 0.4; }

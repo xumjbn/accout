@@ -9,16 +9,16 @@
     "pages/import-preview/import-preview"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#2563EB",
+    "navigationBarBackgroundColor": "#4E6EF5",
     "navigationBarTitleText": "语随记",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F3F4F6"
+    "backgroundColor": "#F4F5FB"
   },
   "tabBar": {
     "color": "#9CA3AF",
-    "selectedColor": "#2563EB",
+    "selectedColor": "#4E6EF5",
     "backgroundColor": "#FFFFFF",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",

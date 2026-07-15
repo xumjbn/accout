@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语随记 · 小程序设计稿 v2</title>
+<style>
+:root{
+  --brand:#4E6EF5; --brand2:#7A5AF8; --bg:#F4F5FB; --bg-top:#E9EDFF;
+  --text:#1B1F2C; --muted:#6B7280; --tert:#9CA3AF; --sep:#ECEEF5;
+  --green:#10B981; --red:#EF4444; --orange:#F59E0B; --gold:#FFC94D;
+  --page:#E9EBF2; --pagetext:#1B1F2C;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:40px 24px 64px;background:var(--page);color:var(--pagetext);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.intro{max-width:860px;margin:0 auto 28px;text-align:center}
+.intro h1{font-size:26px;margin:0 0 8px;letter-spacing:-.02em}
+.intro p{margin:0;color:#697083;font-size:14px;line-height:1.7}
+.tag{display:inline-block;margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--brand)}
+
+/* 设计令牌条 */
+.tokens{max-width:980px;margin:0 auto 40px;background:#fff;border-radius:16px;padding:20px 24px;
+  display:flex;flex-wrap:wrap;gap:24px;align-items:center;box-shadow:0 6px 20px rgba(38,48,92,.06)}
+.tk-group{display:flex;align-items:center;gap:10px}
+.tk-label{font-size:11px;color:#8A91A0;letter-spacing:.08em}
+.chip{width:34px;height:34px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+.tk-type b{font-size:22px}.tk-type span{font-size:12px;color:#8A91A0}
+
+.phones{display:flex;gap:32px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+figcaption{font-size:13px;color:#697083}
+figcaption b{color:var(--pagetext)}
+.frame{width:320px;background:#1A1A1C;border-radius:48px;padding:10px;
+  box-shadow:0 24px 60px rgba(15,20,40,.28)}
+.screen{position:relative;background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg) 200px);
+  border-radius:40px;overflow:hidden;height:640px;display:flex;flex-direction:column;font-size:14px;color:var(--text)}
+.status{flex:none;height:36px;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px 0;font-size:12.5px;font-weight:600}
+/* 小程序导航栏 + 胶囊 */
+.navbar{flex:none;height:44px;display:flex;align-items:center;justify-content:center;position:relative;font-weight:600;font-size:16px}
+.capsule{position:absolute;right:12px;top:7px;width:80px;height:30px;border-radius:15px;
+  background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-evenly;
+  font-size:14px;color:#333}
+.capsule i{font-style:normal}
+.body{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:0 14px;gap:11px}
+
+/* 搜索行 */
+.srow{display:flex;gap:10px;align-items:center;padding-top:4px}
+.search{flex:1;height:34px;border-radius:17px;background:rgba(255,255,255,.85);display:flex;align-items:center;
+  padding:0 14px;color:#9AA1B2;font-size:13px;box-shadow:0 2px 8px rgba(38,48,92,.05)}
+.rbtn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;
+  color:var(--brand);font-size:17px;box-shadow:0 2px 8px rgba(38,48,92,.05)}
+
+/* 概览卡 */
+.summary{position:relative;overflow:hidden;border-radius:18px;padding:18px 20px;color:#fff;
+  background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.22),rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 10% 90%,rgba(255,214,130,.18),rgba(255,214,130,0) 45%),
+    linear-gradient(135deg,#4E6EF5 0%,#6C5CE7 55%,#7A5AF8 100%);
+  box-shadow:0 10px 28px rgba(78,110,245,.35)}
+.summary .cap{font-size:12px;opacity:.85}
+.summary .big{display:block;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;margin:4px 0 8px;letter-spacing:-.02em}
+.summary .row{display:flex;justify-content:space-between;font-size:11.5px;opacity:.9}
+.summary .budget{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22)}
+.summary .brow{display:flex;justify-content:space-between;font-size:11px;opacity:.92;margin-bottom:5px}
+.track{height:5px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.track i{display:block;height:100%;width:64%;background:#fff;border-radius:3px}
+
+/* 列表 */
+.dayt{font-size:11.5px;color:var(--tert);padding:2px 6px 0}
+.txcard{background:#fff;border-radius:14px;padding:4px 14px;box-shadow:0 3px 10px rgba(38,48,92,.04)}
+.tx{display:flex;align-items:center;gap:10px;padding:9px 0}
+.tx + .tx{border-top:1px solid var(--sep)}
+.ticon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:15px;flex:none}
+.tinfo{flex:1;min-width:0}
+.tname{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsub{font-size:10.5px;color:var(--tert)}
+.tamt{font-weight:650;font-variant-numeric:tabular-nums;font-size:13.5px}
+.tamt.in{color:var(--green)}
+
+/* 按住说话 */
+.holdbtn{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);color:#fff;padding:12px 30px;border-radius:30px;
+  font-size:14px;font-weight:600;box-shadow:0 10px 24px rgba(94,100,245,.45);z-index:5}
+
+/* tabBar */
+.tabbar{flex:none;height:56px;border-top:1px solid var(--sep);background:rgba(255,255,255,.92);
+  display:flex;padding-bottom:10px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9.5px;color:var(--tert)}
+.tab.on{color:var(--brand)}
+.tab .ic{font-size:18px;line-height:1}
+
+/* 录音浮层 */
+.recmask{position:absolute;inset:0;background:rgba(15,18,34,.55);z-index:9;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:0 34px 120px}
+.pulse{position:relative;width:96px;height:96px;display:grid;place-items:center;margin-bottom:22px}
+.pulse::before{content:"";position:absolute;inset:-14px;border-radius:50%;background:rgba(122,90,248,.4)}
+.pulse::after{content:"";position:absolute;inset:-30px;border-radius:50%;background:rgba(122,90,248,.18)}
+.micbig{position:relative;z-index:1;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:38px;
+  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);box-shadow:0 12px 32px rgba(78,110,245,.5)}
+.rectext{color:#fff;font-size:21px;font-weight:650;text-align:center;line-height:1.5}
+.rechint{margin-top:14px;color:rgba(255,255,255,.55);font-size:12px;text-align:center}
+.holdbtn.hold{background:linear-gradient(135deg,#EF4444,#F97316);box-shadow:0 10px 24px rgba(239,68,68,.45);z-index:10}
+
+/* 确认弹层 */
+.sheetmask{position:absolute;inset:0;background:rgba(15,18,34,.45);z-index:9;display:flex;flex-direction:column;justify-content:flex-end}
+.sheet{background:#fff;border-radius:24px 24px 0 0;padding:10px 22px 22px;display:flex;flex-direction:column}
+.grab{width:36px;height:4px;border-radius:2px;background:#E3E6EF;align-self:center;margin-bottom:12px}
+.said{font-size:12.5px;color:var(--muted);margin-bottom:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.toggle{display:flex;background:#F0F2F9;border-radius:20px;padding:3px;margin-bottom:6px}
+.topt{flex:1;text-align:center;padding:7px 0;font-size:13px;color:var(--muted);border-radius:17px}
+.topt.on{background:#fff;color:var(--brand);font-weight:650;box-shadow:0 1px 4px rgba(38,48,92,.1)}
+.frow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--sep);font-size:13.5px}
+.flabel{width:64px;color:var(--muted)}
+.fval{flex:1;text-align:right}
+.fval.money{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.acts{display:flex;gap:10px;margin-top:16px}
+.acancel{flex:1;text-align:center;padding:12px 0;border-radius:24px;background:#F0F2F9;color:var(--muted);font-size:14px}
+.asave{flex:2;text-align:center;padding:12px 0;border-radius:24px;color:#fff;font-size:14px;font-weight:650;
+  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);box-shadow:0 8px 18px rgba(94,100,245,.35)}
+
+/* 统计/资产复用 */
+.tiles{display:flex;gap:8px}
+.tile{flex:1;background:#fff;border-radius:12px;padding:9px 11px;box-shadow:0 3px 10px rgba(38,48,92,.04)}
+.tile .k{font-size:10px;color:var(--tert)}
+.tile .v{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .v.g{color:var(--green)}.tile .v.b{color:var(--brand)}
+.ccard{background:#fff;border-radius:14px;padding:13px 15px;box-shadow:0 3px 10px rgba(38,48,92,.04)}
+.ccard h4{margin:0 0 10px;font-size:13.5px}
+.donutwrap{display:flex;align-items:center;gap:14px}
+.donut{position:relative;width:108px;height:108px;flex:none}
+.donut .ring{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(#78716C 0 287deg,#F97316 287deg 325deg,#06B6D4 325deg 337deg,#EC4899 337deg 348deg,#8B5CF6 348deg 356deg,#4E6EF5 356deg 360deg);
+  -webkit-mask:radial-gradient(circle,transparent 56%,#000 58%);mask:radial-gradient(circle,transparent 56%,#000 58%)}
+.donut .lab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut .lab .k{font-size:9px;color:var(--tert)}
+.donut .lab .v{font-size:13.5px;font-weight:750;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-direction:column;gap:5px;font-size:10.5px;color:var(--muted)}
+.legend .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:64px}
+.bars i{flex:1;border-radius:2px;background:linear-gradient(180deg,#4E6EF5,#7A5AF8);min-height:2px}
+.month{display:flex;justify-content:space-between;align-items:center;padding:0 6px;font-weight:650;font-size:13.5px}
+.month .chev{color:var(--brand)}
+
+.networth{position:relative;overflow:hidden;border-radius:18px;padding:18px 20px;color:#fff;
+  background:radial-gradient(circle at 85% 12%,rgba(255,214,130,.25),rgba(255,214,130,0) 45%),
+    linear-gradient(135deg,#0EA5A4 0%,#10B981 100%);box-shadow:0 10px 28px rgba(16,185,129,.32)}
+.acrow{display:flex;align-items:center;gap:10px;padding:9px 0}
+.acrow + .acrow{border-top:1px solid var(--sep)}
+.acprofit{font-size:10px;color:var(--green)}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <span class="tag">语随记 · 小程序 UI 设计稿 V2 · 待确认</span>
+  <h1>按住说话，一句话记完一笔账</h1>
+  <p>核心交互改为「首页按住说话 → 实时转写浮层 → 当前页底部确认卡」（对标随手记）。品牌：靛蓝→电紫渐变 + 记账金点缀。看完在对话里回复要改的点。</p>
+</div>
+
+<div class="tokens">
+  <div class="tk-group"><span class="tk-label">品牌</span>
+    <span class="chip" style="background:linear-gradient(135deg,#4E6EF5,#7A5AF8)"></span>
+    <span class="chip" style="background:#4E6EF5"></span>
+    <span class="chip" style="background:#7A5AF8"></span>
+    <span class="chip" style="background:#FFC94D"></span>
+  </div>
+  <div class="tk-group"><span class="tk-label">语义</span>
+    <span class="chip" style="background:#10B981"></span>
+    <span class="chip" style="background:#F59E0B"></span>
+    <span class="chip" style="background:#EF4444"></span>
+  </div>
+  <div class="tk-group"><span class="tk-label">中性</span>
+    <span class="chip" style="background:#F4F5FB"></span>
+    <span class="chip" style="background:#ECEEF5"></span>
+    <span class="chip" style="background:#6B7280"></span>
+    <span class="chip" style="background:#1B1F2C"></span>
+  </div>
+  <div class="tk-group tk-type"><span class="tk-label">字阶</span><b>¥2,880.5</b><span>32 大数字 / 16 标题 / 14 正文 / 11 辅助 · 金额一律 tabular-nums</span></div>
+</div>
+
+<div class="phones">
+
+  <!-- 1 明细 -->
+  <figure>
+    <div class="frame"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●● 🛜 🔋</span></div>
+      <div class="navbar">语随记<span class="capsule"><i>◉</i><i>⋯</i></span></div>
+      <div class="body">
+        <div class="srow">
+          <div class="search">🔍 搜索备注或分类</div>
+          <div class="rbtn">＋</div><div class="rbtn">⋯</div>
+        </div>
+        <div class="summary">
+          <span class="cap">本月支出</span>
+          <span class="big">¥2,880.5</span>
+          <div class="row"><span>收入 ¥12,000</span><span>结余 ¥9,119.5</span></div>
+          <div class="budget">
+            <div class="brow"><span>预算剩余 ¥1,119.5</span><span>72%</span></div>
+            <div class="track"><i></i></div>
+          </div>
+        </div>
+        <div class="dayt">今天</div>
+        <div class="txcard">
+          <div class="tx"><div class="ticon" style="background:#FFF1E3">🍽️</div>
+            <div class="tinfo"><div class="tname">星巴克</div><div class="tsub">餐饮 · 🎤语音</div></div>
+            <div class="tamt">-32</div></div>
+          <div class="tx"><div class="ticon" style="background:#FCE7F3">🛍️</div>
+            <div class="tinfo"><div class="tname">超市日用品</div><div class="tsub">购物</div></div>
+            <div class="tamt">-86</div></div>
+        </div>
+        <div class="dayt">昨天</div>
+        <div class="txcard">
+          <div class="tx"><div class="ticon" style="background:#E3ECFF">🚗</div>
+            <div class="tinfo"><div class="tname">打车</div><div class="tsub">交通 · 🎤语音</div></div>
+            <div class="tamt">-35.5</div></div>
+          <div class="tx"><div class="ticon" style="background:#E9FBF2">💰</div>
+            <div class="tinfo"><div class="tname">7月工资</div><div class="tsub">工资</div></div>
+            <div class="tamt in">+12,000</div></div>
+        </div>
+      </div>
+      <div class="holdbtn">🎤 按住说话</div>
+      <div class="tabbar">
+        <div class="tab on"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">⌖</span>预算</div>
+        <div class="tab"><span class="ic">🏛</span>资产</div>
+        <div class="tab"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>① 明细首页</b> · 概览卡含预算进度</figcaption>
+  </figure>
+
+  <!-- 2 按住说话 -->
+  <figure>
+    <div class="frame"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●● 🛜 🔋</span></div>
+      <div class="navbar">语随记<span class="capsule"><i>◉</i><i>⋯</i></span></div>
+      <div class="body"></div>
+      <div class="recmask">
+        <div class="pulse"><div class="micbig">🎤</div></div>
+        <div class="rectext">昨天打车花了<br>三十五块五</div>
+        <div class="rechint">松开结束 · 边说边出字</div>
+      </div>
+      <div class="holdbtn hold">🎤 松开结束</div>
+      <div class="tabbar">
+        <div class="tab on"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">⌖</span>预算</div>
+        <div class="tab"><span class="ic">🏛</span>资产</div>
+        <div class="tab"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>② 按住说话</b> · 实时转写浮层（不跳页）</figcaption>
+  </figure>
+
+  <!-- 3 确认弹层 -->
+  <figure>
+    <div class="frame"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●● 🛜 🔋</span></div>
+      <div class="navbar">语随记<span class="capsule"><i>◉</i><i>⋯</i></span></div>
+      <div class="body"></div>
+      <div class="sheetmask">
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="said">「昨天打车花了三十五块五」</div>
+          <div class="toggle"><div class="topt on">支出</div><div class="topt">收入</div></div>
+          <div class="frow"><span class="flabel">金额</span><span class="fval money">35.5</span></div>
+          <div class="frow"><span class="flabel">分类</span><span class="fval">🚗 交通 ›</span></div>
+          <div class="frow"><span class="flabel">备注</span><span class="fval">打车</span></div>
+          <div class="frow"><span class="flabel">日期</span><span class="fval">2026-07-14 ›</span></div>
+          <div class="acts"><div class="acancel">取消</div><div class="asave">保存</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab on"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">⌖</span>预算</div>
+        <div class="tab"><span class="ic">🏛</span>资产</div>
+        <div class="tab"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>③ 确认弹层</b> · 松手后当前页底部弹出</figcaption>
+  </figure>
+
+  <!-- 4 统计 -->
+  <figure>
+    <div class="frame"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●● 🛜 🔋</span></div>
+      <div class="navbar">统计<span class="capsule"><i>◉</i><i>⋯</i></span></div>
+      <div class="body">
+        <div class="month"><span class="chev">‹</span><span>2026年7月</span><span class="chev" style="opacity:.3">›</span></div>
+        <div class="tiles">
+          <div class="tile"><div class="k">总支出</div><div class="v">¥2,880.5</div></div>
+          <div class="tile"><div class="k">总收入</div><div class="v g">¥12,000</div></div>
+          <div class="tile"><div class="k">结余</div><div class="v b">¥9,119.5</div></div>
+        </div>
+        <div class="ccard">
+          <h4>支出构成</h4>
+          <div class="donutwrap">
+            <div class="donut"><div class="ring"></div><div class="lab"><span class="k">总支出</span><span class="v">¥2,880.5</span></div></div>
+            <div class="legend">
+              <span><i class="dot" style="background:#78716C"></i>居住 79.9%</span>
+              <span><i class="dot" style="background:#F97316"></i>餐饮 10.4%</span>
+              <span><i class="dot" style="background:#06B6D4"></i>水电通讯 3.5%</span>
+              <span><i class="dot" style="background:#EC4899"></i>购物 3.0%</span>
+              <span><i class="dot" style="background:#8B5CF6"></i>娱乐 2.0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="ccard">
+          <h4>每日支出</h4>
+          <div class="bars"><i style="height:8%"></i><i style="height:5%"></i><i style="height:14%"></i><i style="height:4%"></i><i style="height:100%"></i><i style="height:6%"></i><i style="height:10%"></i><i style="height:3%"></i><i style="height:16%"></i><i style="height:7%"></i></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">⌖</span>预算</div>
+        <div class="tab"><span class="ic">🏛</span>资产</div>
+        <div class="tab on"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>④ 统计</b> · 环形图/柱状图/排行</figcaption>
+  </figure>
+
+  <!-- 5 资产 -->
+  <figure>
+    <div class="frame"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●● 🛜 🔋</span></div>
+      <div class="navbar">资产<span class="capsule"><i>◉</i><i>⋯</i></span></div>
+      <div class="body">
+        <div class="networth">
+          <span class="cap" style="font-size:12px;opacity:.85">净资产</span>
+          <span class="big" style="display:block;font-size:32px;font-weight:800;margin:4px 0 8px">¥286,450</span>
+          <div class="row" style="display:flex;justify-content:space-between;font-size:11.5px;opacity:.9">
+            <span>总资产 ¥520,300</span><span>总负债 ¥233,850</span>
+          </div>
+        </div>
+        <div class="dayt">资产</div>
+        <div class="txcard">
+          <div class="acrow"><div class="ticon" style="background:#E3ECFF">🏦</div>
+            <div class="tinfo"><div class="tname">招行储蓄卡</div><div class="tsub">存款</div></div>
+            <div style="text-align:right"><div class="tamt">¥180,300</div></div></div>
+          <div class="acrow"><div class="ticon" style="background:#F1E9FF">📊</div>
+            <div class="tinfo"><div class="tname">沪深300基金</div><div class="tsub">投资</div></div>
+            <div style="text-align:right"><div class="tamt">¥52,300</div><div class="acprofit">+¥2,300 (+4.6%)</div></div></div>
+        </div>
+        <div class="dayt">负债</div>
+        <div class="txcard">
+          <div class="acrow"><div class="ticon" style="background:#F4EFEA">🏡</div>
+            <div class="tinfo"><div class="tname">房贷</div><div class="tsub">房贷 · 还剩 18 年</div></div>
+            <div class="tamt" style="color:#EF4444">-¥228,000</div></div>
+          <div class="acrow"><div class="ticon" style="background:#FDEBEB">💳</div>
+            <div class="tinfo"><div class="tname">信用卡</div><div class="tsub">信用卡</div></div>
+            <div class="tamt" style="color:#EF4444">-¥5,850</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><span class="ic">☰</span>明细</div>
+        <div class="tab"><span class="ic">⌖</span>预算</div>
+        <div class="tab on"><span class="ic">🏛</span>资产</div>
+        <div class="tab"><span class="ic">◔</span>统计</div>
+      </div>
+    </div></div>
+    <figcaption><b>⑤ 资产</b> · 净资产用青绿+金，与支出蓝紫区分</figcaption>
+  </figure>
+</div>
+
+</body>
+</html>

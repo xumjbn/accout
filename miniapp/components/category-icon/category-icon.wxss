@@ -5,6 +5,3 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.category-icon text {
-  font-size: 15rpx;
-}

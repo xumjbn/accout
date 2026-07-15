@@ -63,7 +63,7 @@ export function categoryIcon(cat: TransactionCategory): string {
     [TransactionCategory.Entertainment]: '🎮',
     [TransactionCategory.Housing]: '🏠',
     [TransactionCategory.Utilities]: '⚡',
-    [TransactionCategory.Medical]: '❤️',
+    [TransactionCategory.Medical]: '💊',
     [TransactionCategory.Education]: '📚',
     [TransactionCategory.Social]: '🎁',
     [TransactionCategory.Travel]: '✈️',

@@ -1,4 +1,4 @@
-<!-- 分类图标组件 -->
-<view class="category-icon" style="background: {{bgColor}};">
-  <text>{{icon}}</text>
+<!-- 分类图标：淡染底色圆 + emoji（size 单位 rpx） -->
+<view class="category-icon" style="width:{{size}}rpx;height:{{size}}rpx;background:{{bgColor}}22;">
+  <text style="font-size:{{size * 0.5}}rpx;">{{icon}}</text>
 </view>

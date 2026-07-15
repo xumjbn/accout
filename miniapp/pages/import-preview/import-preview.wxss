@@ -1,4 +1,4 @@
-.page { padding: 24rpx; background: #F4F5FB; min-height: 100vh; display: flex; flex-direction: column; }
+.page { padding: 24rpx; min-height: 100vh; display: flex; flex-direction: column; }
 
 .summary-card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
 .summary-item { display: flex; justify-content: space-between; padding: 8rpx 0; }

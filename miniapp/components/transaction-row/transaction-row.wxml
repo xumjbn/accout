@@ -1,6 +1,6 @@
 <!-- 账单行组件 - 对应 iOS TransactionRow -->
 <view class="tx-row">
-  <category-icon icon="{{icon}}" bgColor="{{color}}" size="36" />
+  <category-icon icon="{{icon}}" bgColor="{{color}}" size="64" />
   <view class="tx-info">
     <text class="tx-note">{{note || category}}</text>
     <view class="tx-meta">

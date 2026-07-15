@@ -6,7 +6,7 @@
 import { SpeechRecognizer, createRecognizer } from '../../services/recognizer'
 import { ParsedTransaction, parseMultiple } from '../../services/parser'
 import { createTransaction } from '../../models/transaction'
-import { TransactionCategory, categoryIcon } from '../../models/category'
+import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
 import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
 import { syncTransactions } from '../../services/family'
@@ -17,6 +17,7 @@ import { moneyString } from '../../utils/money'
 interface MultiItemRow {
   parsed: ParsedTransaction
   icon: string
+  color: string
   title: string
   category: string
   amountStr: string
@@ -27,6 +28,7 @@ function toMultiRow(parsed: ParsedTransaction): MultiItemRow {
   return {
     parsed,
     icon: categoryIcon(parsed.category),
+    color: categoryColor(parsed.category),
     title: parsed.note || parsed.category,
     category: parsed.category,
     amountStr: moneyString(parsed.amount ?? 0),

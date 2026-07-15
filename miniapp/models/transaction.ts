@@ -11,6 +11,8 @@ export interface Transaction {
   note: string
   date: number          // timestamp (ms)
   createdAt: number
+  /** 最后编辑时间（家庭合并时新者胜）；旧数据可能缺省 */
+  updatedAt?: number
   source: 'voice' | 'manual' | 'import'
 }
 
@@ -25,6 +27,7 @@ export function createTransaction(partial?: Partial<Transaction>): Transaction {
     note: '',
     date: now,
     createdAt: now,
+    updatedAt: now,
     source: 'manual',
     ...partial,
   }

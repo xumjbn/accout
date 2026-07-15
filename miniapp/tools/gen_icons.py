@@ -33,27 +33,28 @@ def rounded_mask(w, h, radius):
 
 
 def make_logo():
+    """对话气泡 + ¥ + 声波：说出来的账"""
     size = 512 * SS
     img = gradient(size, size, BRAND, BRAND2).convert("RGBA")
     draw = ImageDraw.Draw(img)
     s = SS  # 512 坐标系 → 画布坐标
 
     white = (255, 255, 255, 255)
-    # 麦克风胶囊
-    draw.rounded_rectangle((196 * s, 96 * s, 316 * s, 292 * s), radius=60 * s, fill=white)
-    # 拾音架（下半圆弧）
-    draw.arc((156 * s, 120 * s, 356 * s, 344 * s), start=15, end=165, fill=white, width=26 * s)
-    # 立杆与底座
-    draw.rounded_rectangle((244 * s, 336 * s, 268 * s, 396 * s), radius=12 * s, fill=white)
-    draw.rounded_rectangle((186 * s, 396 * s, 326 * s, 422 * s), radius=13 * s, fill=white)
-    # 金币（记账属性）
-    cx, cy, r = 368 * s, 372 * s, 78 * s
-    draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=GOLD, outline=GOLD_DARK, width=10 * s)
+    # 对话气泡主体（圆角矩形，略偏上）
+    draw.rounded_rectangle((86 * s, 110 * s, 426 * s, 330 * s), radius=72 * s, fill=white)
+    # 气泡小尾巴（左下，指向说话人）
+    draw.polygon([(150 * s, 322 * s), (128 * s, 408 * s), (238 * s, 330 * s)], fill=white)
+
+    # ¥ 主体（品牌绿，气泡中心偏左）
     try:
-        font = ImageFont.truetype("C:/Windows/Fonts/msyhbd.ttc", 96 * s)
+        font = ImageFont.truetype("C:/Windows/Fonts/msyhbd.ttc", 172 * s)
     except OSError:
         font = ImageFont.load_default()
-    draw.text((cx, cy - 4 * s), "¥", font=font, fill=(138, 90, 0), anchor="mm")
+    draw.text((216 * s, 218 * s), "¥", font=font, fill=BRAND, anchor="mm")
+
+    # 声波两道（¥ 右侧，弧线，全部收在气泡内）
+    draw.arc((258 * s, 168 * s, 358 * s, 268 * s), start=-50, end=50, fill=BRAND, width=19 * s)
+    draw.arc((284 * s, 138 * s, 408 * s, 298 * s), start=-44, end=44, fill=BRAND2, width=19 * s)
 
     # 圆角裁切
     mask = rounded_mask(size, size, 115 * s)

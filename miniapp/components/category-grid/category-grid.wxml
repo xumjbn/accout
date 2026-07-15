@@ -2,8 +2,8 @@
   <view class="cg-sheet" catchtap="noop">
     <view class="cg-grabber"></view>
     <view class="cg-toggle">
-      <view class="cg-topt {{isExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="expense">支出</view>
-      <view class="cg-topt {{!isExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="income">收入</view>
+      <view class="cg-topt {{activeExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="expense">支出</view>
+      <view class="cg-topt {{!activeExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="income">收入</view>
     </view>
     <view class="cg-grid">
       <view wx:for="{{items}}" wx:key="name"

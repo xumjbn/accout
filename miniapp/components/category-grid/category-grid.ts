@@ -33,12 +33,16 @@ Component({
   },
 
   data: {
+    // activeExpense 为面板内部工作态：每次打开都从宿主的 isExpense 重新同步
+    activeExpense: true,
     items: buildItems(true),
   },
 
   observers: {
-    isExpense(value: boolean) {
-      this.setData({ items: buildItems(value) })
+    'visible, isExpense'(visible: boolean, isExpense: boolean) {
+      if (visible) {
+        this.setData({ activeExpense: isExpense, items: buildItems(isExpense) })
+      }
     },
   },
 
@@ -50,13 +54,13 @@ Component({
     },
 
     onTypeTab(e: WechatMiniprogram.BaseEvent) {
-      const isExpense = e.currentTarget.dataset.value === 'expense'
-      this.setData({ isExpense })
+      const activeExpense = e.currentTarget.dataset.value === 'expense'
+      this.setData({ activeExpense, items: buildItems(activeExpense) })
     },
 
     onPick(e: WechatMiniprogram.BaseEvent) {
       const category = e.currentTarget.dataset.name as string
-      this.triggerEvent('select', { category, isExpense: this.data.isExpense })
+      this.triggerEvent('select', { category, isExpense: this.data.activeExpense })
     },
   },
 })

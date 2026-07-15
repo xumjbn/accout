@@ -4,7 +4,6 @@ import { categoryIcon, categoryColor } from '../../models/category'
 import { insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
 import { finishAndBack } from '../../utils/page'
-import { syncTransactions } from '../../services/family'
 import { moneyString } from '../../utils/money'
 import { formatDate } from '../../utils/date'
 
@@ -74,7 +73,6 @@ Page({
       source: 'import',
     }))
     insertTransactions(batch)
-    syncTransactions(batch)
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
     finishAndBack(alert, `已导入 ${newRows.length} 笔`)

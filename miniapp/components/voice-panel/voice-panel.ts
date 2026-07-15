@@ -10,7 +10,6 @@ import { TransactionCategory, categoryIcon, categoryColor } from '../../models/c
 import { CategoryPickerState } from '../../utils/category-picker'
 import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
-import { syncTransactions } from '../../services/family'
 import { initialPickerState, typeChanged, rebuildOptions } from '../../utils/category-picker'
 import { formatDate } from '../../utils/date'
 import { moneyString } from '../../utils/money'
@@ -227,7 +226,6 @@ Component({
           }))
         if (batch.length === 0) return
         insertTransactions(batch)
-        syncTransactions(batch)
       } else {
         const amount = parseFloat(amountText)
         if (isNaN(amount) || amount <= 0) return
@@ -240,7 +238,6 @@ Component({
           source: 'voice',
         })
         insertTransaction(tx)
-        syncTransactions([tx])
       }
 
       const alert = checkBudgetAlert(loadBudgets(), loadTransactions())

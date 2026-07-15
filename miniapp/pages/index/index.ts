@@ -3,7 +3,6 @@ import { loadTransactions, deleteTransaction, loadBudgets } from '../../services
 import { exportToCSV } from '../../services/exporter'
 import { checkBudgetAlert, BudgetAlert } from '../../services/notifier'
 import { startOfDay, dayTitle, isSameMonth } from '../../utils/date'
-import { autoPull, syncDeletion } from '../../services/family'
 import { uiIcons } from '../../assets/icons'
 
 interface GroupedData {
@@ -27,10 +26,6 @@ Page({
 
   onShow() {
     this.reload()
-    // 加入了家庭则静默拉取云端账单，有更新再刷一次
-    autoPull()
-      .then(pulled => { if (pulled) this.reload() })
-      .catch(() => {})
   },
 
   reload() {
@@ -101,7 +96,6 @@ Page({
       success: (res) => {
         if (res.confirm) {
           deleteTransaction(id)
-          syncDeletion(id)
           this.reload()
           wx.showToast({ title: '已删除', icon: 'success' })
         }

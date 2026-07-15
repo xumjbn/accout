@@ -11,7 +11,11 @@ const KEYS = {
   budgets: 'accout_budgets',
   accounts: 'accout_accounts',
   notifiedKeys: 'accout_notified_keys',
+  deletedIds: 'accout_deleted_tx_ids',
 } as const
+
+/** 删除墓碑上限（家庭合并用，防止无限增长） */
+const DELETED_IDS_CAP = 1000
 
 // ====== Transactions ======
 
@@ -44,6 +48,7 @@ export function updateTransaction(updated: Transaction): void {
   const list = loadTransactions()
   const idx = list.findIndex(t => t.id === updated.id)
   if (idx !== -1) {
+    updated.updatedAt = Date.now()
     list[idx] = updated
     saveTransactions(list)
   }
@@ -52,6 +57,24 @@ export function updateTransaction(updated: Transaction): void {
 export function deleteTransaction(id: string): void {
   const list = loadTransactions()
   saveTransactions(list.filter(t => t.id !== id))
+  markDeleted([id])
+}
+
+// ==== 删除墓碑（家庭账本合并时同步删除用） ====
+
+export function loadDeletedIds(): string[] {
+  try {
+    const data = wx.getStorageSync(KEYS.deletedIds)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+export function markDeleted(ids: string[]): void {
+  if (ids.length === 0) return
+  const merged = [...new Set([...loadDeletedIds(), ...ids])]
+  wx.setStorageSync(KEYS.deletedIds, JSON.stringify(merged.slice(-DELETED_IDS_CAP)))
 }
 
 // ====== Budgets ======

@@ -1,129 +1,56 @@
-import {
-  FamilyInfo,
-  FamilyMember,
-  cloudAvailable,
-  loadFamily,
-  createFamily,
-  joinFamily,
-  leaveFamily,
-  listMembers,
-  pullTransactions,
-} from '../../services/family'
+import { sharePack, mergePackText, MergeResult } from '../../services/family'
+import { loadTransactions } from '../../services/storage'
 import { refreshPrevPage } from '../../utils/page'
 import { uiIcons } from '../../assets/icons'
 
 Page({
   data: {
-    icoCloud: uiIcons.cloud,
     icoPerson: uiIcons.person,
-    cloudReady: false,
-    family: null as FamilyInfo | null,
-    members: [] as FamilyMember[],
-    loading: false,
-
-    // 未加入时的表单
-    mode: 'create' as 'create' | 'join',
-    familyName: '',
-    inviteCode: '',
-    nickname: '',
+    txCount: 0,
+    lastResult: null as MergeResult | null,
   },
 
   onShow() {
-    const family = loadFamily()
-    this.setData({ cloudReady: cloudAvailable(), family })
-    if (family) {
-      this.refreshMembers()
-    }
+    this.setData({ txCount: loadTransactions().length })
   },
 
-  refreshMembers() {
-    listMembers()
-      .then(members => this.setData({ members }))
-      .catch(() => {})
-  },
-
-  // ==== 表单 ====
-
-  switchMode(e: WechatMiniprogram.BaseEvent) {
-    this.setData({ mode: e.currentTarget.dataset.mode as 'create' | 'join' })
-  },
-
-  onNameInput(e: WechatMiniprogram.Input) { this.setData({ familyName: e.detail.value }) },
-  onCodeInput(e: WechatMiniprogram.Input) { this.setData({ inviteCode: e.detail.value }) },
-  onNicknameInput(e: WechatMiniprogram.Input) { this.setData({ nickname: e.detail.value }) },
-
-  onCreate() {
-    const { familyName, nickname } = this.data
-    if (!familyName.trim()) {
-      wx.showToast({ title: '给家庭起个名字吧', icon: 'none' })
+  /** 导出账本文件并转发给家人 */
+  onShare() {
+    if (this.data.txCount === 0) {
+      wx.showToast({ title: '还没有账单可分享', icon: 'none' })
       return
     }
-    this.run(async () => {
-      const family = await createFamily(familyName.trim(), nickname.trim() || '我')
-      this.setData({ family })
-      this.refreshMembers()
-      refreshPrevPage()
-      wx.showToast({ title: '家庭已创建', icon: 'success' })
-    })
+    sharePack()
+      .then(() => wx.showToast({ title: '已发出，让家人导入即可', icon: 'none', duration: 2500 }))
+      .catch((e: Error) => {
+        // 用户取消转发也会走 fail，静默处理取消
+        if (!e.message.includes('cancel')) {
+          wx.showToast({ title: e.message, icon: 'none' })
+        }
+      })
   },
 
-  onJoin() {
-    const { inviteCode, nickname } = this.data
-    if (inviteCode.trim().length !== 6) {
-      wx.showToast({ title: '请输入 6 位邀请码', icon: 'none' })
-      return
-    }
-    this.run(async () => {
-      const family = await joinFamily(inviteCode, nickname.trim() || '我')
-      this.setData({ family })
-      this.refreshMembers()
-      refreshPrevPage()
-      wx.showToast({ title: '已加入家庭', icon: 'success' })
-    })
-  },
-
-  // ==== 已加入 ====
-
-  copyCode() {
-    const { family } = this.data
-    if (!family) return
-    wx.setClipboardData({
-      data: family.code,
-      success: () => wx.showToast({ title: '邀请码已复制', icon: 'success' }),
-    })
-  },
-
-  syncNow() {
-    this.run(async () => {
-      const total = await pullTransactions()
-      refreshPrevPage()
-      wx.showToast({ title: `已同步，共 ${total} 笔`, icon: 'success' })
-    })
-  },
-
-  onLeave() {
-    wx.showModal({
-      title: '退出家庭',
-      content: '退出后本机不再同步家庭账单，已有账单保留在本机。确定退出？',
+  /** 从聊天记录选择家人发来的账本文件并合并 */
+  onImport() {
+    wx.chooseMessageFile({
+      count: 1,
+      type: 'file',
+      extension: ['json'],
       success: (res) => {
-        if (res.confirm) {
-          leaveFamily()
-          this.setData({ family: null, members: [] })
+        try {
+          const text = wx.getFileSystemManager().readFileSync(res.tempFiles[0].path, 'utf-8') as string
+          const result = mergePackText(text)
+          this.setData({ lastResult: result, txCount: result.total })
+          refreshPrevPage()
+          wx.showToast({
+            title: `合并完成：新增 ${result.added} 笔`,
+            icon: 'success',
+          })
+        } catch (e) {
+          const message = e instanceof Error ? e.message : '导入失败'
+          wx.showModal({ title: '导入失败', content: message, showCancel: false })
         }
       },
     })
-  },
-
-  // ==== 工具 ====
-
-  run(task: () => Promise<void>) {
-    if (this.data.loading) return
-    this.setData({ loading: true })
-    task()
-      .catch((e: unknown) => {
-        const message = e instanceof Error ? e.message : '操作失败，请检查云开发配置'
-        wx.showModal({ title: '出错了', content: message, showCancel: false })
-      })
-      .then(() => this.setData({ loading: false }))
   },
 })

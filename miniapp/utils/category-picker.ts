@@ -39,13 +39,27 @@ export function typeChanged(current: CategoryPickerState, isExpense: boolean): C
 /** picker 选中某个下标 */
 export function categoryPicked(current: CategoryPickerState, index: number): CategoryPickerState {
   const idx = Math.max(0, Math.min(index, current.categoryOptions.length - 1))
-  return { ...current, categoryIndex: idx, category: current.categoryOptions[idx] }
+  return {
+    isExpense: current.isExpense,
+    category: current.categoryOptions[idx],
+    categoryOptions: current.categoryOptions,
+    categoryIndex: idx,
+  }
 }
 
-/** 外部直接设定分类（如语音解析结果回填）后调用，重建选项并对齐下标 */
+/**
+ * 外部直接设定分类（如语音解析结果回填）后调用，重建选项并对齐下标。
+ * ⚠️ 只返回 picker 的四个字段——调用方常传入 {...this.data}，
+ * 若把入参整体展开返回，会带出整个旧页面状态、在 setData 中覆盖新值。
+ */
 export function rebuildOptions(current: CategoryPickerState): CategoryPickerState {
   const options = (current.isExpense ? expenseCategories() : incomeCategories()) as string[]
   let idx = options.indexOf(current.category)
   if (idx < 0) idx = 0
-  return { ...current, categoryOptions: options, categoryIndex: idx, category: options[idx] }
+  return {
+    isExpense: current.isExpense,
+    category: options[idx],
+    categoryOptions: options,
+    categoryIndex: idx,
+  }
 }

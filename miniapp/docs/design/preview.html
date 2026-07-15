@@ -6,7 +6,7 @@
 <title>语随记 · 小程序设计稿 v2</title>
 <style>
 :root{
-  --brand:#4E6EF5; --brand2:#7A5AF8; --bg:#F4F5FB; --bg-top:#E9EDFF;
+  --brand:#07C160; --brandMid:#0ECF74; --brand2:#39D98A; --bg:#F4F5FB; --bg-top:#E9EDFF;
   --text:#1B1F2C; --muted:#6B7280; --tert:#9CA3AF; --sep:#ECEEF5;
   --green:#10B981; --red:#EF4444; --orange:#F59E0B; --gold:#FFC94D;
   --page:#E9EBF2; --pagetext:#1B1F2C;
@@ -56,8 +56,8 @@ figcaption b{color:var(--pagetext)}
 .summary{position:relative;overflow:hidden;border-radius:18px;padding:18px 20px;color:#fff;
   background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.22),rgba(255,255,255,0) 42%),
     radial-gradient(circle at 10% 90%,rgba(255,214,130,.18),rgba(255,214,130,0) 45%),
-    linear-gradient(135deg,#4E6EF5 0%,#6C5CE7 55%,#7A5AF8 100%);
-  box-shadow:0 10px 28px rgba(78,110,245,.35)}
+    linear-gradient(135deg,var(--brand) 0%,var(--brandMid) 55%,var(--brand2) 100%);
+  box-shadow:0 10px 28px color-mix(in srgb, var(--brand) 35%, transparent)}
 .summary .cap{font-size:12px;opacity:.85}
 .summary .big{display:block;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;margin:4px 0 8px;letter-spacing:-.02em}
 .summary .row{display:flex;justify-content:space-between;font-size:11.5px;opacity:.9}
@@ -80,8 +80,8 @@ figcaption b{color:var(--pagetext)}
 
 /* 按住说话 */
 .holdbtn{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;
-  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);color:#fff;padding:12px 30px;border-radius:30px;
-  font-size:14px;font-weight:600;box-shadow:0 10px 24px rgba(94,100,245,.45);z-index:5}
+  background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:12px 30px;border-radius:30px;
+  font-size:14px;font-weight:600;box-shadow:0 10px 24px color-mix(in srgb, var(--brand) 45%, transparent);z-index:5}
 
 /* tabBar */
 .tabbar{flex:none;height:56px;border-top:1px solid var(--sep);background:rgba(255,255,255,.92);
@@ -94,10 +94,10 @@ figcaption b{color:var(--pagetext)}
 .recmask{position:absolute;inset:0;background:rgba(15,18,34,.55);z-index:9;display:flex;flex-direction:column;
   align-items:center;justify-content:center;padding:0 34px 120px}
 .pulse{position:relative;width:96px;height:96px;display:grid;place-items:center;margin-bottom:22px}
-.pulse::before{content:"";position:absolute;inset:-14px;border-radius:50%;background:rgba(122,90,248,.4)}
-.pulse::after{content:"";position:absolute;inset:-30px;border-radius:50%;background:rgba(122,90,248,.18)}
+.pulse::before{content:"";position:absolute;inset:-14px;border-radius:50%;background:color-mix(in srgb, var(--brand) 40%, transparent)}
+.pulse::after{content:"";position:absolute;inset:-30px;border-radius:50%;background:color-mix(in srgb, var(--brand) 18%, transparent)}
 .micbig{position:relative;z-index:1;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:38px;
-  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);box-shadow:0 12px 32px rgba(78,110,245,.5)}
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 12px 32px color-mix(in srgb, var(--brand) 50%, transparent)}
 .rectext{color:#fff;font-size:21px;font-weight:650;text-align:center;line-height:1.5}
 .rechint{margin-top:14px;color:rgba(255,255,255,.55);font-size:12px;text-align:center}
 .holdbtn.hold{background:linear-gradient(135deg,#EF4444,#F97316);box-shadow:0 10px 24px rgba(239,68,68,.45);z-index:10}
@@ -117,7 +117,7 @@ figcaption b{color:var(--pagetext)}
 .acts{display:flex;gap:10px;margin-top:16px}
 .acancel{flex:1;text-align:center;padding:12px 0;border-radius:24px;background:#F0F2F9;color:var(--muted);font-size:14px}
 .asave{flex:2;text-align:center;padding:12px 0;border-radius:24px;color:#fff;font-size:14px;font-weight:650;
-  background:linear-gradient(135deg,#4E6EF5,#7A5AF8);box-shadow:0 8px 18px rgba(94,100,245,.35)}
+  background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 8px 18px color-mix(in srgb, var(--brand) 35%, transparent)}
 
 /* 统计/资产复用 */
 .tiles{display:flex;gap:8px}
@@ -130,7 +130,7 @@ figcaption b{color:var(--pagetext)}
 .donutwrap{display:flex;align-items:center;gap:14px}
 .donut{position:relative;width:108px;height:108px;flex:none}
 .donut .ring{position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(#78716C 0 287deg,#F97316 287deg 325deg,#06B6D4 325deg 337deg,#EC4899 337deg 348deg,#8B5CF6 348deg 356deg,#4E6EF5 356deg 360deg);
+  background:conic-gradient(#78716C 0 287deg,#F97316 287deg 325deg,#06B6D4 325deg 337deg,#EC4899 337deg 348deg,#8B5CF6 348deg 356deg,var(--brand) 356deg 360deg);
   -webkit-mask:radial-gradient(circle,transparent 56%,#000 58%);mask:radial-gradient(circle,transparent 56%,#000 58%)}
 .donut .lab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .donut .lab .k{font-size:9px;color:var(--tert)}
@@ -138,7 +138,7 @@ figcaption b{color:var(--pagetext)}
 .legend{display:flex;flex-direction:column;gap:5px;font-size:10.5px;color:var(--muted)}
 .legend .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
 .bars{display:flex;align-items:flex-end;gap:4px;height:64px}
-.bars i{flex:1;border-radius:2px;background:linear-gradient(180deg,#4E6EF5,#7A5AF8);min-height:2px}
+.bars i{flex:1;border-radius:2px;background:linear-gradient(180deg,var(--brand),var(--brand2));min-height:2px}
 .month{display:flex;justify-content:space-between;align-items:center;padding:0 6px;font-weight:650;font-size:13.5px}
 .month .chev{color:var(--brand)}
 
@@ -148,6 +148,27 @@ figcaption b{color:var(--pagetext)}
 .acrow{display:flex;align-items:center;gap:10px;padding:9px 0}
 .acrow + .acrow{border-top:1px solid var(--sep)}
 .acprofit{font-size:10px;color:var(--green)}
+
+.pal{border:1px solid #D7DBE7;background:#fff;border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;color:#3A4152}
+.pal.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+
+.board{max-width:980px;margin:40px auto 0;background:#fff;border-radius:16px;padding:24px;box-shadow:0 6px 20px rgba(38,48,92,.06)}
+.board h3{margin:0 0 6px;font-size:17px}
+.board .note{margin:0 0 18px;font-size:12.5px;color:#697083;line-height:1.7}
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:14px}
+.icell{display:flex;flex-direction:column;align-items:center;gap:6px}
+.icirc{width:52px;height:52px;border-radius:50%;display:grid;place-items:center}
+.icirc svg{width:26px;height:26px}
+.icell span{font-size:11px;color:#697083}
+.cat-sheet{background:#fff;border-radius:24px 24px 0 0;padding:12px 18px 20px;display:flex;flex-direction:column}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px;margin-top:10px}
+.cat-cell{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 0;border-radius:12px}
+.cat-cell .cc{width:44px;height:44px;border-radius:50%;display:grid;place-items:center}
+.cat-cell .cc svg{width:22px;height:22px}
+.cat-cell span{font-size:10px;color:#697083}
+.cat-cell.sel{background:color-mix(in srgb, var(--brand) 10%, #fff)}
+.cat-cell.sel .cc{box-shadow:0 0 0 2px var(--brand)}
+.cat-cell.sel span{color:var(--brand);font-weight:650}
 </style>
 </head>
 <body>
@@ -158,11 +179,19 @@ figcaption b{color:var(--pagetext)}
   <p>核心交互改为「首页按住说话 → 实时转写浮层 → 当前页底部确认卡」（对标随手记）。品牌：靛蓝→电紫渐变 + 记账金点缀。看完在对话里回复要改的点。</p>
 </div>
 
+
+<div class="tokens" style="justify-content:center;gap:12px" id="palette-bar">
+  <span class="tk-label">配色方案（点击实时切换全部界面）</span>
+  <button class="pal on" data-b="#07C160" data-m="#0ECF74" data-b2="#39D98A">A 清新绿 · 推荐</button>
+  <button class="pal" data-b="#4E6EF5" data-m="#6C5CE7" data-b2="#7A5AF8">B 蓝紫（现行）</button>
+  <button class="pal" data-b="#1E9BFF" data-m="#31B3FF" data-b2="#4FC8FF">C 天空蓝</button>
+  <button class="pal" data-b="#FF7A2F" data-m="#FF9426" data-b2="#FFB020">D 暖橙</button>
+</div>
 <div class="tokens">
   <div class="tk-group"><span class="tk-label">品牌</span>
-    <span class="chip" style="background:linear-gradient(135deg,#4E6EF5,#7A5AF8)"></span>
-    <span class="chip" style="background:#4E6EF5"></span>
-    <span class="chip" style="background:#7A5AF8"></span>
+    <span class="chip" style="background:linear-gradient(135deg,var(--brand),var(--brand2))"></span>
+    <span class="chip" style="background:var(--brand)"></span>
+    <span class="chip" style="background:var(--brand2)"></span>
     <span class="chip" style="background:#FFC94D"></span>
   </div>
   <div class="tk-group"><span class="tk-label">语义</span>
@@ -363,5 +392,41 @@ figcaption b{color:var(--pagetext)}
   </figure>
 </div>
 
+
+<script>
+document.querySelectorAll('.pal').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const r = document.documentElement.style;
+    r.setProperty('--brand', btn.dataset.b);
+    r.setProperty('--brandMid', btn.dataset.m);
+    r.setProperty('--brand2', btn.dataset.b2);
+    document.querySelectorAll('.pal').forEach(b => b.classList.toggle('on', b === btn));
+  });
+});
+</script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="i-food"><path d="M5 11h14a7 7 0 0 1-14 0z"/><path d="M9.5 3l1.5 5M14.5 3l-1.5 5"/></g>
+<g id="i-transport"><path d="M5.5 11l2-5h9l2 5"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="19.5" r="1.4"/><circle cx="16.5" cy="19.5" r="1.4"/></g>
+<g id="i-shopping"><path d="M5 8h14l-1.3 11a2 2 0 0 1-2 1.7H8.3a2 2 0 0 1-2-1.7L5 8z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></g>
+<g id="i-fun"><rect x="2.5" y="8" width="19" height="10" rx="5"/><path d="M8 11v4M6 13h4"/><circle cx="15.5" cy="12" r="1.1"/><circle cx="18" cy="14.2" r="1.1"/></g>
+<g id="i-house"><path d="M4 11l8-7 8 7"/><path d="M6.5 9.5V20h11V9.5"/></g>
+<g id="i-bolt"><path d="M13 2.5L6 13.5h5L10 21.5l7-11h-5l1-8z"/></g>
+<g id="i-med"><rect x="3.5" y="7" width="17" height="13" rx="3"/><path d="M9 7V5.5A2.5 2.5 0 0 1 11.5 3h1A2.5 2.5 0 0 1 15 5.5V7"/><path d="M12 10.5v6M9 13.5h6"/></g>
+<g id="i-book"><path d="M12 5.5C10 4 7 4 4 5.5V19c3-1.5 6-1.5 8 0 2-1.5 5-1.5 8 0V5.5C17 4 14 4 12 5.5z"/><path d="M12 5.5V19"/></g>
+<g id="i-gift"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M4 10h16M12 10v10"/><path d="M12 10c-4.5 0-5.5-2.5-4-4.5 1.5-1.5 4-.5 4 4.5zM12 10c4.5 0 5.5-2.5 4-4.5-1.5-1.5-4-.5-4 4.5z"/></g>
+<g id="i-plane"><path d="M21 3.5l-9 9-7.5-2-2 2 6.5 3 3 6.5 2-2-2-7.5 9-9z"/></g>
+<g id="i-repay"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 9.5h18"/><path d="M9 14.5l2 2 4-4"/></g>
+<g id="i-dots"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></g>
+<g id="i-cash"><rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 10v.01M17.5 14v.01"/></g>
+<g id="i-redpkt"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="M6 7.5c3 2.5 9 2.5 12 0"/><circle cx="12" cy="12.5" r="1.8"/></g>
+<g id="i-chart"><path d="M4 20h16"/><path d="M5 15.5l4.5-5.5 3 3 5.5-6.5"/><path d="M14.5 6.5H18v3.5"/></g>
+<g id="i-tray"><path d="M12 3.5V11M9 8.5l3 3 3-3"/><path d="M4 13v4.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V13"/></g>
+<g id="i-mic"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21M9 21h6"/></g>
+<g id="i-bank"><path d="M3.5 9l8.5-5 8.5 5"/><path d="M5 9.5h14"/><path d="M6.5 12v6M12 12v6M17.5 12v6"/><path d="M4 20.5h16"/></g>
+<g id="i-person"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.5-4 4.7-6 7.5-6s6 2 7.5 6"/></g>
+<g id="i-coin"><circle cx="12" cy="12" r="8.5"/><path d="M9 8.5l3 3.5 3-3.5M12 12.5V16M9.8 13.8h4.4"/></g>
+</defs></svg>
+<div class="board"><h3>原创图标集 v1（SVG 线条 · 圆头描边 · 分类色着色 · 淡染底）</h3><p class="note">替换项目内全部 emoji：16 个分类（含新增「还款」）、账户类型、空状态插图、麦克风/统计/成员等 UI 图标。同一套形状语言，任意尺寸清晰。UI 类图标跟随所选品牌色。</p><div class="icon-grid"><div class="icell"><div class="icirc" style="background:#F9731622;color:#F97316"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-food"/></svg></div><span>餐饮</span></div><div class="icell"><div class="icirc" style="background:#3B82F622;color:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-transport"/></svg></div><span>交通</span></div><div class="icell"><div class="icirc" style="background:#EC489922;color:#EC4899"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-shopping"/></svg></div><span>购物</span></div><div class="icell"><div class="icirc" style="background:#8B5CF622;color:#8B5CF6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fun"/></svg></div><span>娱乐</span></div><div class="icell"><div class="icirc" style="background:#78716C22;color:#78716C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-house"/></svg></div><span>居住</span></div><div class="icell"><div class="icirc" style="background:#06B6D422;color:#06B6D4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg></div><span>水电通讯</span></div><div class="icell"><div class="icirc" style="background:#EF444422;color:#EF4444"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-med"/></svg></div><span>医疗</span></div><div class="icell"><div class="icirc" style="background:#6366F122;color:#6366F1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg></div><span>教育</span></div><div class="icell"><div class="icirc" style="background:#10B98122;color:#10B981"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-gift"/></svg></div><span>人情往来</span></div><div class="icell"><div class="icirc" style="background:#14B8A622;color:#14B8A6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-plane"/></svg></div><span>旅行</span></div><div class="icell"><div class="icirc" style="background:#64748B22;color:#64748B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repay"/></svg></div><span>还款</span></div><div class="icell"><div class="icirc" style="background:#9CA3AF22;color:#9CA3AF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-dots"/></svg></div><span>其他</span></div><div class="icell"><div class="icirc" style="background:#22C55E22;color:#22C55E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-cash"/></svg></div><span>工资</span></div><div class="icell"><div class="icirc" style="background:#EF444422;color:#EF4444"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-redpkt"/></svg></div><span>奖金红包</span></div><div class="icell"><div class="icirc" style="background:#EAB30822;color:#EAB308"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg></div><span>投资理财</span></div><div class="icell"><div class="icirc" style="background:#22C55E22;color:#22C55E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-tray"/></svg></div><span>其他收入</span></div><div class="icell"><div class="icirc" style="background:#07C16022;color:#07C160"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-mic"/></svg></div><span>语音/录音</span></div><div class="icell"><div class="icirc" style="background:#3B82F622;color:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bank"/></svg></div><span>银行/资产</span></div><div class="icell"><div class="icirc" style="background:#07C16022;color:#07C160"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-person"/></svg></div><span>成员</span></div><div class="icell"><div class="icirc" style="background:#07C16022;color:#07C160"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-coin"/></svg></div><span>结余/¥</span></div></div></div><div class="board"><h3>分类选择交互：宫格面板（替代上下滚轮）</h3><p class="note">确认卡/手动记账里点「分类」行 → 底部弹出宫格：所见即所选、一眼全览、单手一次点击完成并收起；支出/收入分段切换。随手记/钱迹同款交互，比系统滚轮少一步且不遮挡内容。</p><div class="phones" style="margin-top:8px"><figure><div class="frame"><div class="screen"><div class="status"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div><div class="navbar">语随记<span class="capsule"><i>&#9673;</i><i>&#8943;</i></span></div><div class="body"></div><div class="sheetmask"><div class="cat-sheet"><div class="grab"></div><div class="toggle" style="margin-bottom:4px"><div class="topt on">支出</div><div class="topt">收入</div></div><div class="cat-grid"><div class="cat-cell"><div class="cc" style="background:#F9731622;color:#F97316"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-food"/></svg></div><span>餐饮</span></div><div class="cat-cell sel"><div class="cc" style="background:#3B82F622;color:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-transport"/></svg></div><span>交通</span></div><div class="cat-cell"><div class="cc" style="background:#EC489922;color:#EC4899"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-shopping"/></svg></div><span>购物</span></div><div class="cat-cell"><div class="cc" style="background:#8B5CF622;color:#8B5CF6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fun"/></svg></div><span>娱乐</span></div><div class="cat-cell"><div class="cc" style="background:#78716C22;color:#78716C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-house"/></svg></div><span>居住</span></div><div class="cat-cell"><div class="cc" style="background:#06B6D422;color:#06B6D4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg></div><span>水电通讯</span></div><div class="cat-cell"><div class="cc" style="background:#EF444422;color:#EF4444"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-med"/></svg></div><span>医疗</span></div><div class="cat-cell"><div class="cc" style="background:#6366F122;color:#6366F1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg></div><span>教育</span></div><div class="cat-cell"><div class="cc" style="background:#10B98122;color:#10B981"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-gift"/></svg></div><span>人情往来</span></div><div class="cat-cell"><div class="cc" style="background:#14B8A622;color:#14B8A6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-plane"/></svg></div><span>旅行</span></div><div class="cat-cell"><div class="cc" style="background:#64748B22;color:#64748B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repay"/></svg></div><span>还款</span></div><div class="cat-cell"><div class="cc" style="background:#9CA3AF22;color:#9CA3AF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-dots"/></svg></div><span>其他</span></div></div></div></div><div class="tabbar"><div class="tab on"><span class="ic">&#9776;</span>明细</div><div class="tab"><span class="ic">&#8918;</span>预算</div><div class="tab"><span class="ic">&#127963;</span>资产</div><div class="tab"><span class="ic">&#9684;</span>统计</div></div></div></div><figcaption><b>⑥ 分类宫格</b> · 选中态品牌描边，点击即选中并收起</figcaption></figure></div></div>
 </body>
 </html>

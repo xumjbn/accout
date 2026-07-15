@@ -24,7 +24,7 @@ const expenseKeywords: Record<string, string[]> = {
     '剧本杀', '密室', '按摩', '足疗', '台球', '羽毛球', '篮球',
   ],
   [TransactionCategory.Housing]: [
-    '房租', '租金', '房贷', '物业', '家具', '装修', '维修', '酒店', '住宿', '民宿',
+    '房租', '租金', '物业', '家具', '装修', '维修', '酒店', '住宿', '民宿',
   ],
   [TransactionCategory.Utilities]: [
     '水费', '电费', '燃气', '煤气', '话费', '流量', '宽带', '网费', '电话费',
@@ -40,6 +40,10 @@ const expenseKeywords: Record<string, string[]> = {
   ],
   [TransactionCategory.Travel]: [
     '旅游', '旅行', '景点', '门票', '签证', '跟团',
+  ],
+  [TransactionCategory.Repayment]: [
+    '还款', '还贷', '还钱', '还信用卡', '信用卡还款', '花呗', '借呗', '白条',
+    '房贷', '车贷', '按揭', '月供', '分期',
   ],
 }
 

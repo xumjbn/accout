@@ -138,7 +138,7 @@ Page({
 
     wx.shareFileMessage({
       filePath,
-      fileName: '语记账账单.csv',
+      fileName: '语随记账单.csv',
       success: () => {
         wx.showToast({ title: '导出成功', icon: 'success' })
       },

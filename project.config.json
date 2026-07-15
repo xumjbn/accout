@@ -5,6 +5,7 @@
     "include": []
   },
   "setting": {
+    "useCompilerPlugins": ["typescript"],
     "bundle": false,
     "userConfirmedBundleSwitch": false,
     "urlCheck": true,

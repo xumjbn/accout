@@ -93,8 +93,24 @@ export class SpeechRecognizer {
       return
     }
 
-    // 使用微信原生语音识别 API
-    wx.translateVoice({
+    // 注意：小程序没有原生语音转文字 API（wx.translateVoice 是老的公众号 JS-SDK 接口）。
+    // 正式方案需要接入「微信同声传译」插件（plugin://WechatSI，需在 app.json 声明且有 AppID）。
+    // 这里做运行时探测：环境支持则用，不支持则给出明确提示。
+    const wxCompat = wx as unknown as {
+      translateVoice?: (options: {
+        filePath: string
+        isEnd: boolean
+        success: (res: { result?: string }) => void
+        fail: (err: { errMsg: string }) => void
+      }) => void
+    }
+
+    if (!wxCompat.translateVoice) {
+      this.callbacks.onError?.('当前环境不支持语音识别：请在 app.json 配置微信同声传译插件后使用')
+      return
+    }
+
+    wxCompat.translateVoice({
       filePath: this.tempFilePath,
       isEnd: true,
       success: (res) => {

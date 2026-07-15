@@ -1,10 +1,8 @@
-import { Transaction, createTransaction } from '../../models/transaction'
-import { Budget } from '../../models/budget'
-import { loadTransactions, deleteTransaction, insertTransaction, loadBudgets } from '../../services/storage'
+import { Transaction } from '../../models/transaction'
+import { loadTransactions, deleteTransaction, loadBudgets } from '../../services/storage'
 import { exportToCSV } from '../../services/exporter'
-import { evaluateBudget } from '../../services/notifier'
+import { checkBudgetAlert, BudgetAlert } from '../../services/notifier'
 import { startOfDay, dayTitle, isSameMonth } from '../../utils/date'
-import { moneyString } from '../../utils/money'
 
 interface GroupedData {
   day: number
@@ -15,14 +13,13 @@ interface GroupedData {
 Page({
   data: {
     transactions: [] as Transaction[],
-    budgets: [] as Budget[],
     monthExpense: 0,
     monthIncome: 0,
     budgetAmount: 0,
     searchText: '',
     groupedData: [] as GroupedData[],
     isEmpty: true,
-    budgetAlert: null as any,
+    budgetAlert: null as BudgetAlert | null,
   },
 
   onShow() {
@@ -31,27 +28,21 @@ Page({
 
   reload() {
     const all = loadTransactions()
-    // 按日期倒序排列
     all.sort((a, b) => b.date - a.date || b.createdAt - a.createdAt)
 
     const budgets = loadBudgets()
     const totalBudget = budgets.find(b => b.categoryRaw === '')
-    const budgetAmount = totalBudget ? totalBudget.amount : 0
 
     const monthTx = all.filter(t => isSameMonth(t.date))
     const monthExpense = monthTx.filter(t => t.isExpense).reduce((s, t) => s + t.amount, 0)
     const monthIncome = monthTx.filter(t => !t.isExpense).reduce((s, t) => s + t.amount, 0)
 
-    // 预算提醒检查
-    const budgetAlert = evaluateBudget(budgets, all)
-
     this.setData({
       transactions: all,
-      budgets,
-      budgetAmount,
+      budgetAmount: totalBudget ? totalBudget.amount : 0,
       monthExpense,
       monthIncome,
-      budgetAlert,
+      budgetAlert: checkBudgetAlert(budgets, all),
       isEmpty: all.length === 0,
     })
 
@@ -59,7 +50,7 @@ Page({
   },
 
   // 搜索
-  onSearchInput(e: any) {
+  onSearchInput(e: WechatMiniprogram.Input) {
     this.setData({ searchText: e.detail.value })
     this.applyFilter()
   },
@@ -68,10 +59,10 @@ Page({
     const { transactions, searchText } = this.data
     let filtered = transactions
 
-    if (searchText.trim()) {
-      const q = searchText.trim().toLowerCase()
+    const query = searchText.trim().toLowerCase()
+    if (query) {
       filtered = transactions.filter(t =>
-        t.note.toLowerCase().includes(q) || t.category.includes(q)
+        t.note.toLowerCase().includes(query) || t.category.includes(query)
       )
     }
 
@@ -79,23 +70,24 @@ Page({
     const groups = new Map<number, Transaction[]>()
     for (const tx of filtered) {
       const day = startOfDay(new Date(tx.date))
-      if (!groups.has(day)) groups.set(day, [])
-      groups.get(day)!.push(tx)
+      const bucket = groups.get(day)
+      if (bucket) {
+        bucket.push(tx)
+      } else {
+        groups.set(day, [tx])
+      }
     }
 
-    const groupedData: GroupedData[] = []
-    for (const [day, items] of groups) {
-      groupedData.push({ day, title: dayTitle(day), items })
-    }
-    // 按天倒序
-    groupedData.sort((a, b) => b.day - a.day)
+    const groupedData: GroupedData[] = [...groups.entries()]
+      .map(([day, items]) => ({ day, title: dayTitle(day), items }))
+      .sort((a, b) => b.day - a.day)
 
     this.setData({ groupedData, isEmpty: filtered.length === 0 })
   },
 
   // 删除
-  onDelete(e: any) {
-    const id = e.currentTarget.dataset.id
+  onDelete(e: WechatMiniprogram.BaseEvent) {
+    const id = e.currentTarget.dataset.id as string
     wx.showModal({
       title: '删除账单',
       content: '确定要删除这条记录吗？',
@@ -118,8 +110,8 @@ Page({
     wx.navigateTo({ url: '/pages/add/add' })
   },
 
-  goToEdit(e: any) {
-    const id = e.currentTarget.dataset.id
+  goToEdit(e: WechatMiniprogram.BaseEvent) {
+    const id = e.currentTarget.dataset.id as string
     wx.navigateTo({ url: `/pages/add/add?id=${id}` })
   },
 
@@ -132,23 +124,18 @@ Page({
     }
 
     const csv = exportToCSV(transactions)
-    const fs = wx.getFileSystemManager()
     const filePath = `${wx.env.USER_DATA_PATH}/accout_export.csv`
-    fs.writeFileSync(filePath, csv, 'utf-8')
+    wx.getFileSystemManager().writeFileSync(filePath, csv, 'utf-8')
 
     wx.shareFileMessage({
       filePath,
       fileName: '语随记账单.csv',
-      success: () => {
-        wx.showToast({ title: '导出成功', icon: 'success' })
-      },
-      fail: () => {
-        wx.showToast({ title: '导出失败', icon: 'error' })
-      },
+      success: () => wx.showToast({ title: '导出成功', icon: 'success' }),
+      fail: () => wx.showToast({ title: '导出失败', icon: 'error' }),
     })
   },
 
-  // 导入 CSV
+  // 导入 CSV：文件内容经 EventChannel 传给预览页，不再走 globalData
   onImport() {
     wx.chooseMessageFile({
       count: 1,
@@ -157,13 +144,14 @@ Page({
       success: (res) => {
         const filePath = res.tempFiles[0].path
         try {
-          const fs = wx.getFileSystemManager()
-          const text = fs.readFileSync(filePath, 'utf-8')
-          // 存储到全局供 import-preview 页面使用
-          getApp().globalData.importCSVText = text
-          getApp().globalData.importCSVExisting = this.data.transactions
-          wx.navigateTo({ url: '/pages/import-preview/import-preview' })
-        } catch (e: any) {
+          const text = wx.getFileSystemManager().readFileSync(filePath, 'utf-8') as string
+          wx.navigateTo({
+            url: '/pages/import-preview/import-preview',
+            success: (nav) => {
+              nav.eventChannel.emit('importData', { text, existing: this.data.transactions })
+            },
+          })
+        } catch {
           wx.showToast({ title: '读取文件失败', icon: 'error' })
         }
       },

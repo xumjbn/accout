@@ -29,8 +29,14 @@ export function saveTransactions(transactions: Transaction[]): void {
 }
 
 export function insertTransaction(tx: Transaction): void {
+  insertTransactions([tx])
+}
+
+/** 批量插入：整个批次只读写一次 Storage（导入/多笔连说用） */
+export function insertTransactions(batch: Transaction[]): void {
+  if (batch.length === 0) return
   const list = loadTransactions()
-  list.push(tx)
+  list.push(...batch)
   saveTransactions(list)
 }
 

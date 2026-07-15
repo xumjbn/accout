@@ -1,5 +1,4 @@
 import { Budget, createBudget } from '../../models/budget'
-import { Transaction } from '../../models/transaction'
 import { TransactionCategory, expenseCategories, categoryIcon, categoryColor } from '../../models/category'
 import { loadBudgets, saveBudgets, loadTransactions } from '../../services/storage'
 import { moneyString, clampedRatio, budgetColor } from '../../utils/money'

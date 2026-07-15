@@ -56,11 +56,3 @@ export function checkBudgetAlert(
 
   return null
 }
-
-/** 每次记账后调用，返回是否有新提醒 */
-export function evaluateBudget(
-  budgets: Budget[],
-  transactions: Transaction[]
-): BudgetAlert | null {
-  return checkBudgetAlert(budgets, transactions)
-}

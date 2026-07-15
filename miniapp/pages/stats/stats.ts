@@ -1,4 +1,3 @@
-import { Transaction } from '../../models/transaction'
 import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
 import { loadTransactions } from '../../services/storage'
 import { startOfDay, formatYearMonth } from '../../utils/date'

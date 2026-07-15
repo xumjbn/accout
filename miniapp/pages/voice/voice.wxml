@@ -21,14 +21,14 @@
     <text class="multi-hint">识别到 {{multiItems.length}} 笔，确认后一起入账</text>
     <view wx:for="{{multiItems}}" wx:key="index" class="multi-item">
       <view class="multi-item-left">
-        <text class="multi-icon">{{item.category}}</text>
+        <text class="multi-icon">{{item.icon}}</text>
       </view>
       <view class="multi-item-info">
-        <text class="multi-note">{{item.note || item.category}}</text>
+        <text class="multi-note">{{item.title}}</text>
         <text class="multi-cat">{{item.category}}</text>
       </view>
       <text class="multi-amount {{item.isExpense ? '' : 'income'}}">
-        {{item.isExpense ? '-' : '+'}}{{item.amount || 0}}
+        {{item.isExpense ? '-' : '+'}}{{item.amountStr}}
       </text>
       <text class="multi-remove" bindtap="removeMultiItem" data-index="{{index}}">✕</text>
     </view>
@@ -52,7 +52,7 @@
 
     <view class="field">
       <text class="field-label">分类</text>
-      <picker mode="selector" range="{{categoryOptions}}" bindchange="onCategoryChange">
+      <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
         <view class="picker-value">{{category}}</view>
       </picker>
     </view>

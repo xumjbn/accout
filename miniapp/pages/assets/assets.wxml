@@ -17,15 +17,15 @@
       bindtap="editAccount" data-id="{{item.id}}"
       bindlongpress="deleteAccount" data-id="{{item.id}}">
       <view class="ac-row">
-        <text class="ac-icon">{{item.kind}}</text>
+        <text class="ac-icon" style="background:{{item.color}}22">{{item.icon}}</text>
         <view class="ac-info">
           <text class="ac-name">{{item.name}}</text>
           <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
         </view>
         <view class="ac-right">
-          <text class="ac-balance">¥{{item.balance}}</text>
-          <view wx:if="{{item.kind === '投资' && item.costBasis > 0}}" class="ac-profit">
-            <text>收益: {{item.balance - item.costBasis >= 0 ? '+' : ''}}{{item.balance - item.costBasis}}</text>
+          <text class="ac-balance">¥{{item.balanceStr}}</text>
+          <view wx:if="{{item.profitStr}}" class="ac-profit">
+            <text style="color:{{item.profitPositive ? '#22C55E' : '#EF4444'}}">{{item.profitStr}} ({{item.profitRateStr}})</text>
           </view>
         </view>
       </view>
@@ -39,12 +39,12 @@
       bindtap="editAccount" data-id="{{item.id}}"
       bindlongpress="deleteAccount" data-id="{{item.id}}">
       <view class="ac-row">
-        <text class="ac-icon">{{item.kind}}</text>
+        <text class="ac-icon" style="background:{{item.color}}22">{{item.icon}}</text>
         <view class="ac-info">
           <text class="ac-name">{{item.name}}</text>
           <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
         </view>
-        <text class="ac-balance liability">-¥{{item.balance}}</text>
+        <text class="ac-balance liability">-¥{{item.balanceStr}}</text>
       </view>
     </view>
   </view>
@@ -62,8 +62,8 @@
   </view>
 
   <!-- 表单弹窗 -->
-  <view wx:if="{{showForm}}" class="modal-mask" bindtap="saveForm">
-    <view class="modal-card" catchtap="">
+  <view wx:if="{{showForm}}" class="modal-mask" bindtap="closeForm">
+    <view class="modal-card" catchtap="noop">
       <text class="modal-title">{{editingAccount ? '编辑账户' : '添加账户'}}</text>
 
       <view class="kind-tabs">
@@ -99,7 +99,7 @@
       </view>
 
       <view class="modal-btns">
-        <view class="modal-cancel" bindtap="saveForm">取消</view>
+        <view class="modal-cancel" bindtap="closeForm">取消</view>
         <view class="modal-confirm" bindtap="saveForm">保存</view>
       </view>
     </view>

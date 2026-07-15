@@ -35,6 +35,19 @@ interface WechatSIPlugin {
   getRecordRecognitionManager(): SIRecognitionManager
 }
 
+/** 插件错误码 → 用户能看懂的话（参考同声传译插件文档） */
+function describeError(res: { retcode?: number; msg?: string }): string {
+  switch (res.retcode) {
+    case -30001: return '录音出错，请重试'
+    case -30002: return '录音时间太短，按住按钮多说一会儿'
+    case -30003: return '网络不稳定，识别失败，请重试'
+    case -30004:
+    case -30005: return '识别服务出错，请稍后重试'
+    case -30011: return '上一次识别还没结束，请稍候再按'
+    default: return `语音识别失败：${res.msg || res.retcode || '未知错误'}`
+  }
+}
+
 function loadRecognitionManager(): SIRecognitionManager | null {
   try {
     const plugin = requirePlugin('WechatSI') as WechatSIPlugin
@@ -95,7 +108,8 @@ export class SpeechRecognizer {
 
     manager.onError = (res) => {
       this._isRecording = false
-      this.callbacks.onError?.(`语音识别失败：${res.msg || res.retcode || '未知错误'}`)
+      console.error('[recognizer] onError:', res.retcode, res.msg)
+      this.callbacks.onError?.(describeError(res))
     }
   }
 
@@ -111,8 +125,14 @@ export class SpeechRecognizer {
           wx.authorize({
             scope: 'scope.record',
             success: () => this.beginRecognition(),
-            fail: () => {
-              this.callbacks.onError?.('未获得麦克风权限，请到「设置」中开启')
+            fail: (err) => {
+              console.error('[recognizer] authorize fail:', err)
+              // 真机上最常见的原因：小程序后台没有配置「用户隐私保护指引」声明麦克风
+              this.callbacks.onError?.(
+                err.errMsg && err.errMsg.includes('privacy')
+                  ? '需要先在小程序后台配置「用户隐私保护指引」并声明麦克风（见 docs/SETUP.md 第④步）'
+                  : '未获得麦克风权限，请到右上角「···」-「设置」中开启'
+              )
             },
           })
         } else {

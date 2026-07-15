@@ -48,10 +48,7 @@
     <view class="bottom-spacer"></view>
   </scroll-view>
 
-  <!-- 底部语音按钮 -->
-  <view class="voice-btn" bindtap="goToVoice">
-    <text class="voice-btn-icon">🎤</text>
-    <text class="voice-btn-label">语音记账</text>
-  </view>
+  <!-- 语音记账：按住说话，当前页完成（含悬浮按钮/录音浮层/确认弹层） -->
+  <voice-panel bind:saved="reload" />
 
 </view>

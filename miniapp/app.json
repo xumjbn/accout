@@ -1,7 +1,6 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/voice/voice",
     "pages/add/add",
     "pages/stats/stats",
     "pages/budget/budget",

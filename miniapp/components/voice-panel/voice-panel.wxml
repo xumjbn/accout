@@ -1,0 +1,77 @@
+<!-- 悬浮「按住说话」按钮 -->
+<view class="vp-btn {{phase === 'recording' ? 'holding' : ''}}"
+  catch:touchstart="onHoldStart"
+  catch:touchend="onHoldEnd"
+  catch:touchcancel="onHoldEnd">
+  <text class="vp-btn-icon">🎤</text>
+  <text>{{phase === 'recording' ? '松开结束' : '按住说话'}}</text>
+</view>
+
+<!-- 录音中：全屏浮层 + 实时转写 -->
+<view wx:if="{{phase === 'recording'}}" class="vp-mask recording-mask">
+  <view class="vp-listening">
+    <view class="vp-pulse"></view>
+    <text class="vp-mic">🎤</text>
+  </view>
+  <text class="vp-transcript">{{transcript || '正在聆听…'}}</text>
+  <text class="vp-hint">试试「昨天打车花了三十五块五」或「早餐12块，打车35」</text>
+</view>
+
+<!-- 确认卡：当前页底部弹层 -->
+<view wx:if="{{phase === 'confirm'}}" class="vp-mask" bindtap="dismiss">
+  <view class="vp-sheet" catchtap="noop">
+    <view class="vp-sheet-grabber"></view>
+    <text class="vp-said">「{{transcript}}」</text>
+
+    <!-- 多笔 -->
+    <block wx:if="{{multiItems.length > 1}}">
+      <text class="vp-multi-hint">识别到 {{multiItems.length}} 笔，确认后一起入账</text>
+      <scroll-view scroll-y class="vp-multi-list">
+        <view wx:for="{{multiItems}}" wx:key="index" class="vp-multi-item">
+          <text class="vp-multi-icon">{{item.icon}}</text>
+          <view class="vp-multi-info">
+            <text class="vp-multi-note">{{item.title}}</text>
+            <text class="vp-multi-cat">{{item.category}}</text>
+          </view>
+          <text class="vp-multi-amount {{item.isExpense ? '' : 'income'}}">{{item.isExpense ? '-' : '+'}}{{item.amountStr}}</text>
+          <text class="vp-multi-remove" catchtap="removeMultiItem" data-index="{{index}}">✕</text>
+        </view>
+      </scroll-view>
+    </block>
+
+    <!-- 单笔可编辑 -->
+    <block wx:elif="{{hasResult}}">
+      <view class="vp-type-toggle">
+        <view class="vp-type-option {{isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="expense">支出</view>
+        <view class="vp-type-option {{!isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="income">收入</view>
+      </view>
+      <view class="vp-field">
+        <text class="vp-label">金额</text>
+        <input class="vp-input vp-money" type="digit" placeholder="0.00" value="{{amountText}}" bindinput="onAmountInput" />
+      </view>
+      <view class="vp-field">
+        <text class="vp-label">分类</text>
+        <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+          <view class="vp-picker">{{category}} ›</view>
+        </picker>
+      </view>
+      <view class="vp-field">
+        <text class="vp-label">备注</text>
+        <input class="vp-input" placeholder="备注" value="{{note}}" bindinput="onNoteInput" />
+      </view>
+      <view class="vp-field">
+        <text class="vp-label">日期</text>
+        <picker mode="date" value="{{dateStr}}" bindchange="onDateChange">
+          <view class="vp-picker">{{dateStr}} ›</view>
+        </picker>
+      </view>
+    </block>
+
+    <view class="vp-actions">
+      <view class="vp-cancel" bindtap="dismiss">取消</view>
+      <view class="vp-save {{canSave ? '' : 'disabled'}}" bindtap="save">
+        <text>{{multiItems.length > 1 ? '保存 ' + multiItems.length + ' 笔' : '保存'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

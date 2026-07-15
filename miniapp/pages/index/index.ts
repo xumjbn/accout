@@ -108,10 +108,6 @@ Page({
   },
 
   // 导航
-  goToVoice() {
-    wx.navigateTo({ url: '/pages/voice/voice' })
-  },
-
   goToAdd() {
     wx.navigateTo({ url: '/pages/add/add' })
   },

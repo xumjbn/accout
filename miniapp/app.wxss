@@ -22,6 +22,11 @@ page {
   background: linear-gradient(180deg, #E9EDFF 0%, #F4F5FB 360rpx, #F4F5FB 100%);
 }
 
+/* 修复超屏：wxss 默认 content-box，width:100% + padding 会撑出屏幕 */
+view, text, image, input, button, scroll-view, picker, textarea, navigator {
+  box-sizing: border-box;
+}
+
 /* 通用工具类 */
 .flex-row {
   display: flex;

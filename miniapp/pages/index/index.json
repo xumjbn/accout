@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "summary-card": "../../components/summary-card/summary-card",
-    "transaction-row": "../../components/transaction-row/transaction-row"
+    "transaction-row": "../../components/transaction-row/transaction-row",
+    "voice-panel": "../../components/voice-panel/voice-panel"
   },
   "navigationBarTitleText": "语随记"
 }

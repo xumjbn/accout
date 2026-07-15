@@ -6,7 +6,8 @@
     "pages/stats/stats",
     "pages/budget/budget",
     "pages/assets/assets",
-    "pages/import-preview/import-preview"
+    "pages/import-preview/import-preview",
+    "pages/family/family"
   ],
   "window": {
     "navigationBarBackgroundColor": "#4E6EF5",

@@ -6,6 +6,7 @@ import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } 
 import { checkBudgetAlert } from '../../services/notifier'
 import { initialPickerState, typeChanged, categoryPicked, rebuildOptions } from '../../utils/category-picker'
 import { finishAndBack } from '../../utils/page'
+import { syncTransactions } from '../../services/family'
 import { formatDate } from '../../utils/date'
 import { moneyString } from '../../utils/money'
 
@@ -155,17 +156,20 @@ Page({
         }))
       if (batch.length === 0) return
       insertTransactions(batch)
+      syncTransactions(batch)
     } else {
       const amount = parseFloat(amountText)
       if (isNaN(amount) || amount <= 0) return
-      insertTransaction(createTransaction({
+      const tx = createTransaction({
         amount,
         isExpense,
         category: category as TransactionCategory,
         note,
         date: dateStr ? new Date(dateStr).getTime() : Date.now(),
         source: 'voice',
-      }))
+      })
+      insertTransaction(tx)
+      syncTransactions([tx])
     }
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())

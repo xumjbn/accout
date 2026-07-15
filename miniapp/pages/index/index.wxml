@@ -1,9 +1,11 @@
 <!-- 首页明细列表 - 对应 iOS HomeView -->
 <view class="page">
-  <!-- 搜索栏 -->
+  <!-- 搜索栏 + 快捷按钮 -->
   <view class="search-bar">
     <input class="search-input" placeholder="搜索备注或分类" bindinput="onSearchInput"
       value="{{searchText}}" />
+    <view class="round-btn" bindtap="goToAdd"><text>＋</text></view>
+    <view class="round-btn" bindtap="openMenu"><text>⋯</text></view>
   </view>
 
   <!-- 预算提醒条 -->
@@ -52,16 +54,4 @@
     <text class="voice-btn-label">语音记账</text>
   </view>
 
-  <!-- 顶部菜单按钮 -->
-  <view class="top-btns">
-    <view class="top-btn-left" bindtap="onImport">
-      <text>📥 导入</text>
-    </view>
-    <view class="top-btn-left" bindtap="onExport">
-      <text>📤 导出</text>
-    </view>
-    <view class="top-btn-right" bindtap="goToAdd">
-      <text>＋</text>
-    </view>
-  </view>
 </view>

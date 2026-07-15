@@ -4,18 +4,36 @@
   height: 100vh;
 }
 
-/* 搜索栏：融入页面背景，不再是白条 */
+/* 搜索栏：融入页面背景，右侧快捷按钮 */
 .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
   padding: 16rpx 24rpx 8rpx;
 }
 
 .search-input {
+  flex: 1;
   height: 68rpx;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 34rpx;
   padding: 0 32rpx;
   font-size: 28rpx;
   box-shadow: 0 4rpx 14rpx rgba(38, 48, 92, 0.05);
+}
+
+.round-btn {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  color: var(--color-primary);
+  box-shadow: 0 4rpx 14rpx rgba(38, 48, 92, 0.05);
+  flex-shrink: 0;
 }
 
 /* 提醒条 */

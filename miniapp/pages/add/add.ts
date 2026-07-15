@@ -4,6 +4,7 @@ import { loadTransactions, insertTransaction, updateTransaction, loadBudgets } f
 import { checkBudgetAlert } from '../../services/notifier'
 import { initialPickerState, typeChanged, categoryPicked, rebuildOptions } from '../../utils/category-picker'
 import { finishAndBack } from '../../utils/page'
+import { syncTransactions } from '../../services/family'
 import { formatDate } from '../../utils/date'
 
 Page({
@@ -70,16 +71,19 @@ Page({
         tx.note = note
         tx.date = date
         updateTransaction(tx)
+        syncTransactions([tx])
       }
     } else {
-      insertTransaction(createTransaction({
+      const tx = createTransaction({
         amount,
         isExpense,
         category: category as TransactionCategory,
         note,
         date,
         source: 'manual',
-      }))
+      })
+      insertTransaction(tx)
+      syncTransactions([tx])
     }
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())

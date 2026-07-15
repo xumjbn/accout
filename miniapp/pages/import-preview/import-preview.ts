@@ -4,6 +4,7 @@ import { categoryIcon, categoryColor } from '../../models/category'
 import { insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
 import { finishAndBack } from '../../utils/page'
+import { syncTransactions } from '../../services/family'
 import { moneyString } from '../../utils/money'
 import { formatDate } from '../../utils/date'
 
@@ -64,14 +65,16 @@ Page({
     const newRows = this.allRows.filter(r => !r.isDuplicate)
     if (newRows.length === 0) return
 
-    insertTransactions(newRows.map(row => createTransaction({
+    const batch = newRows.map(row => createTransaction({
       amount: row.amount,
       isExpense: row.isExpense,
       category: row.category,
       note: row.note,
       date: row.date,
       source: 'import',
-    })))
+    }))
+    insertTransactions(batch)
+    syncTransactions(batch)
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
     finishAndBack(alert, `已导入 ${newRows.length} 笔`)

@@ -3,6 +3,7 @@ import { loadTransactions, deleteTransaction, loadBudgets } from '../../services
 import { exportToCSV } from '../../services/exporter'
 import { checkBudgetAlert, BudgetAlert } from '../../services/notifier'
 import { startOfDay, dayTitle, isSameMonth } from '../../utils/date'
+import { autoPull, syncDeletion } from '../../services/family'
 
 interface GroupedData {
   day: number
@@ -24,6 +25,10 @@ Page({
 
   onShow() {
     this.reload()
+    // 加入了家庭则静默拉取云端账单，有更新再刷一次
+    autoPull()
+      .then(pulled => { if (pulled) this.reload() })
+      .catch(() => {})
   },
 
   reload() {
@@ -94,6 +99,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           deleteTransaction(id)
+          syncDeletion(id)
           this.reload()
           wx.showToast({ title: '已删除', icon: 'success' })
         }
@@ -154,6 +160,18 @@ Page({
         } catch {
           wx.showToast({ title: '读取文件失败', icon: 'error' })
         }
+      },
+    })
+  },
+
+  // 更多菜单：导入 / 导出 / 家庭共享
+  openMenu() {
+    wx.showActionSheet({
+      itemList: ['导入微信/支付宝账单', '导出 CSV', '家庭共享'],
+      success: (res) => {
+        if (res.tapIndex === 0) this.onImport()
+        else if (res.tapIndex === 1) this.onExport()
+        else if (res.tapIndex === 2) wx.navigateTo({ url: '/pages/family/family' })
       },
     })
   },

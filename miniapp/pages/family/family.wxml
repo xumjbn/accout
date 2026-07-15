@@ -1,0 +1,74 @@
+<!-- 家庭共享：创建/加入家庭，账单多人同步 -->
+<view class="page">
+
+  <!-- 云开发未开通 -->
+  <view wx:if="{{!cloudReady}}" class="card notice">
+    <text class="notice-title">☁️ 需要开通云开发</text>
+    <text class="notice-desc">家庭共享依赖微信云开发。请在微信开发者工具中开通云开发（需要 AppID），并创建 families / family_members / family_tx 三个集合，权限设为「所有用户可读写」。</text>
+  </view>
+
+  <!-- 已加入家庭 -->
+  <block wx:elif="{{family}}">
+    <view class="hero">
+      <text class="hero-label">我的家庭</text>
+      <text class="hero-name">{{family.name}}</text>
+      <view class="code-row" bindtap="copyCode">
+        <text class="code-label">邀请码</text>
+        <text class="code-value">{{family.code}}</text>
+        <text class="code-copy">复制</text>
+      </view>
+      <text class="hero-tip">把邀请码发给家人，TA 在这里输入即可共享账单</text>
+    </view>
+
+    <view class="card">
+      <text class="section-title">成员（{{members.length}}）</text>
+      <view wx:for="{{members}}" wx:key="index" class="member-row">
+        <text class="member-avatar">👤</text>
+        <text class="member-name">{{item.nickname}}</text>
+      </view>
+    </view>
+
+    <view class="btn-primary {{loading ? 'disabled' : ''}}" bindtap="syncNow">
+      <text>{{loading ? '同步中…' : '立即同步账单'}}</text>
+    </view>
+    <view class="btn-text-danger" bindtap="onLeave">
+      <text>退出家庭</text>
+    </view>
+  </block>
+
+  <!-- 未加入 -->
+  <block wx:else>
+    <view class="hero">
+      <text class="hero-label">家庭共享</text>
+      <text class="hero-name">一家人记一本账</text>
+      <text class="hero-tip">创建家庭生成邀请码，家人加入后账单自动同步；预算与资产仍归各自设备</text>
+    </view>
+
+    <view class="mode-tabs">
+      <view class="mode-tab {{mode === 'create' ? 'active' : ''}}" bindtap="switchMode" data-mode="create">创建家庭</view>
+      <view class="mode-tab {{mode === 'join' ? 'active' : ''}}" bindtap="switchMode" data-mode="join">加入家庭</view>
+    </view>
+
+    <view class="card">
+      <view wx:if="{{mode === 'create'}}" class="form-field">
+        <text class="form-label">家庭名称</text>
+        <input class="form-input" placeholder="如：我们家" value="{{familyName}}" bindinput="onNameInput" />
+      </view>
+      <view wx:else class="form-field">
+        <text class="form-label">邀请码</text>
+        <input class="form-input code-input" placeholder="6 位邀请码" value="{{inviteCode}}" bindinput="onCodeInput" maxlength="6" />
+      </view>
+      <view class="form-field">
+        <text class="form-label">我的昵称</text>
+        <input class="form-input" placeholder="家人看到的名字，如：爸爸" value="{{nickname}}" bindinput="onNicknameInput" />
+      </view>
+    </view>
+
+    <view wx:if="{{mode === 'create'}}" class="btn-primary {{loading ? 'disabled' : ''}}" bindtap="onCreate">
+      <text>{{loading ? '创建中…' : '创建并开始共享'}}</text>
+    </view>
+    <view wx:else class="btn-primary {{loading ? 'disabled' : ''}}" bindtap="onJoin">
+      <text>{{loading ? '加入中…' : '加入家庭'}}</text>
+    </view>
+  </block>
+</view>

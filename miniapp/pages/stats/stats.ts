@@ -1,35 +1,44 @@
 import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
+import { Transaction } from '../../models/transaction'
 import { loadTransactions } from '../../services/storage'
 import { startOfDay, formatYearMonth } from '../../utils/date'
 import { moneyString } from '../../utils/money'
 
+type Dim = 'month' | 'year'
+
 interface CategorySummary {
   category: TransactionCategory
   total: number
+  totalStr: string
   icon: string
   color: string
+  ratio: number
 }
 
-interface DailySummary {
-  day: number
+interface Bar {
   label: string
-  total: number
+  value: number
+  height: number   // rpx，已按柱内最大值归一
 }
+
+const BAR_MAX_HEIGHT = 200
 
 Page({
   data: {
-    selectedMonth: Date.now(),
-    monthTitle: '',
-    isCurrentMonth: true,
+    dim: 'month' as Dim,
+    anchor: Date.now(),
+    title: '',
+    isLatest: true,
     totalExpense: '0',
     totalIncome: '0',
     balance: '0',
     isEmpty: true,
 
-    // ECharts 数据
-    pieData: [] as { name: string; value: number; itemStyle: { color: string } }[],
-    barData: [] as { date: string; value: number }[],
-    ranking: [] as (CategorySummary & { ratio: number })[],
+    conicStops: '',
+    legend: [] as CategorySummary[],
+    bars: [] as Bar[],
+    barTitle: '每日支出',
+    ranking: [] as CategorySummary[],
   },
 
   onShow() {
@@ -37,99 +46,120 @@ Page({
   },
 
   reload() {
-    const allTransactions = loadTransactions()
-    const selected = new Date(this.data.selectedMonth)
-    const current = new Date()
+    const { dim } = this.data
+    const anchor = new Date(this.data.anchor)
+    const now = new Date()
 
-    const isCurrentMonth =
-      selected.getFullYear() === current.getFullYear() &&
-      selected.getMonth() === current.getMonth()
+    const sameMonth = (d: Date) =>
+      d.getFullYear() === anchor.getFullYear() && d.getMonth() === anchor.getMonth()
+    const sameYear = (d: Date) => d.getFullYear() === anchor.getFullYear()
+    const inRange = dim === 'month' ? sameMonth : sameYear
 
-    // 筛选当月
-    const monthTx = allTransactions.filter(t => {
-      const d = new Date(t.date)
-      return d.getFullYear() === selected.getFullYear() && d.getMonth() === selected.getMonth()
-    })
+    const isLatest = dim === 'month'
+      ? anchor.getFullYear() === now.getFullYear() && anchor.getMonth() === now.getMonth()
+      : anchor.getFullYear() === now.getFullYear()
 
-    const expenseTx = monthTx.filter(t => t.isExpense)
-    const incomeTx = monthTx.filter(t => !t.isExpense)
+    const rangeTx = loadTransactions().filter(t => inRange(new Date(t.date)))
+    const expenseTx = rangeTx.filter(t => t.isExpense)
     const totalExpense = expenseTx.reduce((s, t) => s + t.amount, 0)
-    const totalIncome = incomeTx.reduce((s, t) => s + t.amount, 0)
+    const totalIncome = rangeTx.filter(t => !t.isExpense).reduce((s, t) => s + t.amount, 0)
 
-    // 按分类汇总
+    // ==== 分类汇总（环形图 + 排行共用） ====
     const catMap = new Map<string, number>()
     for (const tx of expenseTx) {
       catMap.set(tx.category, (catMap.get(tx.category) || 0) + tx.amount)
     }
-
-    const byCategory: CategorySummary[] = []
-    for (const [cat, total] of catMap) {
-      byCategory.push({
+    const maxCat = Math.max(...catMap.values(), 1)
+    const byCategory: CategorySummary[] = [...catMap.entries()]
+      .map(([cat, total]) => ({
         category: cat as TransactionCategory,
         total,
+        totalStr: moneyString(Math.round(total * 100) / 100),
         icon: categoryIcon(cat as TransactionCategory),
         color: categoryColor(cat as TransactionCategory),
-      })
+        ratio: total / maxCat,
+      }))
+      .sort((a, b) => b.total - a.total)
+
+    // conic-gradient 颜色停靠点
+    let acc = 0
+    const stops: string[] = []
+    for (const c of byCategory) {
+      const from = acc
+      acc += totalExpense > 0 ? (c.total / totalExpense) * 360 : 0
+      stops.push(`${c.color} ${from.toFixed(1)}deg ${acc.toFixed(1)}deg`)
     }
-    byCategory.sort((a, b) => b.total - a.total)
 
-    // 环形图数据
-    const pieData = byCategory.map(c => ({
-      name: c.category,
-      value: Math.round(c.total * 100) / 100,
-      itemStyle: { color: c.color },
-    }))
+    this.setData({
+      title: dim === 'month' ? formatYearMonth(this.data.anchor) : `${anchor.getFullYear()}年`,
+      isLatest,
+      totalExpense: moneyString(totalExpense),
+      totalIncome: moneyString(totalIncome),
+      balance: moneyString(totalIncome - totalExpense),
+      isEmpty: expenseTx.length === 0,
+      conicStops: stops.join(', '),
+      legend: byCategory.slice(0, 6),
+      ranking: byCategory,
+      barTitle: dim === 'month' ? '每日支出' : '每月支出',
+      bars: dim === 'month' ? this.dailyBars(expenseTx) : this.monthlyBars(expenseTx, anchor),
+    })
+  },
 
-    // 按日汇总
+  dailyBars(expenseTx: Transaction[]): Bar[] {
     const dayMap = new Map<number, number>()
     for (const tx of expenseTx) {
       const day = startOfDay(new Date(tx.date))
       dayMap.set(day, (dayMap.get(day) || 0) + tx.amount)
     }
-
-    const byDay: DailySummary[] = []
-    for (const [day, total] of dayMap) {
-      const d = new Date(day)
-      byDay.push({
-        day,
-        label: `${d.getMonth() + 1}/${d.getDate()}`,
-        total: Math.round(total * 100) / 100,
-      })
-    }
-    byDay.sort((a, b) => a.day - b.day)
-
-    // 排行
-    const maxTotal = byCategory[0]?.total || 1
-    const ranking = byCategory.map(c => ({
-      ...c,
-      ratio: c.total / maxTotal,
+    const entries = [...dayMap.entries()].sort((a, b) => a[0] - b[0])
+    const max = Math.max(...entries.map(e => e[1]), 1)
+    return entries.map(([day, value]) => ({
+      label: `${new Date(day).getDate()}日`,
+      value,
+      height: Math.max(4, Math.round((value / max) * BAR_MAX_HEIGHT)),
     }))
-
-    this.setData({
-      monthTitle: formatYearMonth(this.data.selectedMonth),
-      isCurrentMonth,
-      totalExpense: moneyString(totalExpense),
-      totalIncome: moneyString(totalIncome),
-      balance: moneyString(totalIncome - totalExpense),
-      isEmpty: expenseTx.length === 0,
-      pieData,
-      barData: byDay.map(d => ({ date: d.label, value: d.total })),
-      ranking,
-    })
   },
 
-  prevMonth() {
-    const d = new Date(this.data.selectedMonth)
-    d.setMonth(d.getMonth() - 1)
-    this.setData({ selectedMonth: d.getTime() })
+  /** 年视图：12 个月固定画满，无数据的月份为 0 */
+  monthlyBars(expenseTx: Transaction[], anchor: Date): Bar[] {
+    const sums = new Array<number>(12).fill(0)
+    for (const tx of expenseTx) {
+      const d = new Date(tx.date)
+      if (d.getFullYear() === anchor.getFullYear()) {
+        sums[d.getMonth()] += tx.amount
+      }
+    }
+    const max = Math.max(...sums, 1)
+    return sums.map((value, i) => ({
+      label: `${i + 1}月`,
+      value,
+      height: Math.max(4, Math.round((value / max) * BAR_MAX_HEIGHT)),
+    }))
+  },
+
+  // ==== 维度与翻页 ====
+
+  switchDim(e: WechatMiniprogram.BaseEvent) {
+    const dim = e.currentTarget.dataset.dim as Dim
+    if (dim === this.data.dim) return
+    this.setData({ dim })
     this.reload()
   },
 
-  nextMonth() {
-    if (this.data.isCurrentMonth) return
-    const d = new Date(this.data.selectedMonth)
-    d.setMonth(d.getMonth() + 1)
-    this.setData({ selectedMonth: d.getTime() })
+  prev() {
+    const d = new Date(this.data.anchor)
+    if (this.data.dim === 'month') d.setMonth(d.getMonth() - 1)
+    else d.setFullYear(d.getFullYear() - 1)
+    this.setData({ anchor: d.getTime() })
+    this.reload()
+  },
+
+  next() {
+    if (this.data.isLatest) return
+    const d = new Date(this.data.anchor)
+    if (this.data.dim === 'month') d.setMonth(d.getMonth() + 1)
+    else d.setFullYear(d.getFullYear() + 1)
+    this.setData({ anchor: d.getTime() })
     this.reload()
   },
 })

@@ -62,6 +62,12 @@ export class SpeechRecognizer {
   private callbacks: RecognizerCallbacks = {}
   private _isRecording = false
   private _transcript = ''
+  /** start 的权限流程还在进行中（此窗口内 stop 需要挂起） */
+  private starting = false
+  /** 权限流程期间用户已松手：流程结束后不要再启动 */
+  private stopRequested = false
+  /** 取消模式：丢弃最终识别结果 */
+  private suppressResult = false
 
   constructor() {
     this.manager = loadRecognitionManager()
@@ -97,6 +103,11 @@ export class SpeechRecognizer {
 
     manager.onStop = (res) => {
       this._isRecording = false
+      if (this.suppressResult) {
+        this.suppressResult = false
+        this.callbacks.onStop?.()
+        return
+      }
       if (res.result) {
         this._transcript = res.result
       }
@@ -119,6 +130,9 @@ export class SpeechRecognizer {
       return
     }
 
+    this.starting = true
+    this.stopRequested = false
+    this.suppressResult = false
     wx.getSetting({
       success: (res) => {
         if (!res.authSetting['scope.record']) {
@@ -126,6 +140,7 @@ export class SpeechRecognizer {
             scope: 'scope.record',
             success: () => this.beginRecognition(),
             fail: (err) => {
+              this.starting = false
               console.error('[recognizer] authorize fail:', err)
               // 真机上最常见的原因：小程序后台没有配置「用户隐私保护指引」声明麦克风
               this.callbacks.onError?.(
@@ -143,11 +158,35 @@ export class SpeechRecognizer {
   }
 
   private beginRecognition(): void {
+    this.starting = false
+    // 权限流程期间用户已松手：不再启动，直接回调结束让界面复位
+    if (this.stopRequested) {
+      this.stopRequested = false
+      this.callbacks.onStop?.()
+      return
+    }
     this.manager?.start({ lang: 'zh_CN', duration: 60000 })
   }
 
   stop(): void {
+    // 录音尚未真正启动（授权弹窗/初始化中）：标记挂起，避免 stop 先于 start 导致无法结束
+    if (this.starting) {
+      this.stopRequested = true
+      return
+    }
     this.manager?.stop()
+  }
+
+  /** 取消：结束录音并丢弃结果（点按误触/浮层兜底退出用） */
+  cancel(): void {
+    if (this.starting) {
+      this.stopRequested = true
+      return
+    }
+    if (this._isRecording) {
+      this.suppressResult = true
+      this.manager?.stop()
+    }
   }
 }
 

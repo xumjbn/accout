@@ -1,54 +1,77 @@
-<!-- 月度统计 - 对应 iOS StatsView -->
+<!-- 统计：月/年双维度 -->
 <view class="page">
-  <!-- 月份切换 -->
-  <view class="month-switcher">
-    <view class="month-arrow" bindtap="prevMonth">〈</view>
-    <text class="month-title">{{monthTitle}}</text>
-    <view class="month-arrow {{isCurrentMonth ? 'disabled' : ''}}" bindtap="nextMonth">〉</view>
+  <!-- 周期切换：‹ 2026年7月 › + 月|年 -->
+  <view class="period-row">
+    <view class="switcher">
+      <view class="arrow" bindtap="prev">〈</view>
+      <text class="period-title">{{title}}</text>
+      <view class="arrow {{isLatest ? 'disabled' : ''}}" bindtap="next">〉</view>
+    </view>
+    <view class="dim-seg">
+      <view class="dim-opt {{dim === 'month' ? 'on' : ''}}" bindtap="switchDim" data-dim="month">月</view>
+      <view class="dim-opt {{dim === 'year' ? 'on' : ''}}" bindtap="switchDim" data-dim="year">年</view>
+    </view>
   </view>
 
-  <!-- 汇总卡片 -->
+  <!-- 汇总块 -->
   <view class="totals-row">
     <view class="total-item">
-      <text class="total-label">总支出</text>
-      <text class="total-value">¥{{totalExpense}}</text>
+      <view class="total-chip" style="background:#FDEBEB">💸</view>
+      <view class="total-info">
+        <text class="total-label">总支出</text>
+        <text class="total-value">¥{{totalExpense}}</text>
+      </view>
     </view>
     <view class="total-item">
-      <text class="total-label">总收入</text>
-      <text class="total-value income">¥{{totalIncome}}</text>
+      <view class="total-chip" style="background:#E9FBF2">💰</view>
+      <view class="total-info">
+        <text class="total-label">总收入</text>
+        <text class="total-value income">¥{{totalIncome}}</text>
+      </view>
     </view>
     <view class="total-item">
-      <text class="total-label">结余</text>
-      <text class="total-value balance">¥{{balance}}</text>
+      <view class="total-chip" style="background:#EAEEFE">✨</view>
+      <view class="total-info">
+        <text class="total-label">结余</text>
+        <text class="total-value balance">¥{{balance}}</text>
+      </view>
     </view>
   </view>
 
   <!-- 空状态 -->
   <view wx:if="{{isEmpty}}" class="empty-state">
     <text class="empty-icon">📊</text>
-    <text class="empty-title">本月还没有支出记录</text>
+    <text class="empty-title">{{dim === 'month' ? '本月' : '今年'}}还没有支出记录</text>
     <text class="empty-desc">记几笔账之后，这里会展示分类占比和趋势</text>
   </view>
 
-  <!-- 分类占比 -->
+  <!-- 支出构成：环形图 + 图例 -->
   <view wx:if="{{!isEmpty}}" class="section">
     <text class="section-title">支出构成</text>
-    <view class="pie-legend">
-      <view wx:for="{{pieData}}" wx:key="name" class="legend-item">
-        <view class="legend-dot" style="background: {{item.itemStyle.color}};"></view>
-        <text class="legend-name">{{item.name}}</text>
-        <text class="legend-value">¥{{item.value}}</text>
+    <view class="donut-wrap">
+      <view class="donut" style="background: conic-gradient({{conicStops}});">
+        <view class="donut-hole">
+          <text class="donut-k">总支出</text>
+          <text class="donut-v">¥{{totalExpense}}</text>
+        </view>
+      </view>
+      <view class="pie-legend">
+        <view wx:for="{{legend}}" wx:key="category" class="legend-item">
+          <view class="legend-dot" style="background: {{item.color}};"></view>
+          <text class="legend-name">{{item.category}}</text>
+          <text class="legend-value">¥{{item.totalStr}}</text>
+        </view>
       </view>
     </view>
   </view>
 
-  <!-- 每日柱状图 -->
+  <!-- 柱状图：月=每日 / 年=每月 -->
   <view wx:if="{{!isEmpty}}" class="section">
-    <text class="section-title">每日支出</text>
+    <text class="section-title">{{barTitle}}</text>
     <view class="bar-chart">
-      <view wx:for="{{barData}}" wx:key="date" class="bar-col">
-        <view class="bar-fill" style="height: {{item.value / pieData[0].value * 200}}rpx;"></view>
-        <text class="bar-label">{{item.date}}</text>
+      <view wx:for="{{bars}}" wx:key="label" class="bar-col">
+        <view class="bar-fill" style="height: {{item.height}}rpx;"></view>
+        <text class="bar-label">{{item.label}}</text>
       </view>
     </view>
   </view>
@@ -58,12 +81,12 @@
     <text class="section-title">分类排行</text>
     <view wx:for="{{ranking}}" wx:key="category" class="rank-item">
       <view class="rank-header">
-        <view class="rank-dot" style="background: {{item.color}};">{{item.icon}}</view>
+        <view class="rank-dot" style="background: {{item.color}}22;">{{item.icon}}</view>
         <text class="rank-name">{{item.category}}</text>
-        <text class="rank-value">¥{{item.total}}</text>
+        <text class="rank-value">¥{{item.totalStr}}</text>
       </view>
       <progress percent="{{item.ratio * 100}}" border-radius="3" stroke-width="6"
-        activeColor="{{item.color}}" backgroundColor="#E5E7EB" />
+        activeColor="{{item.color}}" backgroundColor="#ECEEF5" />
     </view>
   </view>
 </view>

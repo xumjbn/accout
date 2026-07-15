@@ -7,14 +7,14 @@
   <text>{{phase === 'recording' ? '松开结束' : '按住说话'}}</text>
 </view>
 
-<!-- 录音中：全屏浮层 + 实时转写 -->
-<view wx:if="{{phase === 'recording'}}" class="vp-mask recording-mask">
+<!-- 录音中：全屏浮层 + 实时转写（点浮层可强制取消，防卡死） -->
+<view wx:if="{{phase === 'recording'}}" class="vp-mask recording-mask" bindtap="forceCancel">
   <view class="vp-listening">
     <view class="vp-pulse"></view>
     <text class="vp-mic">🎤</text>
   </view>
   <text class="vp-transcript">{{transcript || '正在聆听…'}}</text>
-  <text class="vp-hint">试试「昨天打车花了三十五块五」或「早餐12块，打车35」</text>
+  <text class="vp-hint">松开结束 · 点击空白处取消</text>
 </view>
 
 <!-- 确认卡：当前页底部弹层 -->

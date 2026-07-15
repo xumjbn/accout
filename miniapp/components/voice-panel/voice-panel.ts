@@ -38,6 +38,7 @@ function toMultiRow(parsed: ParsedTransaction): MultiItemRow {
 
 // 单页只有一个语音面板，识别器存模块级即可
 let recognizer: SpeechRecognizer | null = null
+let pressStartAt = 0
 
 Component({
   data: {
@@ -88,6 +89,8 @@ Component({
     // ==== 按住说话 ====
 
     onHoldStart() {
+      if (this.data.phase !== 'idle') return
+      pressStartAt = Date.now()
       wx.vibrateShort({ type: 'light' })
       this.setData({ phase: 'recording', transcript: '' })
       recognizer?.start()
@@ -95,8 +98,21 @@ Component({
 
     onHoldEnd() {
       if (this.data.phase !== 'recording') return
+      // 点按（<350ms）视为误触：取消并提示，不进识别流程
+      if (Date.now() - pressStartAt < 350) {
+        recognizer?.cancel()
+        this.setData({ phase: 'idle' })
+        wx.showToast({ title: '按住按钮说话，松开结束', icon: 'none' })
+        return
+      }
       recognizer?.stop()
       // 结果在 onResult(isFinal) / onStop 回调中处理
+    },
+
+    /** 兜底：点录音浮层任意位置强制取消（防止任何情况下卡在录音态） */
+    forceCancel() {
+      recognizer?.cancel()
+      this.setData({ phase: 'idle' })
     },
 
     // ==== 解析与确认 ====

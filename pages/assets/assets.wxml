@@ -1,0 +1,107 @@
+<!-- 资产负债 - 对应 iOS AssetsView -->
+<view class="page">
+  <!-- 净资产卡片 -->
+  <view class="networth-card">
+    <text class="nw-label">净资产</text>
+    <text class="nw-value">¥{{netWorth}}</text>
+    <view class="nw-row">
+      <text>↗️ 总资产 ¥{{totalAssets}}</text>
+      <text>↙️ 总负债 ¥{{totalLiabilities}}</text>
+    </view>
+  </view>
+
+  <!-- 资产 -->
+  <view wx:if="{{assets.length > 0}}" class="section">
+    <text class="section-title">资产</text>
+    <view wx:for="{{assets}}" wx:key="id" class="account-item"
+      bindtap="editAccount" data-id="{{item.id}}"
+      bindlongpress="deleteAccount" data-id="{{item.id}}">
+      <view class="ac-row">
+        <text class="ac-icon">{{item.kind}}</text>
+        <view class="ac-info">
+          <text class="ac-name">{{item.name}}</text>
+          <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
+        </view>
+        <view class="ac-right">
+          <text class="ac-balance">¥{{item.balance}}</text>
+          <view wx:if="{{item.kind === '投资' && item.costBasis > 0}}" class="ac-profit">
+            <text>收益: {{item.balance - item.costBasis >= 0 ? '+' : ''}}{{item.balance - item.costBasis}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 负债 -->
+  <view wx:if="{{liabilities.length > 0}}" class="section">
+    <text class="section-title">负债</text>
+    <view wx:for="{{liabilities}}" wx:key="id" class="account-item"
+      bindtap="editAccount" data-id="{{item.id}}"
+      bindlongpress="deleteAccount" data-id="{{item.id}}">
+      <view class="ac-row">
+        <text class="ac-icon">{{item.kind}}</text>
+        <view class="ac-info">
+          <text class="ac-name">{{item.name}}</text>
+          <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
+        </view>
+        <text class="ac-balance liability">-¥{{item.balance}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{isEmpty}}" class="empty-state">
+    <text class="empty-icon">🏦</text>
+    <text class="empty-title">还没有账户</text>
+    <text class="empty-desc">点右上角 + 添加存款、投资、房贷等账户，自动算净资产</text>
+  </view>
+
+  <!-- 新建按钮 -->
+  <view class="add-btn" bindtap="showAddForm">
+    <text>＋</text>
+  </view>
+
+  <!-- 表单弹窗 -->
+  <view wx:if="{{showForm}}" class="modal-mask" bindtap="saveForm">
+    <view class="modal-card" catchtap="">
+      <text class="modal-title">{{editingAccount ? '编辑账户' : '添加账户'}}</text>
+
+      <view class="kind-tabs">
+        <view class="kind-tab {{formKindIsLiability ? '' : 'active'}}" bindtap="onKindTabChange" data-liability="false">资产</view>
+        <view class="kind-tab {{formKindIsLiability ? 'active' : ''}}" bindtap="onKindTabChange" data-liability="true">负债</view>
+      </view>
+
+      <view class="form-field">
+        <text class="form-label">类型</text>
+        <picker mode="selector" range="{{formKindIsLiability ? formLiabilityKinds : formAssetKinds}}" bindchange="onKindChange">
+          <view class="form-picker">{{formKind}}</view>
+        </picker>
+      </view>
+
+      <view class="form-field">
+        <text class="form-label">名称</text>
+        <input class="form-input" placeholder="如 招行储蓄卡" value="{{formName}}" bindinput="onNameInput" />
+      </view>
+
+      <view class="form-field">
+        <text class="form-label">{{formKindIsLiability ? '当前欠款' : '当前余额'}}</text>
+        <input class="form-input" placeholder="0" type="digit" value="{{formBalanceText}}" bindinput="onBalanceInput" />
+      </view>
+
+      <view wx:if="{{formKind === '投资'}}" class="form-field">
+        <text class="form-label">投入本金</text>
+        <input class="form-input" placeholder="选填，用于算收益" type="digit" value="{{formCostBasisText}}" bindinput="onCostBasisInput" />
+      </view>
+
+      <view class="form-field">
+        <text class="form-label">备注</text>
+        <input class="form-input" placeholder="选填" value="{{formNote}}" bindinput="onNoteInput" />
+      </view>
+
+      <view class="modal-btns">
+        <view class="modal-cancel" bindtap="saveForm">取消</view>
+        <view class="modal-confirm" bindtap="saveForm">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

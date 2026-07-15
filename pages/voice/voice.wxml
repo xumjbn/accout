@@ -1,0 +1,87 @@
+<!-- 语音记账 - 对应 iOS VoiceInputView -->
+<view class="page">
+  <!-- 识别文本区 -->
+  <view class="transcript-area">
+    <text wx:if="{{!transcript}}" class="placeholder">
+      试试说：
+      「昨天打车花了三十五块五」
+      「早餐12块，打车35，咖啡20」（多笔连说）
+      「发工资一万二」
+    </text>
+    <text wx:else class="transcript-text">{{transcript}}</text>
+  </view>
+
+  <!-- 错误 -->
+  <view wx:if="{{errorMessage}}" class="error-msg">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <!-- 多笔结果 -->
+  <scroll-view wx:if="{{multiItems.length > 1}}" scroll-y class="multi-list">
+    <text class="multi-hint">识别到 {{multiItems.length}} 笔，确认后一起入账</text>
+    <view wx:for="{{multiItems}}" wx:key="index" class="multi-item">
+      <view class="multi-item-left">
+        <text class="multi-icon">{{item.category}}</text>
+      </view>
+      <view class="multi-item-info">
+        <text class="multi-note">{{item.note || item.category}}</text>
+        <text class="multi-cat">{{item.category}}</text>
+      </view>
+      <text class="multi-amount {{item.isExpense ? '' : 'income'}}">
+        {{item.isExpense ? '-' : '+'}}{{item.amount || 0}}
+      </text>
+      <text class="multi-remove" bindtap="removeMultiItem" data-index="{{index}}">✕</text>
+    </view>
+  </scroll-view>
+
+  <!-- 单笔可编辑结果 -->
+  <view wx:if="{{hasResult && multiItems.length < 2}}" class="result-card">
+    <view class="result-header">
+      <text class="result-title">识别结果</text>
+      <view class="type-toggle">
+        <view class="type-option {{isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="expense">支出</view>
+        <view class="type-option {{!isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="income">收入</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="field-label">金额</text>
+      <input class="field-input money-input" placeholder="0.00" type="digit" value="{{amountText}}" bindinput="onAmountInput" />
+    </view>
+    <view class="field-divider"></view>
+
+    <view class="field">
+      <text class="field-label">分类</text>
+      <picker mode="selector" range="{{categoryOptions}}" bindchange="onCategoryChange">
+        <view class="picker-value">{{category}}</view>
+      </picker>
+    </view>
+    <view class="field-divider"></view>
+
+    <view class="field">
+      <text class="field-label">备注</text>
+      <input class="field-input" placeholder="备注" value="{{note}}" bindinput="onNoteInput" />
+    </view>
+    <view class="field-divider"></view>
+
+    <view class="field">
+      <text class="field-label">日期</text>
+      <picker mode="date" value="{{dateStr}}" bindchange="onDateChange">
+        <view class="picker-value">{{dateStr}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 底部麦克风 -->
+  <view class="mic-section">
+    <view class="mic-btn {{isRecording ? 'recording' : ''}}" bindtap="toggleMic">
+      <text class="mic-icon">{{isRecording ? '⏹' : '🎤'}}</text>
+    </view>
+    <text class="mic-hint">{{isRecording ? '正在聆听…点击停止' : '点击麦克风开始说话'}}</text>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-btn" bindtap="save">
+    <text>{{multiItems.length > 1 ? '保存 ' + multiItems.length + ' 笔' : '保存'}}</text>
+  </view>
+</view>

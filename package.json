@@ -1,0 +1,13 @@
+{
+  "name": "accout-miniapp",
+  "version": "1.0.0",
+  "description": "语记账 - 语音记账微信小程序",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "compile": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/wechat-miniprogram": "^3.4.0",
+    "typescript": "^5.3.0"
+  }
+}

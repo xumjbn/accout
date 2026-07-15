@@ -1,0 +1,67 @@
+<!-- 首页明细列表 - 对应 iOS HomeView -->
+<view class="page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索备注或分类" bindinput="onSearchInput"
+      value="{{searchText}}" />
+  </view>
+
+  <!-- 预算提醒条 -->
+  <view wx:if="{{budgetAlert}}" class="alert-bar alert-{{budgetAlert.level}}">
+    <view class="alert-content">
+      <text class="alert-title">{{budgetAlert.title}}</text>
+      <text class="alert-msg">{{budgetAlert.message}}</text>
+    </view>
+    <text class="alert-close" bindtap="dismissAlert">✕</text>
+  </view>
+
+  <!-- 内容区域 -->
+  <scroll-view scroll-y class="content" enhanced show-scrollbar="{{false}}">
+    <!-- 概览卡片 -->
+    <summary-card
+      monthExpense="{{monthExpense}}"
+      monthIncome="{{monthIncome}}"
+      budgetAmount="{{budgetAmount}}" />
+
+    <!-- 空状态 -->
+    <view wx:if="{{isEmpty}}" class="empty-state">
+      <text class="empty-icon">🎤</text>
+      <text class="empty-title">还没有账单</text>
+      <text class="empty-desc">点击下方按钮，说一句「早餐花了12块」试试</text>
+    </view>
+
+    <!-- 按日分组的账单列表 -->
+    <view wx:for="{{groupedData}}" wx:key="day" class="day-group">
+      <view class="day-header">
+        <text class="day-title">{{item.title}}</text>
+      </view>
+      <view wx:for="{{item.items}}" wx:key="id" wx:for-item="tx" class="tx-item"
+        bindtap="goToEdit" data-id="{{tx.id}}"
+        bindlongpress="onDelete" data-id="{{tx.id}}">
+        <transaction-row transaction="{{tx}}" />
+      </view>
+    </view>
+
+    <!-- 底部留白给语音按钮 -->
+    <view class="bottom-spacer"></view>
+  </scroll-view>
+
+  <!-- 底部语音按钮 -->
+  <view class="voice-btn" bindtap="goToVoice">
+    <text class="voice-btn-icon">🎤</text>
+    <text class="voice-btn-label">语音记账</text>
+  </view>
+
+  <!-- 顶部菜单按钮 -->
+  <view class="top-btns">
+    <view class="top-btn-left" bindtap="onImport">
+      <text>📥 导入</text>
+    </view>
+    <view class="top-btn-left" bindtap="onExport">
+      <text>📤 导出</text>
+    </view>
+    <view class="top-btn-right" bindtap="goToAdd">
+      <text>＋</text>
+    </view>
+  </view>
+</view>

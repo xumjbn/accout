@@ -1,0 +1,47 @@
+<!-- 手动记账/编辑 - 对应 iOS TransactionFormView -->
+<view class="page">
+  <view class="card">
+    <!-- 类型切换 -->
+    <view class="type-toggle">
+      <view class="type-option {{isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="expense">支出</view>
+      <view class="type-option {{!isExpense ? 'active' : ''}}" bindtap="onTypeChange" data-value="income">收入</view>
+    </view>
+
+    <!-- 金额 -->
+    <view class="field">
+      <text class="field-label">金额</text>
+      <input class="field-input money-input" placeholder="0.00" type="digit" value="{{amountText}}" bindinput="onAmountInput" focus />
+    </view>
+  </view>
+
+  <view class="card">
+    <!-- 分类 -->
+    <view class="field">
+      <text class="field-label">分类</text>
+      <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker-value">{{category}}</view>
+      </picker>
+    </view>
+    <view class="field-divider"></view>
+
+    <!-- 备注 -->
+    <view class="field">
+      <text class="field-label">备注</text>
+      <input class="field-input" placeholder="备注" value="{{note}}" bindinput="onNoteInput" />
+    </view>
+    <view class="field-divider"></view>
+
+    <!-- 日期 -->
+    <view class="field">
+      <text class="field-label">日期</text>
+      <picker mode="date" value="{{dateStr}}" bindchange="onDateChange">
+        <view class="picker-value">{{dateStr}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 保存 -->
+  <view class="save-btn {{canSave ? '' : 'disabled'}}" bindtap="save">
+    <text>{{isEdit ? '保存修改' : '记一笔'}}</text>
+  </view>
+</view>

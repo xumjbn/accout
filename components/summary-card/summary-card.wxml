@@ -1,0 +1,23 @@
+<!-- 月度概览卡片 - 对应 iOS HomeView.summaryCard -->
+<view class="summary-card">
+  <text class="summary-label">本月支出</text>
+  <text class="summary-value">¥{{monthExpenseStr}}</text>
+  <view class="summary-row">
+    <view class="summary-item">
+      <text class="summary-item-label">↘️ 收入 ¥{{monthIncomeStr}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-item-label">= 结余 ¥{{balanceStr}}</text>
+    </view>
+  </view>
+
+  <!-- 预算进度 -->
+  <view wx:if="{{showBudget}}" class="budget-section">
+    <view class="budget-title-row">
+      <text class="budget-label">{{isOver ? '预算超支 ¥' : '预算剩余 ¥'}}{{remainingStr}}</text>
+      <text class="budget-pct">{{ratioPercent}}%</text>
+    </view>
+    <progress percent="{{ratioPercent}}" border-radius="4" stroke-width="6"
+      activeColor="{{progressColor}}" backgroundColor="#E5E7EB" />
+  </view>
+</view>

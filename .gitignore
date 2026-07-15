@@ -1,0 +1,17 @@
+# Xcode
+*.xcodeproj/
+!*.xcodeproj/project.pbxproj
+xcuserdata/
+DerivedData/
+*.xcuserstate
+.DS_Store
+
+# XcodeGen 生成产物（由 project.yml 生成，不入库）
+Accout.xcodeproj/
+
+# SwiftPM
+.build/
+.swiftpm/
+
+# 微信小程序
+miniapp/node_modules/

@@ -1,0 +1,7 @@
+<!-- 预算进度条组件 - 对应 iOS budget progress -->
+<view class="budget-progress">
+  <view class="budget-bar-bg">
+    <view class="budget-bar-fill" style="width: {{ratioPercent}}%; background: {{color}};"></view>
+  </view>
+  <slot></slot>
+</view>

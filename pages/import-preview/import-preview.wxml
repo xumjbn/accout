@@ -1,0 +1,34 @@
+<!-- 导入预览 - 对应 iOS ImportPreviewView -->
+<view class="page">
+  <view class="summary-card">
+    <view class="summary-item">
+      <text class="summary-label">解析到</text>
+      <text class="summary-value">{{totalCount}} 笔</text>
+    </view>
+    <view wx:if="{{duplicateCount > 0}}" class="summary-item">
+      <text class="summary-label">疑似重复（将跳过）</text>
+      <text class="summary-value dup">{{duplicateCount}} 笔</text>
+    </view>
+  </view>
+
+  <text class="hint">分类由关键词引擎自动判断，导入后可在明细里单笔修改。重复判定依据：同一分钟内金额相同的已有账单。</text>
+
+  <view class="section-title">明细预览</view>
+  <scroll-view scroll-y class="preview-list">
+    <view wx:for="{{rows}}" wx:key="id" class="preview-row {{item.isDuplicate ? 'duplicate' : ''}}">
+      <text class="row-icon">{{item.icon}}</text>
+      <view class="row-info">
+        <text class="row-note">{{item.note || item.category}}</text>
+        <text class="row-date">{{item.date}}</text>
+      </view>
+      <text class="row-amount {{item.isExpense ? '' : 'income'}}">
+        {{item.isExpense ? '-' : '+'}}{{item.amount}}
+      </text>
+    </view>
+    <text wx:if="{{totalCount > 200}}" class="more-hint">仅预览前 200 条，导入时会处理全部</text>
+  </scroll-view>
+
+  <view class="import-btn {{newCount === 0 ? 'disabled' : ''}}" bindtap="importAll">
+    <text>导入 {{newCount}} 笔</text>
+  </view>
+</view>

@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/voice/voice",
+    "pages/add/add",
+    "pages/stats/stats",
+    "pages/budget/budget",
+    "pages/assets/assets",
+    "pages/import-preview/import-preview"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#2563EB",
+    "navigationBarTitleText": "语记账",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F3F4F6"
+  },
+  "tabBar": {
+    "color": "#9CA3AF",
+    "selectedColor": "#2563EB",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "明细",
+        "iconPath": "icons/list.png",
+        "selectedIconPath": "icons/list-active.png"
+      },
+      {
+        "pagePath": "pages/budget/budget",
+        "text": "预算",
+        "iconPath": "icons/budget.png",
+        "selectedIconPath": "icons/budget-active.png"
+      },
+      {
+        "pagePath": "pages/assets/assets",
+        "text": "资产",
+        "iconPath": "icons/assets.png",
+        "selectedIconPath": "icons/assets-active.png"
+      },
+      {
+        "pagePath": "pages/stats/stats",
+        "text": "统计",
+        "iconPath": "icons/stats.png",
+        "selectedIconPath": "icons/stats-active.png"
+      }
+    ]
+  },
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.5",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "permission": {
+    "scope.record": {
+      "desc": "用于语音记账的录音识别"
+    }
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

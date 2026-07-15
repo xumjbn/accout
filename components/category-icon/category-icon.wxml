@@ -1,0 +1,4 @@
+<!-- 分类图标组件 -->
+<view class="category-icon" style="background: {{bgColor}};">
+  <text>{{icon}}</text>
+</view>

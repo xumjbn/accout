@@ -1,0 +1,69 @@
+<!-- 月度统计 - 对应 iOS StatsView -->
+<view class="page">
+  <!-- 月份切换 -->
+  <view class="month-switcher">
+    <view class="month-arrow" bindtap="prevMonth">〈</view>
+    <text class="month-title">{{monthTitle}}</text>
+    <view class="month-arrow {{isCurrentMonth ? 'disabled' : ''}}" bindtap="nextMonth">〉</view>
+  </view>
+
+  <!-- 汇总卡片 -->
+  <view class="totals-row">
+    <view class="total-item">
+      <text class="total-label">总支出</text>
+      <text class="total-value">¥{{totalExpense}}</text>
+    </view>
+    <view class="total-item">
+      <text class="total-label">总收入</text>
+      <text class="total-value income">¥{{totalIncome}}</text>
+    </view>
+    <view class="total-item">
+      <text class="total-label">结余</text>
+      <text class="total-value balance">¥{{balance}}</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{isEmpty}}" class="empty-state">
+    <text class="empty-icon">📊</text>
+    <text class="empty-title">本月还没有支出记录</text>
+    <text class="empty-desc">记几笔账之后，这里会展示分类占比和趋势</text>
+  </view>
+
+  <!-- 分类占比 -->
+  <view wx:if="{{!isEmpty}}" class="section">
+    <text class="section-title">支出构成</text>
+    <view class="pie-legend">
+      <view wx:for="{{pieData}}" wx:key="name" class="legend-item">
+        <view class="legend-dot" style="background: {{item.itemStyle.color}};"></view>
+        <text class="legend-name">{{item.name}}</text>
+        <text class="legend-value">¥{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 每日柱状图 -->
+  <view wx:if="{{!isEmpty}}" class="section">
+    <text class="section-title">每日支出</text>
+    <view class="bar-chart">
+      <view wx:for="{{barData}}" wx:key="date" class="bar-col">
+        <view class="bar-fill" style="height: {{item.value / pieData[0].value * 200}}rpx;"></view>
+        <text class="bar-label">{{item.date}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类排行 -->
+  <view wx:if="{{!isEmpty}}" class="section">
+    <text class="section-title">分类排行</text>
+    <view wx:for="{{ranking}}" wx:key="category" class="rank-item">
+      <view class="rank-header">
+        <view class="rank-dot" style="background: {{item.color}};">{{item.icon}}</view>
+        <text class="rank-name">{{item.category}}</text>
+        <text class="rank-value">¥{{item.total}}</text>
+      </view>
+      <progress percent="{{item.ratio * 100}}" border-radius="3" stroke-width="6"
+        activeColor="{{item.color}}" backgroundColor="#E5E7EB" />
+    </view>
+  </view>
+</view>

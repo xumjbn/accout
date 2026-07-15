@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "budget-progress": "../../components/budget-progress/budget-progress"
+  },
+  "navigationBarTitleText": "预算"
+}

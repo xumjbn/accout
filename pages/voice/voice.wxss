@@ -1,0 +1,220 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 24rpx;
+  background: #F3F4F6;
+}
+
+/* 识别文本区 */
+.transcript-area {
+  min-height: 200rpx;
+  max-height: 280rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  overflow-y: auto;
+}
+
+.placeholder {
+  font-size: 28rpx;
+  color: #9CA3AF;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.transcript-text {
+  font-size: 34rpx;
+  color: #111827;
+  line-height: 1.6;
+}
+
+/* 错误 */
+.error-msg {
+  background: #FEE2E2;
+  border-radius: 12rpx;
+  padding: 16rpx 24rpx;
+  margin-bottom: 20rpx;
+  font-size: 26rpx;
+  color: #991B1B;
+}
+
+/* 多笔列表 */
+.multi-list {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow-y: auto;
+}
+
+.multi-hint {
+  display: block;
+  padding: 16rpx 24rpx;
+  font-size: 24rpx;
+  color: #9CA3AF;
+  border-bottom: 1rpx solid #E5E7EB;
+}
+
+.multi-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 16rpx;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.multi-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.multi-note {
+  font-size: 28rpx;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-cat {
+  font-size: 22rpx;
+  color: #9CA3AF;
+}
+
+.multi-amount {
+  font-size: 30rpx;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.multi-amount.income {
+  color: #10B981;
+}
+
+.multi-remove {
+  font-size: 28rpx;
+  color: #D1D5DB;
+  padding: 8rpx;
+}
+
+/* 单笔结果卡片 */
+.result-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.result-title {
+  font-size: 24rpx;
+  color: #9CA3AF;
+}
+
+.type-toggle {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.type-option {
+  padding: 8rpx 28rpx;
+  font-size: 26rpx;
+  color: #6B7280;
+}
+
+.type-option.active {
+  background: #2563EB;
+  color: #fff;
+}
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+}
+
+.field-label {
+  font-size: 28rpx;
+  color: #6B7280;
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+
+.field-input {
+  flex: 1;
+  text-align: right;
+  font-size: 28rpx;
+}
+
+.money-input {
+  font-size: 34rpx;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #111827;
+}
+
+.field-divider {
+  height: 1rpx;
+  background: #F3F4F6;
+}
+
+/* 麦克风 */
+.mic-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.mic-btn {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: #2563EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(37, 99, 235, 0.35);
+}
+
+.mic-btn.recording {
+  background: #EF4444;
+  box-shadow: 0 8rpx 24rpx rgba(239, 68, 68, 0.35);
+}
+
+.mic-icon {
+  font-size: 52rpx;
+}
+
+.mic-hint {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  margin-top: 16rpx;
+}
+
+/* 保存按钮 */
+.save-btn {
+  background: #2563EB;
+  color: #fff;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}

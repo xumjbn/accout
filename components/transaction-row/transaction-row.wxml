@@ -1,0 +1,14 @@
+<!-- 账单行组件 - 对应 iOS TransactionRow -->
+<view class="tx-row">
+  <category-icon icon="{{icon}}" bgColor="{{color}}" size="36" />
+  <view class="tx-info">
+    <text class="tx-note">{{note || category}}</text>
+    <view class="tx-meta">
+      <text class="tx-category">{{category}}</text>
+      <text wx:if="{{sourceIcon}}" class="tx-source">{{sourceIcon}}</text>
+    </view>
+  </view>
+  <view class="tx-amount {{isExpense ? 'tx-expense' : 'tx-income'}}">
+    {{isExpense ? '-' : '+'}}{{amountStr}}
+  </view>
+</view>

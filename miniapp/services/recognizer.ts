@@ -1,12 +1,17 @@
 /**
- * 语音识别服务 - 对应 iOS SpeechRecognizer
- * 使用微信原生 wx.translateVoice 实现语音转文字（无需插件）
+ * 语音识别服务 - 基于微信官方「同声传译」插件（WechatSI）
+ *
+ * 前置条件（详见 docs/SETUP.md）：
+ * 1. 小程序管理后台已添加「同声传译」插件
+ * 2. app.json 已声明 plugins.WechatSI
+ *
+ * 插件支持流式识别：说话过程中 onRecognize 持续回调中间结果（边说边出字），
+ * onStop 给出最终结果。插件不可用时优雅降级为明确的错误提示。
  *
  * 用法：
  *   const rec = createRecognizer()
- *   rec.start()
- *   rec.onResult((text, isFinal) => { ... })
- *   rec.stop()
+ *   rec.setCallbacks({ onResult: (text, isFinal) => { ... } })
+ *   rec.start() / rec.stop()
  */
 
 export interface RecognizerCallbacks {
@@ -16,16 +21,40 @@ export interface RecognizerCallbacks {
   onStop?: () => void
 }
 
+/** 同声传译插件的识别管理器（插件无官方 d.ts，声明用到的最小接口） */
+interface SIRecognitionManager {
+  start(options: { lang: string; duration?: number }): void
+  stop(): void
+  onStart: ((res: unknown) => void) | undefined
+  onRecognize: ((res: { result?: string }) => void) | undefined
+  onStop: ((res: { result?: string }) => void) | undefined
+  onError: ((res: { retcode?: number; msg?: string }) => void) | undefined
+}
+
+interface WechatSIPlugin {
+  getRecordRecognitionManager(): SIRecognitionManager
+}
+
+function loadRecognitionManager(): SIRecognitionManager | null {
+  try {
+    const plugin = requirePlugin('WechatSI') as WechatSIPlugin
+    return plugin.getRecordRecognitionManager()
+  } catch {
+    return null
+  }
+}
+
 export class SpeechRecognizer {
-  private manager: WechatMiniprogram.RecorderManager
+  private manager: SIRecognitionManager | null
   private callbacks: RecognizerCallbacks = {}
   private _isRecording = false
   private _transcript = ''
-  private tempFilePath = ''
 
   constructor() {
-    this.manager = wx.getRecorderManager()
-    this.setupListeners()
+    this.manager = loadRecognitionManager()
+    if (this.manager) {
+      this.setupListeners()
+    }
   }
 
   get isRecording(): boolean { return this._isRecording }
@@ -36,91 +65,69 @@ export class SpeechRecognizer {
   }
 
   private setupListeners(): void {
-    this.manager.onStart(() => {
+    const manager = this.manager
+    if (!manager) return
+
+    manager.onStart = () => {
       this._isRecording = true
       this._transcript = ''
       this.callbacks.onStart?.()
-    })
+    }
 
-    this.manager.onStop((res) => {
+    // 流式中间结果：边说边出字
+    manager.onRecognize = (res) => {
+      if (res.result) {
+        this._transcript = res.result
+        this.callbacks.onResult?.(this._transcript, false)
+      }
+    }
+
+    manager.onStop = (res) => {
       this._isRecording = false
-      this.tempFilePath = res.tempFilePath
+      if (res.result) {
+        this._transcript = res.result
+      }
+      if (this._transcript) {
+        this.callbacks.onResult?.(this._transcript, true)
+      }
       this.callbacks.onStop?.()
-      this.recognizeVoice()
-    })
+    }
 
-    this.manager.onError((res) => {
+    manager.onError = (res) => {
       this._isRecording = false
-      this.callbacks.onError?.(res.errMsg)
-    })
+      this.callbacks.onError?.(`语音识别失败：${res.msg || res.retcode || '未知错误'}`)
+    }
   }
 
   start(): void {
+    if (!this.manager) {
+      this.callbacks.onError?.('语音识别不可用：请在小程序后台添加「同声传译」插件（配置步骤见 docs/SETUP.md）')
+      return
+    }
+
     wx.getSetting({
       success: (res) => {
         if (!res.authSetting['scope.record']) {
           wx.authorize({
             scope: 'scope.record',
-            success: () => this.beginRecord(),
+            success: () => this.beginRecognition(),
             fail: () => {
               this.callbacks.onError?.('未获得麦克风权限，请到「设置」中开启')
             },
           })
         } else {
-          this.beginRecord()
+          this.beginRecognition()
         }
       },
     })
   }
 
-  private beginRecord(): void {
-    this.manager.start({
-      duration: 60000,
-      sampleRate: 16000,
-      numberOfChannels: 1,
-      encodeBitRate: 48000,
-      format: 'mp3',
-    })
+  private beginRecognition(): void {
+    this.manager?.start({ lang: 'zh_CN', duration: 60000 })
   }
 
   stop(): void {
-    this.manager.stop()
-  }
-
-  private recognizeVoice(): void {
-    if (!this.tempFilePath) {
-      this.callbacks.onError?.('录音文件为空')
-      return
-    }
-
-    // 注意：小程序没有原生语音转文字 API（wx.translateVoice 是老的公众号 JS-SDK 接口）。
-    // 正式方案需要接入「微信同声传译」插件（plugin://WechatSI，需在 app.json 声明且有 AppID）。
-    // 这里做运行时探测：环境支持则用，不支持则给出明确提示。
-    const wxCompat = wx as unknown as {
-      translateVoice?: (options: {
-        filePath: string
-        isEnd: boolean
-        success: (res: { result?: string }) => void
-        fail: (err: { errMsg: string }) => void
-      }) => void
-    }
-
-    if (!wxCompat.translateVoice) {
-      this.callbacks.onError?.('当前环境不支持语音识别：请在 app.json 配置微信同声传译插件后使用')
-      return
-    }
-
-    wxCompat.translateVoice({
-      filePath: this.tempFilePath,
-      isEnd: true,
-      success: (res) => {
-        this._transcript = res.result || ''
-        this.callbacks.onResult?.(this._transcript, true)
-      },
-      fail: (err) => {
-        this.callbacks.onError?.(`语音识别失败: ${err.errMsg}`)
-      },
-    })
+    this.manager?.stop()
   }
 }
 

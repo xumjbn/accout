@@ -27,7 +27,7 @@
 }
 
 .type-option.active {
-  background: #4E6EF5;
+  background: #07C160;
   color: #fff;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .save-btn {
-  background: #4E6EF5;
+  background: #07C160;
   color: #fff;
   text-align: center;
   padding: 24rpx;
@@ -80,3 +80,8 @@
 .save-btn.disabled {
   opacity: 0.4;
 }
+
+/* 分类值：图标 + 名称 */
+.cat-value { display: flex; align-items: center; justify-content: flex-end; gap: 12rpx; }
+.cat-value-circ { width: 48rpx; height: 48rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.cat-value-img { width: 26rpx; height: 26rpx; }

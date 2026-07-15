@@ -4,6 +4,7 @@ import { exportToCSV } from '../../services/exporter'
 import { checkBudgetAlert, BudgetAlert } from '../../services/notifier'
 import { startOfDay, dayTitle, isSameMonth } from '../../utils/date'
 import { autoPull, syncDeletion } from '../../services/family'
+import { uiIcons } from '../../assets/icons'
 
 interface GroupedData {
   day: number
@@ -13,6 +14,7 @@ interface GroupedData {
 
 Page({
   data: {
+    icoEmpty: uiIcons.micBrand,
     transactions: [] as Transaction[],
     monthExpense: 0,
     monthIncome: 0,

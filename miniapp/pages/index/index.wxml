@@ -27,7 +27,7 @@
 
     <!-- 空状态 -->
     <view wx:if="{{isEmpty}}" class="empty-state">
-      <text class="empty-icon">🎤</text>
+      <view class="empty-badge"><image src="{{icoEmpty}}" mode="aspectFit" /></view>
       <text class="empty-title">还没有账单</text>
       <text class="empty-desc">点击下方按钮，说一句「早餐花了12块」试试</text>
     </view>

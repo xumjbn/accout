@@ -1,3 +1,5 @@
+import { accountIconSrc } from '../assets/icons'
+
 /**
  * 账户类型 - 对应 iOS AccountKind
  */
@@ -36,20 +38,9 @@ export function liabilityKinds(): AccountKind[] {
   return [AccountKind.Mortgage, AccountKind.CarLoan, AccountKind.CreditCard, AccountKind.Borrowing, AccountKind.OtherDebt]
 }
 
-/** 账户类型图标 */
+/** 账户类型图标（原创 SVG data URI，供 <image src> 使用） */
 export function accountKindIcon(kind: AccountKind): string {
-  const map: Record<string, string> = {
-    [AccountKind.Cash]: '💴',
-    [AccountKind.Deposit]: '🏦',
-    [AccountKind.Investment]: '📊',
-    [AccountKind.Receivable]: '↗️',
-    [AccountKind.Mortgage]: '🏡',
-    [AccountKind.CarLoan]: '🚙',
-    [AccountKind.CreditCard]: '💳',
-    [AccountKind.Borrowing]: '↙️',
-    [AccountKind.OtherDebt]: '📄',
-  }
-  return map[kind] || '📄'
+  return accountIconSrc[kind] || accountIconSrc[AccountKind.OtherDebt]
 }
 
 /** 账户类型颜色 */

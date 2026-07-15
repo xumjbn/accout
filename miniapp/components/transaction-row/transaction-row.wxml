@@ -5,7 +5,7 @@
     <text class="tx-note">{{note || category}}</text>
     <view class="tx-meta">
       <text class="tx-category">{{category}}</text>
-      <text wx:if="{{sourceIcon}}" class="tx-source">{{sourceIcon}}</text>
+      <image wx:if="{{sourceIcon}}" class="tx-source" src="{{sourceIcon}}" mode="aspectFit" />
     </view>
   </view>
   <view class="tx-amount {{isExpense ? 'tx-expense' : 'tx-income'}}">

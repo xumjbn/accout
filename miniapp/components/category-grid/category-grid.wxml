@@ -1,0 +1,19 @@
+<view wx:if="{{visible}}" class="cg-mask" catchtap="onClose">
+  <view class="cg-sheet" catchtap="noop">
+    <view class="cg-grabber"></view>
+    <view class="cg-toggle">
+      <view class="cg-topt {{isExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="expense">支出</view>
+      <view class="cg-topt {{!isExpense ? 'on' : ''}}" catchtap="onTypeTab" data-value="income">收入</view>
+    </view>
+    <view class="cg-grid">
+      <view wx:for="{{items}}" wx:key="name"
+        class="cg-cell {{selected === item.name ? 'sel' : ''}}"
+        catchtap="onPick" data-name="{{item.name}}">
+        <view class="cg-circ {{selected === item.name ? 'ring' : ''}}" style="background:{{item.color}}22;">
+          <image class="cg-img" src="{{item.icon}}" mode="aspectFit" />
+        </view>
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+</view>

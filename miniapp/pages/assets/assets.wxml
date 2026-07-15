@@ -17,7 +17,7 @@
       bindtap="editAccount" data-id="{{item.id}}"
       bindlongpress="deleteAccount" data-id="{{item.id}}">
       <view class="ac-row">
-        <text class="ac-icon" style="background:{{item.color}}22">{{item.icon}}</text>
+        <view class="ac-icon" style="background:{{item.color}}22"><image class="ac-img" src="{{item.icon}}" mode="aspectFit" /></view>
         <view class="ac-info">
           <text class="ac-name">{{item.name}}</text>
           <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
@@ -39,7 +39,7 @@
       bindtap="editAccount" data-id="{{item.id}}"
       bindlongpress="deleteAccount" data-id="{{item.id}}">
       <view class="ac-row">
-        <text class="ac-icon" style="background:{{item.color}}22">{{item.icon}}</text>
+        <view class="ac-icon" style="background:{{item.color}}22"><image class="ac-img" src="{{item.icon}}" mode="aspectFit" /></view>
         <view class="ac-info">
           <text class="ac-name">{{item.name}}</text>
           <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
@@ -51,7 +51,7 @@
 
   <!-- 空状态 -->
   <view wx:if="{{isEmpty}}" class="empty-state">
-    <text class="empty-icon">🏦</text>
+    <view class="empty-badge"><image src="{{icoEmpty}}" mode="aspectFit" /></view>
     <text class="empty-title">还没有账户</text>
     <text class="empty-desc">点右上角 + 添加存款、投资、房贷等账户，自动算净资产</text>
   </view>

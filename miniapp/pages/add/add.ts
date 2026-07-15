@@ -1,8 +1,9 @@
 import { createTransaction } from '../../models/transaction'
+import { categoryIcon, categoryColor } from '../../models/category'
 import { TransactionCategory } from '../../models/category'
 import { loadTransactions, insertTransaction, updateTransaction, loadBudgets } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
-import { initialPickerState, typeChanged, categoryPicked, rebuildOptions } from '../../utils/category-picker'
+import { initialPickerState, typeChanged, rebuildOptions, CategoryPickerState } from '../../utils/category-picker'
 import { finishAndBack } from '../../utils/page'
 import { syncTransactions } from '../../services/family'
 import { formatDate } from '../../utils/date'
@@ -15,6 +16,9 @@ Page({
     note: '',
     dateStr: '',
     ...initialPickerState(),
+    catIcon: categoryIcon(TransactionCategory.Other),
+    catColor: categoryColor(TransactionCategory.Other),
+    showCatGrid: false,
     canSave: false,
   },
 
@@ -29,8 +33,8 @@ Page({
           note: tx.note,
           dateStr: formatDate(tx.date),
           canSave: true,
-          ...rebuildOptions({ ...this.data, isExpense: tx.isExpense, category: tx.category }),
         })
+        this.applyPicker(rebuildOptions({ ...this.data, isExpense: tx.isExpense, category: tx.category }))
         wx.setNavigationBarTitle({ title: '编辑账单' })
         return
       }
@@ -48,11 +52,31 @@ Page({
 
   onTypeChange(e: WechatMiniprogram.BaseEvent) {
     const isExpense = e.currentTarget.dataset.value === 'expense'
-    this.setData({ ...typeChanged(this.data, isExpense) })
+    this.applyPicker(typeChanged(this.data, isExpense))
   },
 
-  onCategoryChange(e: WechatMiniprogram.PickerChange) {
-    this.setData({ ...categoryPicked(this.data, Number(e.detail.value)) })
+  /** 应用 picker 状态并同步分类图标展示 */
+  applyPicker(state: CategoryPickerState) {
+    this.setData({
+      ...state,
+      catIcon: categoryIcon(state.category as TransactionCategory),
+      catColor: categoryColor(state.category as TransactionCategory),
+    })
+  },
+
+  // ==== 分类宫格 ====
+
+  openCatGrid() { this.setData({ showCatGrid: true }) },
+  closeCatGrid() { this.setData({ showCatGrid: false }) },
+
+  onCatGridSelect(e: WechatMiniprogram.CustomEvent) {
+    const { category, isExpense } = e.detail as { category: string; isExpense: boolean }
+    let state: CategoryPickerState = this.data
+    if (isExpense !== this.data.isExpense) {
+      state = typeChanged(state, isExpense)
+    }
+    this.applyPicker(rebuildOptions({ ...state, category }))
+    this.setData({ showCatGrid: false })
   },
 
   save() {

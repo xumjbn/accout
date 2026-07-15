@@ -1,6 +1,7 @@
 import { Transaction } from '../../models/transaction'
 import { categoryIcon, categoryColor } from '../../models/category'
 import { moneyString } from '../../utils/money'
+import { uiIcons } from '../../assets/icons'
 
 Component({
   properties: {
@@ -17,8 +18,8 @@ Component({
       const color = categoryColor(tx.category)
       const amountStr = moneyString(tx.amount)
       let sourceIcon = ''
-      if (tx.source === 'voice') sourceIcon = '🎤'
-      else if (tx.source === 'import') sourceIcon = '📥'
+      if (tx.source === 'voice') sourceIcon = uiIcons.micGray
+      else if (tx.source === 'import') sourceIcon = uiIcons.trayGray
 
       this.setData({
         icon,

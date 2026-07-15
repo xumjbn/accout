@@ -145,11 +145,11 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
-  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
+  background: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
   color: #fff;
   padding: 26rpx 60rpx;
   border-radius: 60rpx;
-  box-shadow: 0 12rpx 30rpx rgba(94, 100, 245, 0.45);
+  box-shadow: 0 12rpx 30rpx rgba(7, 193, 96, 0.45);
   font-size: 30rpx;
   font-weight: 600;
   z-index: 100;

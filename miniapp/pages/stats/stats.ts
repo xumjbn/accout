@@ -3,6 +3,7 @@ import { Transaction } from '../../models/transaction'
 import { loadTransactions } from '../../services/storage'
 import { startOfDay, formatYearMonth } from '../../utils/date'
 import { moneyString } from '../../utils/money'
+import { uiIcons } from '../../assets/icons'
 
 type Dim = 'month' | 'year'
 
@@ -25,6 +26,10 @@ const BAR_MAX_HEIGHT = 200
 
 Page({
   data: {
+    icoUp: uiIcons.arrowUpRed,
+    icoDown: uiIcons.arrowDownGreen,
+    icoCoin: uiIcons.coinBrand,
+    icoEmpty: uiIcons.chartBrand,
     dim: 'month' as Dim,
     anchor: Date.now(),
     title: '',

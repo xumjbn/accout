@@ -7,11 +7,11 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
-  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
+  background: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
   color: #fff;
   padding: 26rpx 60rpx;
   border-radius: 60rpx;
-  box-shadow: 0 12rpx 30rpx rgba(94, 100, 245, 0.45);
+  box-shadow: 0 12rpx 30rpx rgba(7, 193, 96, 0.45);
   font-size: 30rpx;
   font-weight: 600;
   z-index: 100;
@@ -59,7 +59,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(122, 90, 248, 0.5);
+  background: rgba(7, 193, 96, 0.5);
   animation: vp-pulse 1.4s ease-out infinite;
 }
 
@@ -73,12 +73,12 @@
   width: 150rpx;
   height: 150rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
+  background: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 64rpx;
-  box-shadow: 0 12rpx 36rpx rgba(78, 110, 245, 0.5);
+  box-shadow: 0 12rpx 36rpx rgba(7, 193, 96, 0.5);
 }
 
 .vp-transcript {
@@ -269,13 +269,22 @@
   text-align: center;
   padding: 24rpx 0;
   border-radius: 999rpx;
-  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
+  background: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
   color: #fff;
   font-size: 30rpx;
   font-weight: 600;
-  box-shadow: 0 8rpx 20rpx rgba(94, 100, 245, 0.35);
+  box-shadow: 0 8rpx 20rpx rgba(7, 193, 96, 0.35);
 }
 
 .vp-save.disabled {
   opacity: 0.5;
 }
+
+.vp-btn-img { width: 34rpx; height: 34rpx; }
+.vp-mic-img { width: 64rpx; height: 64rpx; }
+.vp-multi-img { width: 28rpx; height: 28rpx; }
+
+/* 确认卡分类值：图标 + 名称 */
+.vp-cat { display: flex; align-items: center; justify-content: flex-end; gap: 12rpx; }
+.vp-cat-circ { width: 48rpx; height: 48rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.vp-cat-img { width: 26rpx; height: 26rpx; }

@@ -16,11 +16,14 @@
 
   <view class="card">
     <!-- 分类 -->
-    <view class="field">
+    <view class="field" bindtap="openCatGrid">
       <text class="field-label">分类</text>
-      <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
-        <view class="picker-value">{{category}}</view>
-      </picker>
+      <view class="picker-value cat-value">
+        <view class="cat-value-circ" style="background:{{catColor}}22;">
+          <image class="cat-value-img" src="{{catIcon}}" mode="aspectFit" />
+        </view>
+        <text>{{category}} ›</text>
+      </view>
     </view>
     <view class="field-divider"></view>
 
@@ -45,3 +48,6 @@
     <text>{{isEdit ? '保存修改' : '记一笔'}}</text>
   </view>
 </view>
+
+<category-grid visible="{{showCatGrid}}" isExpense="{{isExpense}}" selected="{{category}}"
+  bind:select="onCatGridSelect" bind:close="closeCatGrid" />

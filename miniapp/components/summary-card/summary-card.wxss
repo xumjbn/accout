@@ -6,10 +6,10 @@
   background:
     radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 42%),
     radial-gradient(circle at 10% 90%, rgba(255, 214, 130, 0.18) 0%, rgba(255, 214, 130, 0) 45%),
-    linear-gradient(135deg, #4E6EF5 0%, #6C5CE7 55%, #7A5AF8 100%);
+    linear-gradient(135deg, #07C160 0%, #0ECF74 55%, #39D98A 100%);
   border-radius: 28rpx;
   color: #fff;
-  box-shadow: 0 12rpx 36rpx rgba(78, 110, 245, 0.35);
+  box-shadow: 0 12rpx 36rpx rgba(7, 193, 96, 0.35);
 }
 
 .summary-label {

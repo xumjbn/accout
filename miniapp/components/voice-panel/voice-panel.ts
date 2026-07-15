@@ -7,12 +7,14 @@ import { SpeechRecognizer, createRecognizer } from '../../services/recognizer'
 import { ParsedTransaction, parseMultiple } from '../../services/parser'
 import { createTransaction } from '../../models/transaction'
 import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
+import { CategoryPickerState } from '../../utils/category-picker'
 import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
 import { syncTransactions } from '../../services/family'
-import { initialPickerState, typeChanged, categoryPicked, rebuildOptions } from '../../utils/category-picker'
+import { initialPickerState, typeChanged, rebuildOptions } from '../../utils/category-picker'
 import { formatDate } from '../../utils/date'
 import { moneyString } from '../../utils/money'
+import { uiIcons } from '../../assets/icons'
 
 interface MultiItemRow {
   parsed: ParsedTransaction
@@ -42,6 +44,7 @@ let pressStartAt = 0
 
 Component({
   data: {
+    icoMic: uiIcons.micWhite,
     // idle 隐藏 / recording 按住录音浮层 / confirm 底部确认卡
     phase: 'idle' as 'idle' | 'recording' | 'confirm',
     transcript: '',
@@ -52,6 +55,9 @@ Component({
     note: '',
     dateStr: '',
     ...initialPickerState(),
+    catIcon: categoryIcon(TransactionCategory.Other),
+    catColor: categoryColor(TransactionCategory.Other),
+    showCatGrid: false,
     canSave: false,
   },
 
@@ -132,6 +138,15 @@ Component({
       }
     },
 
+    /** 应用 picker 状态并同步分类图标展示 */
+    applyPicker(state: CategoryPickerState) {
+      this.setData({
+        ...state,
+        catIcon: categoryIcon(state.category as TransactionCategory),
+        catColor: categoryColor(state.category as TransactionCategory),
+      })
+    },
+
     applyParsed(p: ParsedTransaction) {
       this.setData({
         hasResult: true,
@@ -139,8 +154,8 @@ Component({
         note: p.note,
         dateStr: formatDate(p.date),
         canSave: p.amount !== null && p.amount > 0,
-        ...rebuildOptions({ ...this.data, isExpense: p.isExpense, category: p.category }),
       })
+      this.applyPicker(rebuildOptions({ ...this.data, isExpense: p.isExpense, category: p.category }))
     },
 
     dismiss() {
@@ -160,11 +175,22 @@ Component({
 
     onTypeChange(e: WechatMiniprogram.BaseEvent) {
       const isExpense = e.currentTarget.dataset.value === 'expense'
-      this.setData({ ...typeChanged(this.data, isExpense) })
+      this.applyPicker(typeChanged(this.data, isExpense))
     },
 
-    onCategoryChange(e: WechatMiniprogram.PickerChange) {
-      this.setData({ ...categoryPicked(this.data, Number(e.detail.value)) })
+    // ==== 分类宫格 ====
+
+    openCatGrid() { this.setData({ showCatGrid: true }) },
+    closeCatGrid() { this.setData({ showCatGrid: false }) },
+
+    onCatGridSelect(e: WechatMiniprogram.CustomEvent) {
+      const { category, isExpense } = e.detail as { category: string; isExpense: boolean }
+      let state: CategoryPickerState = this.data
+      if (isExpense !== this.data.isExpense) {
+        state = typeChanged(state, isExpense)
+      }
+      this.applyPicker(rebuildOptions({ ...state, category }))
+      this.setData({ showCatGrid: false })
     },
 
     // ==== 多笔 ====

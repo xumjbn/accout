@@ -3,7 +3,7 @@
 
   <!-- 云开发未开通 -->
   <view wx:if="{{!cloudReady}}" class="card notice">
-    <text class="notice-title">☁️ 需要开通云开发</text>
+    <view class="notice-head"><image class="notice-img" src="{{icoCloud}}" mode="aspectFit" /><text class="notice-title">需要开通云开发</text></view>
     <text class="notice-desc">家庭共享依赖微信云开发。请在微信开发者工具中开通云开发（需要 AppID），并创建 families / family_members / family_tx 三个集合，权限设为「所有用户可读写」。</text>
   </view>
 
@@ -23,7 +23,7 @@
     <view class="card">
       <text class="section-title">成员（{{members.length}}）</text>
       <view wx:for="{{members}}" wx:key="index" class="member-row">
-        <text class="member-avatar">👤</text>
+        <view class="member-avatar"><image class="member-img" src="{{icoPerson}}" mode="aspectFit" /></view>
         <text class="member-name">{{item.nickname}}</text>
       </view>
     </view>

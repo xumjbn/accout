@@ -6,8 +6,8 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "icons")
-BRAND = (78, 110, 245)      # #4E6EF5
-BRAND2 = (122, 90, 248)     # #7A5AF8
+BRAND = (7, 193, 96)        # #07C160
+BRAND2 = (57, 217, 138)     # #39D98A
 GRAY = (156, 163, 175)      # #9CA3AF
 GOLD = (255, 201, 77)       # #FFC94D
 GOLD_DARK = (244, 169, 37)

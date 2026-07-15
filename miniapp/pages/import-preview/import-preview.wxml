@@ -16,7 +16,7 @@
   <view class="section-title">明细预览</view>
   <scroll-view scroll-y class="preview-list">
     <view wx:for="{{rows}}" wx:key="id" class="preview-row {{item.isDuplicate ? 'duplicate' : ''}}">
-      <text class="row-icon">{{item.icon}}</text>
+      <view class="row-icon" style="background:{{item.color}}22"><image class="row-img" src="{{item.icon}}" mode="aspectFit" /></view>
       <view class="row-info">
         <text class="row-note">{{item.note || item.category}}</text>
         <text class="row-date">{{item.date}}</text>

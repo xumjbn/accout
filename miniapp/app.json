@@ -9,14 +9,14 @@
     "pages/family/family"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#4E6EF5",
+    "navigationBarBackgroundColor": "#07C160",
     "navigationBarTitleText": "语随记",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#F4F5FB"
   },
   "tabBar": {
     "color": "#9CA3AF",
-    "selectedColor": "#4E6EF5",
+    "selectedColor": "#07C160",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

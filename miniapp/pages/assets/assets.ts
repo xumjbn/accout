@@ -1,6 +1,7 @@
 import { Account, createAccount, AccountKind, assetKinds, liabilityKinds, isLiability, accountKindIcon, accountKindColor, accountProfit } from '../../models/account'
 import { loadAccounts, saveAccounts } from '../../services/storage'
 import { moneyString, profitRate } from '../../utils/money'
+import { uiIcons } from '../../assets/icons'
 
 /** 账户列表展示行（WXML 不能调函数，展示字段全部预计算） */
 interface AccountRow {
@@ -34,6 +35,7 @@ function toRow(account: Account): AccountRow {
 
 Page({
   data: {
+    icoEmpty: uiIcons.bankBrand,
     totalAssets: '0',
     totalLiabilities: '0',
     netWorth: '0',

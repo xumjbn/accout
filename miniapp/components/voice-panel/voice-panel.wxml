@@ -3,7 +3,7 @@
   catch:touchstart="onHoldStart"
   catch:touchend="onHoldEnd"
   catch:touchcancel="onHoldEnd">
-  <text class="vp-btn-icon">🎤</text>
+  <image class="vp-btn-img" src="{{icoMic}}" mode="aspectFit" />
   <text>{{phase === 'recording' ? '松开结束' : '按住说话'}}</text>
 </view>
 
@@ -11,7 +11,7 @@
 <view wx:if="{{phase === 'recording'}}" class="vp-mask recording-mask" bindtap="forceCancel">
   <view class="vp-listening">
     <view class="vp-pulse"></view>
-    <text class="vp-mic">🎤</text>
+    <view class="vp-mic"><image class="vp-mic-img" src="{{icoMic}}" mode="aspectFit" /></view>
   </view>
   <text class="vp-transcript">{{transcript || '正在聆听…'}}</text>
   <text class="vp-hint">松开结束 · 点击空白处取消</text>
@@ -28,7 +28,7 @@
       <text class="vp-multi-hint">识别到 {{multiItems.length}} 笔，确认后一起入账</text>
       <scroll-view scroll-y class="vp-multi-list">
         <view wx:for="{{multiItems}}" wx:key="index" class="vp-multi-item">
-          <text class="vp-multi-icon" style="background:{{item.color}}22;">{{item.icon}}</text>
+          <view class="vp-multi-icon" style="background:{{item.color}}22;"><image class="vp-multi-img" src="{{item.icon}}" mode="aspectFit" /></view>
           <view class="vp-multi-info">
             <text class="vp-multi-note">{{item.title}}</text>
             <text class="vp-multi-cat">{{item.category}}</text>
@@ -49,11 +49,14 @@
         <text class="vp-label">金额</text>
         <input class="vp-input vp-money" type="digit" placeholder="0.00" value="{{amountText}}" bindinput="onAmountInput" />
       </view>
-      <view class="vp-field">
+      <view class="vp-field" bindtap="openCatGrid">
         <text class="vp-label">分类</text>
-        <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
-          <view class="vp-picker">{{category}} ›</view>
-        </picker>
+        <view class="vp-picker vp-cat">
+          <view class="vp-cat-circ" style="background:{{catColor}}22;">
+            <image class="vp-cat-img" src="{{catIcon}}" mode="aspectFit" />
+          </view>
+          <text>{{category}} ›</text>
+        </view>
       </view>
       <view class="vp-field">
         <text class="vp-label">备注</text>
@@ -75,3 +78,7 @@
     </view>
   </view>
 </view>
+
+<!-- 分类宫格 -->
+<category-grid visible="{{showCatGrid}}" isExpense="{{isExpense}}" selected="{{category}}"
+  bind:select="onCatGridSelect" bind:close="closeCatGrid" />

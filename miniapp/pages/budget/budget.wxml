@@ -31,7 +31,7 @@
     <view wx:for="{{categoryBudgets}}" wx:key="id" class="cat-budget-item"
       bindtap="editBudget" data-id="{{item.id}}">
       <view class="cat-header">
-        <text class="cat-icon">{{item.icon}}</text>
+        <view class="cat-icon" style="background:{{item.color}}22"><image class="cat-img" src="{{item.icon}}" mode="aspectFit" /></view>
         <text class="cat-name">{{item.categoryRaw}}</text>
         <text class="cat-amount">¥{{item.spent}} / ¥{{item.amount}}</text>
       </view>

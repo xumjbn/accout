@@ -1,9 +1,9 @@
 /* 全局样式 */
 page {
-  --color-primary: #4E6EF5;
-  --color-primary-light: #7A5AF8;
-  --grad-brand: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
-  --color-bg: #F4F5FB;
+  --color-primary: #07C160;
+  --color-primary-light: #39D98A;
+  --grad-brand: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
+  --color-bg: #F4F6F5;
   --color-surface: #FFFFFF;
   --color-text: #1B1F2C;
   --color-text-secondary: #6B7280;
@@ -19,7 +19,7 @@ page {
   font-size: 14px;
   color: var(--color-text);
   /* 顶部淡靛晕染，向下过渡到浅灰蓝 */
-  background: linear-gradient(180deg, #E9EDFF 0%, #F4F5FB 360rpx, #F4F5FB 100%);
+  background: linear-gradient(180deg, #E4F6EB 0%, #F4F6F5 360rpx, #F4F6F5 100%);
 }
 
 /* 修复超屏：wxss 默认 content-box，width:100% + padding 会撑出屏幕 */
@@ -90,4 +90,21 @@ view, text, image, input, button, scroll-view, picker, textarea, navigator {
   height: 1rpx;
   background: var(--color-separator);
   margin: 16rpx 0;
+}
+
+/* 空状态插图徽章 */
+.empty-badge {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 50%;
+  background: #E7F7EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.empty-badge image {
+  width: 60rpx;
+  height: 60rpx;
 }

@@ -10,9 +10,12 @@ import {
   pullTransactions,
 } from '../../services/family'
 import { refreshPrevPage } from '../../utils/page'
+import { uiIcons } from '../../assets/icons'
 
 Page({
   data: {
+    icoCloud: uiIcons.cloud,
+    icoPerson: uiIcons.person,
     cloudReady: false,
     family: null as FamilyInfo | null,
     members: [] as FamilyMember[],

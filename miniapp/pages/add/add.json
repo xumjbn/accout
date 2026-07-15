@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "category-grid": "../../components/category-grid/category-grid"
+  },
   "navigationBarTitleText": "记一笔"
 }

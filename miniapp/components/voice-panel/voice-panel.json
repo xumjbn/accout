@@ -1,4 +1,6 @@
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "category-grid": "../category-grid/category-grid"
+  }
 }

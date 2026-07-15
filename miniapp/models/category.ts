@@ -1,3 +1,5 @@
+import { categoryIconSrc } from '../assets/icons'
+
 /**
  * 交易分类枚举 - 与 iOS TransactionCategory 完全一致
  * 11 个支出分类 + 4 个收入分类
@@ -56,27 +58,9 @@ export function isIncomeCategory(cat: TransactionCategory): boolean {
   return incomeCategories().includes(cat)
 }
 
-/** 分类图标 (Unicode 字符替代 SF Symbol) */
+/** 分类图标（原创 SVG data URI，供 <image src> 使用） */
 export function categoryIcon(cat: TransactionCategory): string {
-  const map: Record<string, string> = {
-    [TransactionCategory.Food]: '🍽️',
-    [TransactionCategory.Transport]: '🚗',
-    [TransactionCategory.Shopping]: '🛍️',
-    [TransactionCategory.Entertainment]: '🎮',
-    [TransactionCategory.Housing]: '🏠',
-    [TransactionCategory.Utilities]: '⚡',
-    [TransactionCategory.Medical]: '💊',
-    [TransactionCategory.Education]: '📚',
-    [TransactionCategory.Social]: '🎁',
-    [TransactionCategory.Travel]: '✈️',
-    [TransactionCategory.Repayment]: '💳',
-    [TransactionCategory.Other]: '📌',
-    [TransactionCategory.Salary]: '💰',
-    [TransactionCategory.Bonus]: '🧧',
-    [TransactionCategory.Investment]: '📈',
-    [TransactionCategory.OtherIncome]: '📥',
-  }
-  return map[cat] || '📌'
+  return categoryIconSrc[cat] || categoryIconSrc[TransactionCategory.Other]
 }
 
 /** 分类颜色 */

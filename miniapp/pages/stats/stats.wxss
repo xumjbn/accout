@@ -19,7 +19,7 @@
 
 .arrow {
   font-size: 32rpx;
-  color: #4E6EF5;
+  color: #07C160;
   padding: 8rpx 12rpx;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .dim-opt.on {
-  background: linear-gradient(135deg, #4E6EF5 0%, #7A5AF8 100%);
+  background: linear-gradient(135deg, #07C160 0%, #39D98A 100%);
   color: #fff;
   font-weight: 600;
 }
@@ -109,7 +109,7 @@
 }
 
 .total-value.income { color: #10B981; }
-.total-value.balance { color: #4E6EF5; }
+.total-value.balance { color: #07C160; }
 
 /* 空状态 */
 .empty-state {
@@ -190,7 +190,7 @@
 .bar-fill {
   width: 100%;
   max-width: 48rpx;
-  background: linear-gradient(to top, #4E6EF5, #BCC7FF);
+  background: linear-gradient(to top, #07C160, #8CE8B8);
   border-radius: 6rpx 6rpx 0 0;
   min-height: 4rpx;
   transition: height 0.3s;
@@ -288,3 +288,6 @@
   font-size: 24rpx;
   flex-shrink: 0;
 }
+
+.chip-img { width: 30rpx; height: 30rpx; }
+.rank-img { width: 26rpx; height: 26rpx; }

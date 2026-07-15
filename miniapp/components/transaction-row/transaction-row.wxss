@@ -33,7 +33,8 @@
 }
 
 .tx-source {
-  font-size: 20rpx;
+  width: 22rpx;
+  height: 22rpx;
 }
 
 .tx-amount {

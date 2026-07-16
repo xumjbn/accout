@@ -5,37 +5,46 @@
  *   <view class="theme-bg" style="background:{{themeBg}}"></view>
  */
 
+import { patternBg } from '../assets/patterns'
+
 export interface Theme {
   id: string
   name: string
   bg: string
 }
 
+/** 组合背景：可爱涂鸦纹理（最上层）+ 光斑 + 渐变 */
+function composeBg(id: string, layers: string): string {
+  const pattern = patternBg[id]
+  const doodle = pattern ? 'url(' + pattern + ') repeat 0 0 / 480rpx 480rpx, ' : ''
+  return doodle + layers
+}
+
 export const THEMES: Theme[] = [
   {
     id: 'cream',
     name: '奶油暖阳',
-    bg: 'radial-gradient(circle at 12% 10%, rgba(255, 189, 89, 0.16) 0%, rgba(255, 189, 89, 0) 34%), radial-gradient(circle at 88% 22%, rgba(255, 138, 101, 0.12) 0%, rgba(255, 138, 101, 0) 30%), linear-gradient(180deg, #FFFFFF 0%, #FFF3E2 260rpx, #FFF9F2 640rpx, #FFF9F2 100%)',
+    bg: composeBg('cream', 'radial-gradient(circle at 12% 10%, rgba(255, 189, 89, 0.16) 0%, rgba(255, 189, 89, 0) 34%), radial-gradient(circle at 88% 22%, rgba(255, 138, 101, 0.12) 0%, rgba(255, 138, 101, 0) 30%), linear-gradient(180deg, #FFFFFF 0%, #FFF3E2 260rpx, #FFF9F2 640rpx, #FFF9F2 100%)'),
   },
   {
     id: 'peach',
     name: '蜜桃粉',
-    bg: 'radial-gradient(circle at 14% 10%, rgba(255, 128, 171, 0.14) 0%, rgba(255, 128, 171, 0) 32%), radial-gradient(circle at 86% 20%, rgba(255, 201, 77, 0.12) 0%, rgba(255, 201, 77, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #FFE9EF 260rpx, #FFF7F9 640rpx, #FFF7F9 100%)',
+    bg: composeBg('peach', 'radial-gradient(circle at 14% 10%, rgba(255, 128, 171, 0.14) 0%, rgba(255, 128, 171, 0) 32%), radial-gradient(circle at 86% 20%, rgba(255, 201, 77, 0.12) 0%, rgba(255, 201, 77, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #FFE9EF 260rpx, #FFF7F9 640rpx, #FFF7F9 100%)'),
   },
   {
     id: 'lavender',
     name: '薰衣草',
-    bg: 'radial-gradient(circle at 12% 10%, rgba(155, 126, 245, 0.14) 0%, rgba(155, 126, 245, 0) 32%), radial-gradient(circle at 88% 20%, rgba(255, 158, 205, 0.12) 0%, rgba(255, 158, 205, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #F0EAFF 260rpx, #FAF8FF 640rpx, #FAF8FF 100%)',
+    bg: composeBg('lavender', 'radial-gradient(circle at 12% 10%, rgba(155, 126, 245, 0.14) 0%, rgba(155, 126, 245, 0) 32%), radial-gradient(circle at 88% 20%, rgba(255, 158, 205, 0.12) 0%, rgba(255, 158, 205, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #F0EAFF 260rpx, #FAF8FF 640rpx, #FAF8FF 100%)'),
   },
   {
     id: 'sky',
     name: '天空蓝',
-    bg: 'radial-gradient(circle at 12% 10%, rgba(78, 168, 255, 0.14) 0%, rgba(78, 168, 255, 0) 32%), radial-gradient(circle at 88% 20%, rgba(126, 231, 196, 0.12) 0%, rgba(126, 231, 196, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #E3F2FF 260rpx, #F5FAFF 640rpx, #F5FAFF 100%)',
+    bg: composeBg('sky', 'radial-gradient(circle at 12% 10%, rgba(78, 168, 255, 0.14) 0%, rgba(78, 168, 255, 0) 32%), radial-gradient(circle at 88% 20%, rgba(126, 231, 196, 0.12) 0%, rgba(126, 231, 196, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #E3F2FF 260rpx, #F5FAFF 640rpx, #F5FAFF 100%)'),
   },
   {
     id: 'green',
     name: '清新绿',
-    bg: 'radial-gradient(circle at 12% 10%, rgba(7, 193, 96, 0.10) 0%, rgba(7, 193, 96, 0) 32%), radial-gradient(circle at 88% 20%, rgba(255, 201, 77, 0.12) 0%, rgba(255, 201, 77, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #E4F6EB 260rpx, #F4F6F5 640rpx, #F4F6F5 100%)',
+    bg: composeBg('green', 'radial-gradient(circle at 12% 10%, rgba(7, 193, 96, 0.10) 0%, rgba(7, 193, 96, 0) 32%), radial-gradient(circle at 88% 20%, rgba(255, 201, 77, 0.12) 0%, rgba(255, 201, 77, 0) 28%), linear-gradient(180deg, #FFFFFF 0%, #E4F6EB 260rpx, #F4F6F5 640rpx, #F4F6F5 100%)'),
   },
 ]
 

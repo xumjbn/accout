@@ -1,4 +1,5 @@
 import { createTransaction } from '../../models/transaction'
+import { applyTheme } from '../../services/theme'
 import { categoryIcon, categoryColor } from '../../models/category'
 import { TransactionCategory } from '../../models/category'
 import { loadTransactions, insertTransaction, updateTransaction, loadBudgets } from '../../services/storage'
@@ -11,6 +12,7 @@ import { formatDate } from '../../utils/date'
 
 Page({
   data: {
+    themeBg: '',
     isEdit: false,
     editId: '',
     amountText: '',
@@ -21,6 +23,10 @@ Page({
     catColor: categoryColor(TransactionCategory.Other),
     showCatGrid: false,
     canSave: false,
+  },
+
+  onShow() {
+    applyTheme(this)
   },
 
   onLoad(options: { id?: string }) {

@@ -1,5 +1,6 @@
 <!-- 资产负债 - 对应 iOS AssetsView -->
 <view class="page">
+  <view class="theme-bg" style="background:{{themeBg}}"></view>
   <!-- 净资产卡片 -->
   <view class="networth-card">
     <text class="nw-label">净资产</text>

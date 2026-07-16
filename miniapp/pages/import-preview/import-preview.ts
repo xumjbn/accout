@@ -1,4 +1,5 @@
 import { ImportedRow, parseCSV } from '../../services/importer'
+import { applyTheme } from '../../services/theme'
 import { Transaction, createTransaction } from '../../models/transaction'
 import { categoryIcon, categoryColor } from '../../models/category'
 import { insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
@@ -15,10 +16,15 @@ interface ImportPayload {
 
 Page({
   data: {
+    themeBg: '',
     totalCount: 0,
     duplicateCount: 0,
     newCount: 0,
     rows: [] as (ImportedRow & { icon: string; color: string; amountStr: string; dateStr: string })[],
+  },
+
+  onShow() {
+    applyTheme(this)
   },
 
   allRows: [] as ImportedRow[],

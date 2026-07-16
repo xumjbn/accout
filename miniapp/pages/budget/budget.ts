@@ -1,4 +1,5 @@
 import { Budget, createBudget } from '../../models/budget'
+import { applyTheme } from '../../services/theme'
 import { TransactionCategory, expenseCategories, categoryIcon, categoryColor } from '../../models/category'
 import { loadBudgets, saveBudgets, loadTransactions } from '../../services/storage'
 import { moneyString, clampedRatio, budgetColor } from '../../utils/money'
@@ -20,6 +21,7 @@ interface CatBudgetRow {
 
 Page({
   data: {
+    themeBg: '',
     totalBudget: null as Budget | null,
     categoryBudgets: [] as CatBudgetRow[],
     totalSpent: 0,
@@ -42,6 +44,7 @@ Page({
   },
 
   onShow() {
+    applyTheme(this)
     this.reload()
   },
 

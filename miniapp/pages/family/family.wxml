@@ -1,5 +1,6 @@
 <!-- 家庭共享（免费版）：账本文件微信群互传 + 智能合并 -->
 <view class="page">
+  <view class="theme-bg" style="background:{{themeBg}}"></view>
   <view class="hero">
     <text class="hero-label">家庭共享</text>
     <text class="hero-name">一家人记一本账</text>

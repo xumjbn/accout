@@ -1,4 +1,5 @@
 import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
+import { applyTheme } from '../../services/theme'
 import { Transaction } from '../../models/transaction'
 import { loadTransactions } from '../../services/storage'
 import { startOfDay, formatYearMonth } from '../../utils/date'
@@ -26,6 +27,7 @@ const BAR_MAX_HEIGHT = 200
 
 Page({
   data: {
+    themeBg: '',
     icoUp: uiIcons.arrowUpRed,
     icoDown: uiIcons.arrowDownGreen,
     icoCoin: uiIcons.coinBrand,
@@ -47,6 +49,7 @@ Page({
   },
 
   onShow() {
+    applyTheme(this)
     this.reload()
   },
 

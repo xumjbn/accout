@@ -9,9 +9,9 @@
     "pages/family/family"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#07C160",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTitleText": "语随记",
-    "navigationBarTextStyle": "white",
+    "navigationBarTextStyle": "black",
     "backgroundColor": "#F4F5FB"
   },
   "tabBar": {

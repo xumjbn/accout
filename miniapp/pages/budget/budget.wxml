@@ -1,5 +1,6 @@
 <!-- 预算管理 - 对应 iOS BudgetView -->
 <view class="page">
+  <view class="theme-bg" style="background:{{themeBg}}"></view>
   <!-- 总预算 -->
   <view class="section">
     <text class="section-title">本月总预算</text>

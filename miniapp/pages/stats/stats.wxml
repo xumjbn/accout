@@ -1,5 +1,6 @@
 <!-- 统计：月/年双维度 -->
 <view class="page">
+  <view class="theme-bg" style="background:{{themeBg}}"></view>
   <!-- 周期切换：‹ 2026年7月 › + 月|年 -->
   <view class="period-row">
     <view class="switcher">

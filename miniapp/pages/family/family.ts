@@ -1,16 +1,19 @@
 import { sharePack, mergePackText, MergeResult } from '../../services/family'
+import { applyTheme } from '../../services/theme'
 import { loadTransactions } from '../../services/storage'
 import { refreshPrevPage } from '../../utils/page'
 import { uiIcons } from '../../assets/icons'
 
 Page({
   data: {
+    themeBg: '',
     icoPerson: uiIcons.person,
     txCount: 0,
     lastResult: null as MergeResult | null,
   },
 
   onShow() {
+    applyTheme(this)
     this.setData({ txCount: loadTransactions().length })
   },
 

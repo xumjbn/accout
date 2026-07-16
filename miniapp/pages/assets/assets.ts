@@ -1,4 +1,5 @@
 import { Account, createAccount, AccountKind, assetKinds, liabilityKinds, isLiability, accountKindIcon, accountKindColor, accountProfit, estMonthlyPayment, remainingPeriods, monthlyInterest } from '../../models/account'
+import { applyTheme } from '../../services/theme'
 import { loadAccounts, saveAccounts } from '../../services/storage'
 import { moneyString, profitRate } from '../../utils/money'
 import { uiIcons } from '../../assets/icons'
@@ -51,6 +52,7 @@ function buildLoanInfo(account: Account): string {
 
 Page({
   data: {
+    themeBg: '',
     icoEmpty: uiIcons.bankBrand,
     totalAssets: '0',
     totalLiabilities: '0',
@@ -76,6 +78,7 @@ Page({
   },
 
   onShow() {
+    applyTheme(this)
     this.reload()
   },
 

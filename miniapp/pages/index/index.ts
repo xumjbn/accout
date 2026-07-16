@@ -1,4 +1,5 @@
 import { Transaction } from '../../models/transaction'
+import { applyTheme, promptSwitchTheme } from '../../services/theme'
 import { loadTransactions, deleteTransaction, loadBudgets } from '../../services/storage'
 import { exportToCSV } from '../../services/exporter'
 import { checkBudgetAlert, BudgetAlert } from '../../services/notifier'
@@ -13,6 +14,7 @@ interface GroupedData {
 
 Page({
   data: {
+    themeBg: '',
     icoEmpty: uiIcons.micBrand,
     transactions: [] as Transaction[],
     monthExpense: 0,
@@ -25,6 +27,7 @@ Page({
   },
 
   onShow() {
+    applyTheme(this)
     this.reload()
   },
 
@@ -159,11 +162,12 @@ Page({
   // 更多菜单：导入 / 导出 / 家庭共享
   openMenu() {
     wx.showActionSheet({
-      itemList: ['导入微信/支付宝账单', '导出 CSV', '家庭共享'],
+      itemList: ['导入微信/支付宝账单', '导出 CSV', '家庭共享', '切换背景'],
       success: (res) => {
         if (res.tapIndex === 0) this.onImport()
         else if (res.tapIndex === 1) this.onExport()
         else if (res.tapIndex === 2) wx.navigateTo({ url: '/pages/family/family' })
+        else if (res.tapIndex === 3) promptSwitchTheme(this)
       },
     })
   },

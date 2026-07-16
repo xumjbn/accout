@@ -18,8 +18,7 @@ page {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
   font-size: 14px;
   color: var(--color-text);
-  /* 顶部淡靛晕染，向下过渡到浅灰蓝 */
-  background: linear-gradient(180deg, #E4F6EB 0%, #F4F6F5 360rpx, #F4F6F5 100%);
+  background: var(--color-bg);
 }
 
 /* 修复超屏：wxss 默认 content-box，width:100% + padding 会撑出屏幕 */
@@ -107,4 +106,14 @@ view, text, image, input, button, scroll-view, picker, textarea, navigator {
 .empty-badge image {
   width: 60rpx;
   height: 60rpx;
+}
+
+/* 可切换主题背景层（页面根节点第一个子元素） */
+.theme-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
 }

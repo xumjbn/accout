@@ -1,5 +1,6 @@
 <!-- 手动记账/编辑 - 对应 iOS TransactionFormView -->
 <view class="page">
+  <view class="theme-bg" style="background:{{themeBg}}"></view>
   <view class="card">
     <!-- 类型切换 -->
     <view class="type-toggle">

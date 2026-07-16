@@ -8,7 +8,7 @@ import { ParsedTransaction, parseMultiple } from '../../services/parser'
 import { createTransaction } from '../../models/transaction'
 import { TransactionCategory, categoryIcon, categoryColor } from '../../models/category'
 import { CategoryPickerState } from '../../utils/category-picker'
-import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
+import { insertTransaction, insertTransactions, updateTransaction, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
 import { promptLinkRepayment } from '../../services/loan'
 import { initialPickerState, typeChanged, rebuildOptions } from '../../utils/category-picker'
@@ -213,6 +213,7 @@ Component({
 
     save() {
       const { multiItems, amountText, isExpense, category, note, dateStr } = this.data
+      let savedTx: ReturnType<typeof createTransaction> | null = null
 
       if (multiItems.length > 1) {
         const batch = multiItems
@@ -239,6 +240,7 @@ Component({
           source: 'voice',
         })
         insertTransaction(tx)
+        savedTx = tx
       }
 
       const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
@@ -247,8 +249,12 @@ Component({
       const needLink = multiItems.length <= 1 && isExpense
         && category === TransactionCategory.Repayment && amount > 0
       console.log('[voice-panel] 还款联动检查:', { category, isExpense, amount, needLink })
-      const link = needLink ? promptLinkRepayment(amount) : Promise.resolve()
-      link.then(() => {
+      const link = needLink ? promptLinkRepayment(amount) : Promise.resolve(null as string | null)
+      link.then((accountId) => {
+        if (accountId && savedTx) {
+          savedTx.linkedAccountId = accountId
+          updateTransaction(savedTx)
+        }
         this.dismiss()
         this.triggerEvent('saved')
         if (alert) {

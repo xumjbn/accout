@@ -13,6 +13,8 @@ export interface Transaction {
   createdAt: number
   /** 最后编辑时间（家庭合并时新者胜）；旧数据可能缺省 */
   updatedAt?: number
+  /** 还款账单已关联的负债账户 id（防止重复冲抵本金） */
+  linkedAccountId?: string
   source: 'voice' | 'manual' | 'import'
 }
 

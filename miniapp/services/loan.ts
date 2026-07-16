@@ -40,16 +40,16 @@ export function applyRepayment(accountId: string, amount: number): RepaymentSpli
 
 /**
  * 记完「还款」账单后调用：有负债账户则询问关联到哪个，
- * 关联后弹出利息/本金拆分明细。无论用户怎么选都会 resolve。
+ * 关联后弹出利息/本金拆分明细。resolve 关联的账户 id（未关联为 null）。
  */
-export function promptLinkRepayment(amount: number): Promise<void> {
+export function promptLinkRepayment(amount: number): Promise<string | null> {
   return new Promise(resolve => {
     const liabilities = loadAccounts().filter(a => isLiability(a.kind) && a.balance > 0)
     console.log('[loan] promptLinkRepayment, 负债账户数:', liabilities.length)
     if (liabilities.length === 0) {
       // 没有可关联对象：给出提示而不是静默跳过
       wx.showToast({ title: '想自动冲抵本金？先在「资产」页添加负债账户', icon: 'none', duration: 3000 })
-      resolve()
+      resolve(null)
       return
     }
     // ActionSheet 最多 6 项：前 5 个负债 + 不关联
@@ -60,23 +60,24 @@ export function promptLinkRepayment(amount: number): Promise<void> {
       itemList,
       success: (res) => {
         if (res.tapIndex < shown.length) {
-          const split = applyRepayment(shown[res.tapIndex].id, amount)
+          const accountId = shown[res.tapIndex].id
+          const split = applyRepayment(accountId, amount)
           if (split) {
             const interestPart = split.interest > 0 ? `本期利息 ¥${moneyString(split.interest)}，` : ''
             wx.showModal({
               title: '已冲抵负债',
               content: `${interestPart}冲抵本金 ¥${moneyString(split.principal)}。「${split.accountName}」剩余本金 ¥${moneyString(split.newBalance)}`,
               showCancel: false,
-              complete: () => resolve(),
+              complete: () => resolve(accountId),
             })
             return
           }
         }
-        resolve()
+        resolve(null)
       },
       fail: (err) => {
         console.error('[loan] showActionSheet fail:', err)
-        resolve()
+        resolve(null)
       },
     })
   })

@@ -2,6 +2,7 @@ import { createTransaction } from '../../models/transaction'
 import { categoryIcon, categoryColor } from '../../models/category'
 import { TransactionCategory } from '../../models/category'
 import { loadTransactions, insertTransaction, updateTransaction, loadBudgets } from '../../services/storage'
+import { Transaction } from '../../models/transaction'
 import { checkBudgetAlert } from '../../services/notifier'
 import { promptLinkRepayment } from '../../services/loan'
 import { initialPickerState, typeChanged, rebuildOptions, CategoryPickerState } from '../../utils/category-picker'
@@ -86,6 +87,7 @@ Page({
 
     const date = dateStr ? new Date(dateStr).getTime() : Date.now()
 
+    let saved: Transaction | null = null
     if (this.data.isEdit) {
       const tx = loadTransactions().find(t => t.id === this.data.editId)
       if (tx) {
@@ -95,6 +97,7 @@ Page({
         tx.note = note
         tx.date = date
         updateTransaction(tx)
+        saved = tx
       }
     } else {
       const tx = createTransaction({
@@ -106,13 +109,21 @@ Page({
         source: 'manual',
       })
       insertTransaction(tx)
+      saved = tx
     }
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
-    // 新建的还款账单：询问关联负债账户（编辑不重复联动）
-    const needLink = !this.data.isEdit && isExpense
+    // 还款账单且尚未关联过负债：询问关联（新建/编辑都可补关联；已关联的不重复弹）
+    const needLink = !!saved && isExpense
       && category === TransactionCategory.Repayment && amount > 0
-    const link = needLink ? promptLinkRepayment(amount) : Promise.resolve()
-    link.then(() => finishAndBack(alert, this.data.isEdit ? '已更新' : '已入账'))
+      && !saved.linkedAccountId
+    const link = needLink ? promptLinkRepayment(amount) : Promise.resolve(null as string | null)
+    link.then((accountId) => {
+      if (accountId && saved) {
+        saved.linkedAccountId = accountId
+        updateTransaction(saved)
+      }
+      finishAndBack(alert, this.data.isEdit ? '已更新' : '已入账')
+    })
   },
 })

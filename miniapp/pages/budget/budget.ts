@@ -4,167 +4,229 @@ import { loadBudgets, saveBudgets, loadTransactions } from '../../services/stora
 import { moneyString, clampedRatio, budgetColor } from '../../utils/money'
 import { isSameMonth, daysLeftInMonth } from '../../utils/date'
 
+const TOTAL_RAW = ''
+const TOTAL_LABEL = '总预算（全部支出）'
+
+interface CatBudgetRow {
+  id: string
+  categoryRaw: string
+  amount: number
+  icon: string
+  color: string
+  spent: number
+  ratio: number
+  progressColor: string
+}
+
 Page({
   data: {
     totalBudget: null as Budget | null,
-    categoryBudgets: [] as (Budget & { icon: string; color: string; spent: number; ratio: number; progressColor: string })[],
+    categoryBudgets: [] as CatBudgetRow[],
     totalSpent: 0,
     totalAmount: 0,
     remaining: '0',
     dailyAvailable: '0',
-    progressColor: '#22C55E',
+    progressColor: '#07C160',
     ratio: 0,
     isOver: false,
     daysLeft: 0,
+
+    // 表单
     showForm: false,
-    editingBudget: null as Budget | null,
-    formCategory: '',
+    isEdit: false,
+    editingId: '',
+    formRaws: [] as string[],
+    formLabels: [] as string[],
+    formIndex: 0,
     formAmountText: '',
-    formCategories: expenseCategories() as string[],
-    formCategoryIndex: 0,
-    takenCategoryRaws: [] as string[],
   },
 
   onShow() {
     this.reload()
   },
 
+  /** 清洗历史脏数据：'(总预算)' 字面量、未知分类、重复范围 */
+  sanitize(budgets: Budget[]): Budget[] {
+    const valid = new Set(expenseCategories() as string[])
+    const seen = new Set<string>()
+    const cleaned: Budget[] = []
+    let changed = false
+    for (const budget of budgets) {
+      let raw = budget.categoryRaw
+      if (raw === '(总预算)' || raw === '总预算') raw = TOTAL_RAW
+      if (raw !== TOTAL_RAW && !valid.has(raw)) { changed = true; continue }
+      if (seen.has(raw)) { changed = true; continue }
+      seen.add(raw)
+      if (raw !== budget.categoryRaw) { changed = true; budget.categoryRaw = raw }
+      cleaned.push(budget)
+    }
+    if (changed) saveBudgets(cleaned)
+    return cleaned
+  },
+
   reload() {
-    const budgets = loadBudgets()
-    const transactions = loadTransactions()
-    const monthTx = transactions.filter(t => t.isExpense && isSameMonth(t.date))
+    const budgets = this.sanitize(loadBudgets())
+    const monthTx = loadTransactions().filter(t => t.isExpense && isSameMonth(t.date))
 
-    const totalBudget = budgets.find(b => b.categoryRaw === '') || null
-    const categoryBudgets = budgets.filter(b => b.categoryRaw !== '')
-
-    const takenCategoryRaws = budgets.map(b => b.categoryRaw).filter(r => r !== '')
+    const totalBudget = budgets.find(b => b.categoryRaw === TOTAL_RAW) || null
+    const categoryBudgets = budgets.filter(b => b.categoryRaw !== TOTAL_RAW)
 
     const totalSpent = monthTx.reduce((s, t) => s + t.amount, 0)
-    const totalAmount = totalBudget?.amount || 0
+    const totalAmount = totalBudget ? totalBudget.amount : 0
     const remaining = totalAmount - totalSpent
-    const ratio = clampedRatio(totalSpent, totalAmount)
-    const progressColor = budgetColor(totalSpent, totalAmount)
     const daysLeft = daysLeftInMonth()
-    const dailyAvailable = remaining > 0 ? remaining / daysLeft : 0
 
-    const catBudgetRows = categoryBudgets.map(b => {
-      const catSpent = monthTx.filter(t => t.category === b.categoryRaw).reduce((s, t) => s + t.amount, 0)
+    const rows: CatBudgetRow[] = categoryBudgets.map(b => {
+      const spent = monthTx.filter(t => t.category === b.categoryRaw).reduce((s, t) => s + t.amount, 0)
       return {
-        ...b,
+        id: b.id,
+        categoryRaw: b.categoryRaw,
+        amount: b.amount,
         icon: categoryIcon(b.categoryRaw as TransactionCategory),
         color: categoryColor(b.categoryRaw as TransactionCategory),
-        spent: catSpent,
-        ratio: clampedRatio(catSpent, b.amount),
-        progressColor: budgetColor(catSpent, b.amount),
+        spent,
+        ratio: clampedRatio(spent, b.amount),
+        progressColor: budgetColor(spent, b.amount),
       }
     })
 
     this.setData({
       totalBudget,
-      categoryBudgets: catBudgetRows,
+      categoryBudgets: rows,
       totalSpent,
       totalAmount,
-      remaining: moneyString(remaining > 0 ? remaining : 0),
-      dailyAvailable: moneyString(dailyAvailable),
-      progressColor,
-      ratio: Math.round(ratio * 100),
-      isOver: remaining < 0,
+      remaining: moneyString(Math.abs(remaining)),
+      dailyAvailable: moneyString(remaining > 0 ? remaining / daysLeft : 0),
+      progressColor: budgetColor(totalSpent, totalAmount),
+      ratio: Math.round(clampedRatio(totalSpent, totalAmount) * 100),
+      isOver: totalAmount > 0 && remaining < 0,
       daysLeft,
-      takenCategoryRaws,
     })
   },
 
-  // 新建表单
-  showAddForm() {
-    const formCategories = expenseCategories()
+  // ==== 表单 ====
+
+  /** 打开表单：editing 传预算对象则为编辑；presetRaw 指定默认选中的范围 */
+  openForm(editing: Budget | null, presetRaw?: string) {
+    const budgets = loadBudgets()
+    const taken = new Set(budgets.map(b => b.categoryRaw))
+
+    // 可选范围 = 总预算 + 未设过预算的分类；编辑时保留自己当前的范围
+    const raws: string[] = []
+    if (!taken.has(TOTAL_RAW) || (editing && editing.categoryRaw === TOTAL_RAW)) {
+      raws.push(TOTAL_RAW)
+    }
+    for (const cat of expenseCategories()) {
+      if (!taken.has(cat) || (editing && editing.categoryRaw === cat)) {
+        raws.push(cat)
+      }
+    }
+    if (raws.length === 0) {
+      wx.showToast({ title: '所有范围都已设置预算', icon: 'none' })
+      return
+    }
+
+    const target = editing ? editing.categoryRaw : (presetRaw !== undefined ? presetRaw : raws[0])
+    const found = raws.indexOf(target)
+
     this.setData({
       showForm: true,
-      editingBudget: null,
-      formCategory: formCategories[0],
-      formAmountText: '',
-      formCategories,
-      formCategoryIndex: 0,
+      isEdit: !!editing,
+      editingId: editing ? editing.id : '',
+      formRaws: raws,
+      formLabels: raws.map(r => (r === TOTAL_RAW ? TOTAL_LABEL : r)),
+      formIndex: found >= 0 ? found : 0,
+      formAmountText: editing ? String(editing.amount) : '',
     })
   },
 
-  // 编辑
-  editBudget(e: any) {
-    const id = e.currentTarget.dataset.id
+  showAddForm() {
+    this.openForm(null)
+  },
+
+  /** 「＋ 设置本月总预算」入口 */
+  addTotal() {
+    this.openForm(null, TOTAL_RAW)
+  },
+
+  editBudget(e: WechatMiniprogram.BaseEvent) {
+    const id = e.currentTarget.dataset.id as string | undefined
+    const budgets = loadBudgets()
     if (id) {
-      const budgets = loadBudgets()
-      const b = budgets.find(b => b.id === id)
-      if (b) {
-        const formCategories = expenseCategories()
-        const idx = formCategories.indexOf(b.categoryRaw as TransactionCategory)
-        this.setData({
-          showForm: true,
-          editingBudget: b,
-          formCategory: b.categoryRaw,
-          formAmountText: String(b.amount),
-          formCategories,
-          formCategoryIndex: idx >= 0 ? idx : 0,
-        })
-      }
+      const budget = budgets.find(b => b.id === id)
+      if (budget) this.openForm(budget)
     } else {
-      // 点击总预算区域编辑
-      this.setData({
-        showForm: true,
-        editingBudget: this.data.totalBudget,
-        formCategory: '',
-        formAmountText: this.data.totalBudget ? String(this.data.totalBudget.amount) : '',
-        formCategories: ['(总预算)'] as any,
-        formCategoryIndex: 0,
-      })
+      // 点总预算卡片
+      const total = budgets.find(b => b.categoryRaw === TOTAL_RAW)
+      if (total) this.openForm(total)
+      else this.openForm(null, TOTAL_RAW)
     }
   },
 
-  onCategoryChange(e: any) {
-    const idx = e.detail.value
-    this.setData({ formCategoryIndex: idx, formCategory: this.data.formCategories[idx] })
+  closeForm() {
+    this.setData({ showForm: false })
   },
 
-  onAmountInput(e: any) {
+  noop() {},
+
+  onCategoryChange(e: WechatMiniprogram.PickerChange) {
+    this.setData({ formIndex: Number(e.detail.value) })
+  },
+
+  onAmountInput(e: WechatMiniprogram.Input) {
     this.setData({ formAmountText: e.detail.value })
   },
 
   saveForm() {
-    const { formCategory, formAmountText, editingBudget } = this.data
+    const { formRaws, formIndex, formAmountText, isEdit, editingId } = this.data
     const amount = parseFloat(formAmountText)
     if (isNaN(amount) || amount <= 0) {
       wx.showToast({ title: '请输入有效金额', icon: 'none' })
       return
     }
-
+    const raw = formRaws[formIndex]
     const budgets = loadBudgets()
 
-    if (editingBudget) {
-      const idx = budgets.findIndex(b => b.id === editingBudget.id)
-      if (idx !== -1) {
-        budgets[idx].amount = amount
-        budgets[idx].categoryRaw = formCategory
+    if (isEdit) {
+      const budget = budgets.find(b => b.id === editingId)
+      if (!budget) return
+      const conflict = budgets.some(b => b.id !== editingId && b.categoryRaw === raw)
+      if (conflict) {
+        wx.showToast({ title: '该范围已有预算', icon: 'none' })
+        return
       }
+      budget.categoryRaw = raw
+      budget.amount = amount
     } else {
-      budgets.push(createBudget({
-        categoryRaw: formCategory,
-        amount,
-      }))
+      if (budgets.some(b => b.categoryRaw === raw)) {
+        wx.showToast({ title: '该范围已有预算，可点击修改', icon: 'none' })
+        return
+      }
+      budgets.push(createBudget({ categoryRaw: raw, amount }))
     }
 
     saveBudgets(budgets)
-    this.setData({ showForm: false })
+    this.closeForm()
     this.reload()
     wx.showToast({ title: '已保存', icon: 'success' })
   },
 
-  deleteBudget(e: any) {
-    const id = e.currentTarget.dataset.id
+  /** 长按删除（总预算卡不带 data-id，分类行带） */
+  deleteBudget(e: WechatMiniprogram.BaseEvent) {
+    const id = e.currentTarget.dataset.id as string | undefined
+    const budgets = loadBudgets()
+    const target = id
+      ? budgets.find(b => b.id === id)
+      : budgets.find(b => b.categoryRaw === TOTAL_RAW)
+    if (!target) return
+
+    const name = target.categoryRaw === TOTAL_RAW ? '总预算' : `「${target.categoryRaw}」预算`
     wx.showModal({
       title: '删除预算',
-      content: '确定要删除这个预算吗？',
+      content: `确定删除${name}吗？`,
       success: (res) => {
         if (res.confirm) {
-          const budgets = loadBudgets().filter(b => b.id !== id)
-          saveBudgets(budgets)
+          saveBudgets(budgets.filter(b => b.id !== target.id))
           this.reload()
         }
       },

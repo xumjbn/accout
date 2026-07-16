@@ -3,7 +3,7 @@
   <!-- 总预算 -->
   <view class="section">
     <text class="section-title">本月总预算</text>
-    <view wx:if="{{totalBudget}}" class="total-card" bindtap="editBudget">
+    <view wx:if="{{totalBudget}}" class="total-card" bindtap="editBudget" bindlongpress="deleteBudget">
       <view class="total-amounts">
         <text class="total-spent">¥{{totalSpent}}</text>
         <text class="total-budget">/ ¥{{totalAmount}}</text>
@@ -17,7 +17,7 @@
         <text>日均可用 ¥{{dailyAvailable}}</text>
       </view>
     </view>
-    <view wx:else class="empty-slot" bindtap="showAddForm">
+    <view wx:else class="empty-slot" bindtap="addTotal">
       <text>＋ 设置本月总预算</text>
     </view>
   </view>
@@ -29,7 +29,8 @@
       还没有分类预算。点右上角 + 给某个分类单独设额度。
     </view>
     <view wx:for="{{categoryBudgets}}" wx:key="id" class="cat-budget-item"
-      bindtap="editBudget" data-id="{{item.id}}">
+      bindtap="editBudget" data-id="{{item.id}}"
+      bindlongpress="deleteBudget" data-id="{{item.id}}">
       <view class="cat-header">
         <view class="cat-icon" style="background:{{item.color}}22"><image class="cat-img" src="{{item.icon}}" mode="aspectFit" /></view>
         <text class="cat-name">{{item.categoryRaw}}</text>
@@ -48,13 +49,13 @@
   </view>
 
   <!-- 表单弹窗 -->
-  <view wx:if="{{showForm}}" class="modal-mask" bindtap="saveForm">
-    <view class="modal-card" catchtap="">
-      <text class="modal-title">{{editingBudget ? '编辑预算' : '新建预算'}}</text>
+  <view wx:if="{{showForm}}" class="modal-mask" bindtap="closeForm">
+    <view class="modal-card" catchtap="noop">
+      <text class="modal-title">{{isEdit ? '编辑预算' : '新建预算'}}</text>
       <view class="form-field">
         <text class="form-label">范围</text>
-        <picker mode="selector" range="{{formCategories}}" value="{{formCategoryIndex}}" bindchange="onCategoryChange">
-          <view class="form-picker">{{formCategory || '总预算（全部支出）'}}</view>
+        <picker mode="selector" range="{{formLabels}}" value="{{formIndex}}" bindchange="onCategoryChange">
+          <view class="form-picker">{{formLabels[formIndex]}}</view>
         </picker>
       </view>
       <view class="form-field">
@@ -63,7 +64,7 @@
       </view>
       <text class="form-footer">预算按自然月统计，每月 1 日进度自动清零，金额长期有效。</text>
       <view class="modal-btns">
-        <view class="modal-cancel" bindtap="saveForm">取消</view>
+        <view class="modal-cancel" bindtap="closeForm">取消</view>
         <view class="modal-confirm" bindtap="saveForm">保存</view>
       </view>
     </view>

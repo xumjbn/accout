@@ -16,6 +16,8 @@ export enum TransactionCategory {
   Education = '教育',
   Social = '人情往来',
   Travel = '旅行',
+  Clothing = '服饰',
+  Daily = '日用',
   Repayment = '还款',
   Other = '其他',
   // 收入
@@ -38,6 +40,8 @@ export function expenseCategories(): TransactionCategory[] {
     TransactionCategory.Education,
     TransactionCategory.Social,
     TransactionCategory.Travel,
+    TransactionCategory.Clothing,
+    TransactionCategory.Daily,
     TransactionCategory.Repayment,
     TransactionCategory.Other,
   ]
@@ -76,6 +80,8 @@ export function categoryColor(cat: TransactionCategory): string {
     [TransactionCategory.Education]: '#6366F1',
     [TransactionCategory.Social]: '#10B981',
     [TransactionCategory.Travel]: '#14B8A6',
+    [TransactionCategory.Clothing]: '#D946EF',
+    [TransactionCategory.Daily]: '#0EA5E9',
     [TransactionCategory.Repayment]: '#64748B',
     [TransactionCategory.Other]: '#9CA3AF',
     [TransactionCategory.Salary]: '#22C55E',

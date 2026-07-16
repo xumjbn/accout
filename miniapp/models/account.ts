@@ -68,6 +68,12 @@ export interface Account {
   kind: AccountKind
   balance: number
   costBasis: number        // 投资本金
+  /** 负债：年利率 %（如 3.6 表示 3.6%），选填 */
+  annualRate?: number
+  /** 负债：总期数（月），选填 */
+  totalPeriods?: number
+  /** 负债：已还期数，选填 */
+  paidPeriods?: number
   note: string
   createdAt: number
   updatedAt: number
@@ -87,6 +93,28 @@ export function createAccount(partial?: Partial<Account>): Account {
     updatedAt: now,
     ...partial,
   }
+}
+
+/** 剩余期数（未设置总期数返回 null） */
+export function remainingPeriods(account: Account): number | null {
+  if (!account.totalPeriods || account.totalPeriods <= 0) return null
+  return Math.max(0, account.totalPeriods - (account.paidPeriods || 0))
+}
+
+/** 本期利息：剩余本金 x 年利率 / 12（未填利率视为免息） */
+export function monthlyInterest(account: Account): number {
+  if (!account.annualRate || account.annualRate <= 0) return 0
+  return Math.round(account.balance * account.annualRate / 100 / 12 * 100) / 100
+}
+
+/** 等额本息月供估算：按当前剩余本金与剩余期数 */
+export function estMonthlyPayment(account: Account): number | null {
+  const n = remainingPeriods(account)
+  if (!n || n <= 0) return null
+  const r = (account.annualRate || 0) / 100 / 12
+  if (r <= 0) return Math.round(account.balance / n * 100) / 100
+  const pow = Math.pow(1 + r, n)
+  return Math.round(account.balance * r * pow / (pow - 1) * 100) / 100
 }
 
 /** 计算投资收益（仅投资类有意义） */

@@ -44,7 +44,10 @@
           <text class="ac-name">{{item.name}}</text>
           <text class="ac-kind">{{item.kind}}{{item.note ? ' · ' + item.note : ''}}</text>
         </view>
-        <text class="ac-balance liability">-¥{{item.balanceStr}}</text>
+        <view class="ac-right">
+          <text class="ac-balance liability">-¥{{item.balanceStr}}</text>
+          <text wx:if="{{item.loanInfo}}" class="ac-loan">{{item.loanInfo}}</text>
+        </view>
       </view>
     </view>
   </view>
@@ -92,6 +95,21 @@
         <text class="form-label">投入本金</text>
         <input class="form-input" placeholder="选填，用于算收益" type="digit" value="{{formCostBasisText}}" bindinput="onCostBasisInput" />
       </view>
+
+      <block wx:if="{{formKindIsLiability}}">
+        <view class="form-field">
+          <text class="form-label">年利率 %</text>
+          <input class="form-input" placeholder="选填，如 3.6" type="digit" value="{{formRateText}}" bindinput="onRateInput" />
+        </view>
+        <view class="form-field">
+          <text class="form-label">总期数（月）</text>
+          <input class="form-input" placeholder="选填，如 360" type="number" value="{{formPeriodsText}}" bindinput="onPeriodsInput" />
+        </view>
+        <view class="form-field">
+          <text class="form-label">已还期数</text>
+          <input class="form-input" placeholder="选填" type="number" value="{{formPaidText}}" bindinput="onPaidInput" />
+        </view>
+      </block>
 
       <view class="form-field">
         <text class="form-label">备注</text>

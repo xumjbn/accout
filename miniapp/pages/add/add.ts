@@ -3,6 +3,7 @@ import { categoryIcon, categoryColor } from '../../models/category'
 import { TransactionCategory } from '../../models/category'
 import { loadTransactions, insertTransaction, updateTransaction, loadBudgets } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
+import { promptLinkRepayment } from '../../services/loan'
 import { initialPickerState, typeChanged, rebuildOptions, CategoryPickerState } from '../../utils/category-picker'
 import { finishAndBack } from '../../utils/page'
 import { formatDate } from '../../utils/date'
@@ -108,6 +109,10 @@ Page({
     }
 
     const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
-    finishAndBack(alert, this.data.isEdit ? '已更新' : '已入账')
+    // 新建的还款账单：询问关联负债账户（编辑不重复联动）
+    const needLink = !this.data.isEdit && isExpense
+      && category === TransactionCategory.Repayment && amount > 0
+    const link = needLink ? promptLinkRepayment(amount) : Promise.resolve()
+    link.then(() => finishAndBack(alert, this.data.isEdit ? '已更新' : '已入账'))
   },
 })

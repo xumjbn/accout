@@ -79,3 +79,5 @@
 .modal-confirm { background: #07C160; color: #fff; }
 
 .ac-img { width: 32rpx; height: 32rpx; }
+
+.ac-loan { display: block; font-size: 20rpx; color: #9CA3AF; margin-top: 2rpx; }

@@ -1,4 +1,4 @@
-import { Account, createAccount, AccountKind, assetKinds, liabilityKinds, isLiability, accountKindIcon, accountKindColor, accountProfit } from '../../models/account'
+import { Account, createAccount, AccountKind, assetKinds, liabilityKinds, isLiability, accountKindIcon, accountKindColor, accountProfit, estMonthlyPayment, remainingPeriods, monthlyInterest } from '../../models/account'
 import { loadAccounts, saveAccounts } from '../../services/storage'
 import { moneyString, profitRate } from '../../utils/money'
 import { uiIcons } from '../../assets/icons'
@@ -15,6 +15,7 @@ interface AccountRow {
   profitStr: string      // 空串表示不显示收益
   profitRateStr: string
   profitPositive: boolean
+  loanInfo: string       // 负债：月供/期数/月息信息，空串不显示
 }
 
 function toRow(account: Account): AccountRow {
@@ -30,7 +31,22 @@ function toRow(account: Account): AccountRow {
     profitStr: profit !== null ? (profit >= 0 ? '+¥' : '-¥') + moneyString(Math.abs(profit)) : '',
     profitRateStr: profit !== null ? profitRate(profit, account.costBasis) : '',
     profitPositive: (profit ?? 0) >= 0,
+    loanInfo: buildLoanInfo(account),
   }
+}
+
+function buildLoanInfo(account: Account): string {
+  if (!isLiability(account.kind)) return ''
+  const payment = estMonthlyPayment(account)
+  const periods = remainingPeriods(account)
+  if (payment !== null && periods !== null) {
+    return '月供约 ¥' + moneyString(payment) + ' · 剩 ' + periods + ' 期'
+  }
+  const interest = monthlyInterest(account)
+  if (interest > 0) {
+    return '月息约 ¥' + moneyString(interest)
+  }
+  return ''
 }
 
 Page({
@@ -50,6 +66,9 @@ Page({
     formName: '',
     formBalanceText: '',
     formCostBasisText: '',
+    formRateText: '',
+    formPeriodsText: '',
+    formPaidText: '',
     formNote: '',
     formAssetKinds: assetKinds() as string[],
     formLiabilityKinds: liabilityKinds() as string[],
@@ -88,6 +107,9 @@ Page({
       formName: '',
       formBalanceText: '',
       formCostBasisText: '',
+      formRateText: '',
+      formPeriodsText: '',
+      formPaidText: '',
       formNote: '',
       formKindIsLiability: false,
     })
@@ -112,6 +134,9 @@ Page({
       formName: account.name,
       formBalanceText: String(account.balance),
       formCostBasisText: account.costBasis > 0 ? String(account.costBasis) : '',
+      formRateText: account.annualRate ? String(account.annualRate) : '',
+      formPeriodsText: account.totalPeriods ? String(account.totalPeriods) : '',
+      formPaidText: account.paidPeriods ? String(account.paidPeriods) : '',
       formNote: account.note,
       formKindIsLiability: isLiability(account.kind),
     })
@@ -151,10 +176,13 @@ Page({
   onNameInput(e: WechatMiniprogram.Input) { this.setData({ formName: e.detail.value }) },
   onBalanceInput(e: WechatMiniprogram.Input) { this.setData({ formBalanceText: e.detail.value }) },
   onCostBasisInput(e: WechatMiniprogram.Input) { this.setData({ formCostBasisText: e.detail.value }) },
+  onRateInput(e: WechatMiniprogram.Input) { this.setData({ formRateText: e.detail.value }) },
+  onPeriodsInput(e: WechatMiniprogram.Input) { this.setData({ formPeriodsText: e.detail.value }) },
+  onPaidInput(e: WechatMiniprogram.Input) { this.setData({ formPaidText: e.detail.value }) },
   onNoteInput(e: WechatMiniprogram.Input) { this.setData({ formNote: e.detail.value }) },
 
   saveForm() {
-    const { formKind, formName, formBalanceText, formCostBasisText, formNote, editingAccount } = this.data
+    const { formKind, formName, formBalanceText, formCostBasisText, formRateText, formPeriodsText, formPaidText, formNote, editingAccount } = this.data
     const balance = parseFloat(formBalanceText)
     if (isNaN(balance) || balance < 0) {
       wx.showToast({ title: '请输入有效金额', icon: 'none' })
@@ -163,6 +191,12 @@ Page({
 
     const name = formName.trim() || formKind
     const costBasis = formKind === AccountKind.Investment ? Math.max(0, parseFloat(formCostBasisText) || 0) : 0
+    const liability = isLiability(formKind as AccountKind)
+    const annualRate = liability ? (Math.max(0, parseFloat(formRateText) || 0) || undefined) : undefined
+    const totalPeriods = liability ? (Math.max(0, parseInt(formPeriodsText, 10) || 0) || undefined) : undefined
+    const paidPeriods = liability && totalPeriods
+      ? (Math.min(totalPeriods, Math.max(0, parseInt(formPaidText, 10) || 0)) || undefined)
+      : undefined
 
     const accounts = loadAccounts()
     if (editingAccount) {
@@ -172,6 +206,9 @@ Page({
         target.name = name
         target.balance = balance
         target.costBasis = costBasis
+        target.annualRate = annualRate
+        target.totalPeriods = totalPeriods
+        target.paidPeriods = paidPeriods
         target.note = formNote
         target.updatedAt = Date.now()
       }
@@ -181,6 +218,9 @@ Page({
         name,
         balance,
         costBasis,
+        annualRate,
+        totalPeriods,
+        paidPeriods,
         note: formNote,
       }))
     }

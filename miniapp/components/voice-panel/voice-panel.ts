@@ -10,6 +10,7 @@ import { TransactionCategory, categoryIcon, categoryColor } from '../../models/c
 import { CategoryPickerState } from '../../utils/category-picker'
 import { insertTransaction, insertTransactions, loadBudgets, loadTransactions } from '../../services/storage'
 import { checkBudgetAlert } from '../../services/notifier'
+import { promptLinkRepayment } from '../../services/loan'
 import { initialPickerState, typeChanged, rebuildOptions } from '../../utils/category-picker'
 import { formatDate } from '../../utils/date'
 import { moneyString } from '../../utils/money'
@@ -241,13 +242,20 @@ Component({
       }
 
       const alert = checkBudgetAlert(loadBudgets(), loadTransactions())
-      this.dismiss()
-      this.triggerEvent('saved')
-      if (alert) {
-        wx.showToast({ title: alert.title, icon: 'none', duration: 2500 })
-      } else {
-        wx.showToast({ title: '已入账', icon: 'success' })
-      }
+      // 还款分类（单笔）：询问关联负债账户，自动拆利息/冲本金
+      const amount = parseFloat(amountText)
+      const needLink = multiItems.length <= 1 && isExpense
+        && category === TransactionCategory.Repayment && amount > 0
+      const link = needLink ? promptLinkRepayment(amount) : Promise.resolve()
+      link.then(() => {
+        this.dismiss()
+        this.triggerEvent('saved')
+        if (alert) {
+          wx.showToast({ title: alert.title, icon: 'none', duration: 2500 })
+        } else {
+          wx.showToast({ title: '已入账', icon: 'success' })
+        }
+      })
     },
   },
 })

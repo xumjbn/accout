@@ -41,6 +41,8 @@ Page({
       }
     }
     this.setData({ dateStr: formatDate(Date.now()) })
+    // 初始分类为「历史最常用」，同步图标展示
+    this.applyPicker(rebuildOptions({ ...this.data }))
   },
 
   onAmountInput(e: WechatMiniprogram.Input) {

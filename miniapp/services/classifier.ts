@@ -2,7 +2,8 @@
  * 关键词规则分类器 - 对应 iOS CategoryClassifier
  * 长词命中得分更高，全部本地运行
  */
-import { TransactionCategory } from '../models/category'
+import { TransactionCategory, isIncomeCategory } from '../models/category'
+import { loadTransactions } from './storage'
 
 const expenseKeywords: Record<string, string[]> = {
   [TransactionCategory.Food]: [
@@ -62,6 +63,39 @@ const incomeKeywords: Record<string, string[]> = {
   [TransactionCategory.OtherIncome]: ['报销', '退款', '二手', '闲鱼', '转卖', '兼职'],
 }
 
+// 最常用分类缓存（导入几百行时避免反复读全量账单）
+let fallbackCacheAt = 0
+let fallbackCache: { expense: TransactionCategory; income: TransactionCategory } | null = null
+
+/** 智能默认分类：历史最常用；无历史时支出=餐饮、收入=工资 */
+export function defaultCategoryFor(isExpense: boolean): TransactionCategory {
+  const now = Date.now()
+  if (!fallbackCache || now - fallbackCacheAt > 3000) {
+    const expenseCount = new Map<string, number>()
+    const incomeCount = new Map<string, number>()
+    for (const tx of loadTransactions()) {
+      const map = tx.isExpense ? expenseCount : incomeCount
+      map.set(tx.category, (map.get(tx.category) || 0) + 1)
+    }
+    const top = (map: Map<string, number>): TransactionCategory | null => {
+      let best: TransactionCategory | null = null
+      let max = 0
+      for (const [cat, count] of map) {
+        if (count > max) { max = count; best = cat as TransactionCategory }
+      }
+      return best
+    }
+    const topExpense = top(expenseCount)
+    const topIncome = top(incomeCount)
+    fallbackCache = {
+      expense: topExpense && !isIncomeCategory(topExpense) ? topExpense : TransactionCategory.Food,
+      income: topIncome && isIncomeCategory(topIncome) ? topIncome : TransactionCategory.Salary,
+    }
+    fallbackCacheAt = now
+  }
+  return isExpense ? fallbackCache.expense : fallbackCache.income
+}
+
 export function classify(text: string, isExpense: boolean): TransactionCategory {
   const table = isExpense ? expenseKeywords : incomeKeywords
   let best: { category: TransactionCategory; score: number } | null = null
@@ -78,5 +112,6 @@ export function classify(text: string, isExpense: boolean): TransactionCategory 
     }
   }
 
-  return best?.category ?? (isExpense ? TransactionCategory.Other : TransactionCategory.OtherIncome)
+  // 没命中关键词时不再落到「其他」，用历史最常用分类兜底
+  return best?.category ?? defaultCategoryFor(isExpense)
 }

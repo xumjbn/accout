@@ -8,6 +8,7 @@ import {
   expenseCategories,
   incomeCategories,
 } from '../models/category'
+import { defaultCategoryFor } from '../services/classifier'
 
 export interface CategoryPickerState {
   isExpense: boolean
@@ -19,7 +20,7 @@ export interface CategoryPickerState {
 export function initialPickerState(): CategoryPickerState {
   return rebuildOptions({
     isExpense: true,
-    category: TransactionCategory.Other,
+    category: defaultCategoryFor(true),
     categoryOptions: [],
     categoryIndex: 0,
   })
@@ -29,9 +30,9 @@ export function initialPickerState(): CategoryPickerState {
 export function typeChanged(current: CategoryPickerState, isExpense: boolean): CategoryPickerState {
   let category = current.category as TransactionCategory
   if (isExpense && isIncomeCategory(category)) {
-    category = TransactionCategory.Other
+    category = defaultCategoryFor(true)
   } else if (!isExpense && !isIncomeCategory(category)) {
-    category = TransactionCategory.Salary
+    category = defaultCategoryFor(false)
   }
   return rebuildOptions({ ...current, isExpense, category })
 }

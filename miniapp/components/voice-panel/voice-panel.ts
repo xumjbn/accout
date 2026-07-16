@@ -246,6 +246,7 @@ Component({
       const amount = parseFloat(amountText)
       const needLink = multiItems.length <= 1 && isExpense
         && category === TransactionCategory.Repayment && amount > 0
+      console.log('[voice-panel] 还款联动检查:', { category, isExpense, amount, needLink })
       const link = needLink ? promptLinkRepayment(amount) : Promise.resolve()
       link.then(() => {
         this.dismiss()

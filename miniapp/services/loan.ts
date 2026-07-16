@@ -45,7 +45,10 @@ export function applyRepayment(accountId: string, amount: number): RepaymentSpli
 export function promptLinkRepayment(amount: number): Promise<void> {
   return new Promise(resolve => {
     const liabilities = loadAccounts().filter(a => isLiability(a.kind) && a.balance > 0)
+    console.log('[loan] promptLinkRepayment, 负债账户数:', liabilities.length)
     if (liabilities.length === 0) {
+      // 没有可关联对象：给出提示而不是静默跳过
+      wx.showToast({ title: '想自动冲抵本金？先在「资产」页添加负债账户', icon: 'none', duration: 3000 })
       resolve()
       return
     }
@@ -54,7 +57,6 @@ export function promptLinkRepayment(amount: number): Promise<void> {
     const itemList = [...shown.map(a => `${a.name}（剩 ¥${moneyString(a.balance)}）`), '不关联']
 
     wx.showActionSheet({
-      alertText: '把这笔还款关联到负债账户？',
       itemList,
       success: (res) => {
         if (res.tapIndex < shown.length) {
@@ -72,7 +74,10 @@ export function promptLinkRepayment(amount: number): Promise<void> {
         }
         resolve()
       },
-      fail: () => resolve(),
+      fail: (err) => {
+        console.error('[loan] showActionSheet fail:', err)
+        resolve()
+      },
     })
   })
 }

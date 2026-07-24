@@ -9,6 +9,7 @@
       <view class="arrow {{isLatest ? 'disabled' : ''}}" bindtap="next">〉</view>
     </view>
     <view class="dim-seg">
+      <view class="dim-opt {{dim === 'week' ? 'on' : ''}}" bindtap="switchDim" data-dim="week">周</view>
       <view class="dim-opt {{dim === 'month' ? 'on' : ''}}" bindtap="switchDim" data-dim="month">月</view>
       <view class="dim-opt {{dim === 'year' ? 'on' : ''}}" bindtap="switchDim" data-dim="year">年</view>
     </view>
@@ -42,7 +43,7 @@
   <!-- 空状态 -->
   <view wx:if="{{isEmpty}}" class="empty-state">
     <view class="empty-badge"><image src="{{icoEmpty}}" mode="aspectFit" /></view>
-    <text class="empty-title">{{dim === 'month' ? '本月' : '今年'}}还没有支出记录</text>
+    <text class="empty-title">{{dim === 'week' ? '本周' : dim === 'month' ? '本月' : '今年'}}还没有支出记录</text>
     <text class="empty-desc">记几笔账之后，这里会展示分类占比和趋势</text>
   </view>
 

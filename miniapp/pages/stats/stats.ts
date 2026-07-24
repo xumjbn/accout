@@ -2,11 +2,11 @@ import { TransactionCategory, categoryIcon, categoryColor } from '../../models/c
 import { applyTheme } from '../../services/theme'
 import { Transaction } from '../../models/transaction'
 import { loadTransactions } from '../../services/storage'
-import { startOfDay, formatYearMonth } from '../../utils/date'
+import { startOfDay, startOfWeek, formatYearMonth, formatWeekRange } from '../../utils/date'
 import { moneyString } from '../../utils/money'
 import { uiIcons } from '../../assets/icons'
 
-type Dim = 'month' | 'year'
+type Dim = 'week' | 'month' | 'year'
 
 interface CategorySummary {
   category: TransactionCategory
@@ -58,14 +58,18 @@ Page({
     const anchor = new Date(this.data.anchor)
     const now = new Date()
 
+    const anchorWeekStart = startOfWeek(anchor)
+    const sameWeek = (d: Date) => startOfWeek(d) === anchorWeekStart
     const sameMonth = (d: Date) =>
       d.getFullYear() === anchor.getFullYear() && d.getMonth() === anchor.getMonth()
     const sameYear = (d: Date) => d.getFullYear() === anchor.getFullYear()
-    const inRange = dim === 'month' ? sameMonth : sameYear
+    const inRange = dim === 'week' ? sameWeek : dim === 'month' ? sameMonth : sameYear
 
-    const isLatest = dim === 'month'
-      ? anchor.getFullYear() === now.getFullYear() && anchor.getMonth() === now.getMonth()
-      : anchor.getFullYear() === now.getFullYear()
+    const isLatest = dim === 'week'
+      ? anchorWeekStart === startOfWeek(now)
+      : dim === 'month'
+        ? anchor.getFullYear() === now.getFullYear() && anchor.getMonth() === now.getMonth()
+        : anchor.getFullYear() === now.getFullYear()
 
     const rangeTx = loadTransactions().filter(t => inRange(new Date(t.date)))
     const expenseTx = rangeTx.filter(t => t.isExpense)
@@ -98,8 +102,18 @@ Page({
       stops.push(`${c.color} ${from.toFixed(1)}deg ${acc.toFixed(1)}deg`)
     }
 
+    const title =
+      dim === 'week' ? formatWeekRange(this.data.anchor)
+      : dim === 'month' ? formatYearMonth(this.data.anchor)
+      : `${anchor.getFullYear()}年`
+    const barTitle = dim === 'year' ? '每月支出' : '每日支出'
+    const bars =
+      dim === 'week' ? this.weeklyBars(expenseTx, anchor)
+      : dim === 'month' ? this.dailyBars(expenseTx)
+      : this.monthlyBars(expenseTx, anchor)
+
     this.setData({
-      title: dim === 'month' ? formatYearMonth(this.data.anchor) : `${anchor.getFullYear()}年`,
+      title,
       isLatest,
       totalExpense: moneyString(totalExpense),
       totalIncome: moneyString(totalIncome),
@@ -108,8 +122,8 @@ Page({
       conicStops: stops.join(', '),
       legend: byCategory.slice(0, 6),
       ranking: byCategory,
-      barTitle: dim === 'month' ? '每日支出' : '每月支出',
-      bars: dim === 'month' ? this.dailyBars(expenseTx) : this.monthlyBars(expenseTx, anchor),
+      barTitle,
+      bars,
     })
   },
 
@@ -123,6 +137,23 @@ Page({
     const max = Math.max(...entries.map(e => e[1]), 1)
     return entries.map(([day, value]) => ({
       label: `${new Date(day).getDate()}日`,
+      value,
+      height: Math.max(4, Math.round((value / max) * BAR_MAX_HEIGHT)),
+    }))
+  },
+
+  /** 周视图：周一~周日 7 天固定画满，无数据的天为 0 */
+  weeklyBars(expenseTx: Transaction[], anchor: Date): Bar[] {
+    const weekStart = startOfWeek(anchor)
+    const labels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    const sums = new Array<number>(7).fill(0)
+    for (const tx of expenseTx) {
+      const idx = Math.floor((startOfDay(new Date(tx.date)) - weekStart) / 86400000)
+      if (idx >= 0 && idx < 7) sums[idx] += tx.amount
+    }
+    const max = Math.max(...sums, 1)
+    return sums.map((value, i) => ({
+      label: labels[i],
       value,
       height: Math.max(4, Math.round((value / max) * BAR_MAX_HEIGHT)),
     }))
@@ -156,7 +187,8 @@ Page({
 
   prev() {
     const d = new Date(this.data.anchor)
-    if (this.data.dim === 'month') d.setMonth(d.getMonth() - 1)
+    if (this.data.dim === 'week') d.setDate(d.getDate() - 7)
+    else if (this.data.dim === 'month') d.setMonth(d.getMonth() - 1)
     else d.setFullYear(d.getFullYear() - 1)
     this.setData({ anchor: d.getTime() })
     this.reload()
@@ -165,7 +197,8 @@ Page({
   next() {
     if (this.data.isLatest) return
     const d = new Date(this.data.anchor)
-    if (this.data.dim === 'month') d.setMonth(d.getMonth() + 1)
+    if (this.data.dim === 'week') d.setDate(d.getDate() + 7)
+    else if (this.data.dim === 'month') d.setMonth(d.getMonth() + 1)
     else d.setFullYear(d.getFullYear() + 1)
     this.setData({ anchor: d.getTime() })
     this.reload()

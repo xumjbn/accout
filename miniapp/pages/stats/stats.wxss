@@ -28,13 +28,13 @@
 }
 
 .period-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
   min-width: 190rpx;
   text-align: center;
 }
 
-/* 月/年切换 */
+/* 周/月/年切换 */
 .dim-seg {
   display: flex;
   background: rgba(255, 255, 255, 0.85);
@@ -44,7 +44,7 @@
 }
 
 .dim-opt {
-  padding: 10rpx 30rpx;
+  padding: 10rpx 22rpx;
   font-size: 26rpx;
   color: #6B7280;
   border-radius: 999rpx;

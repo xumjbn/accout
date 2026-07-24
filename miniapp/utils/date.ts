@@ -17,11 +17,25 @@ export function startOfDay(date: Date = new Date()): number {
   return d.getTime()
 }
 
+/** 获取本周周一的 0:00 时间戳（周一为一周起点） */
+export function startOfWeek(date: Date = new Date()): number {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  const offset = (d.getDay() + 6) % 7 // 周一=0 … 周日=6
+  d.setDate(d.getDate() - offset)
+  return d.getTime()
+}
+
 /** 判断两个时间戳是否同月 */
 export function isSameMonth(t1: number, t2: number = Date.now()): boolean {
   const d1 = new Date(t1)
   const d2 = new Date(t2)
   return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth()
+}
+
+/** 判断两个时间戳是否同一周（周一为起点） */
+export function isSameWeek(t1: number, t2: number = Date.now()): boolean {
+  return startOfWeek(new Date(t1)) === startOfWeek(new Date(t2))
 }
 
 /** 获取当月剩余天数 */
@@ -44,6 +58,14 @@ export function formatDate(timestamp: number): string {
 export function formatYearMonth(timestamp: number): string {
   const d = new Date(timestamp)
   return `${d.getFullYear()}年${d.getMonth() + 1}月`
+}
+
+/** 周区间格式化 M月d日-M月d日（传入周内任一时间戳） */
+export function formatWeekRange(timestamp: number): string {
+  const start = new Date(startOfWeek(new Date(timestamp)))
+  const end = new Date(start)
+  end.setDate(end.getDate() + 6)
+  return `${start.getMonth() + 1}月${start.getDate()}日-${end.getMonth() + 1}月${end.getDate()}日`
 }
 
 /** 日期格式化 M月d日 星期X */
